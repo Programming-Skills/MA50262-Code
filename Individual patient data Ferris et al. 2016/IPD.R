@@ -25,7 +25,7 @@ source("program-2.R")
 ##############
 
 
-digitized.file.names = c("mok.c.caroplatin.tsv", "mok.c.gefitinib.tsv")
+digitized.file.names = c("ferris.a.nivolumab.tsv", "ferris.standard.tsv")
 
 
 ################################
@@ -38,8 +38,10 @@ digitized.file.names = c("mok.c.caroplatin.tsv", "mok.c.gefitinib.tsv")
 ################################
 
 numbers.below.figure = list(  
-  mok.c.caroplatin = c(85, 58, 14, 1),
-  mok.c.gefitinib = c(91, 21, 4, 2, 1)
+  ferris.a.nivolumab = c(88, 67, 44, 18, 6),
+  ferris.standard = c(61, 42, 20, 6, 2)
+  # ferris.a.nivolumab = c(88, 67, 44, 18, 6,0,0,0,0,0,0,0,0,0,0,0),
+  # ferris.standard = c(61, 42, 20, 6, 2, 0,0,0,0,0,0,0,0,0,0,0)
   
 )
 
@@ -55,8 +57,8 @@ numbers.below.figure = list(
 #
 ####################
 
-time = list( time.mok.c.caroplatin = 0:13, 
-             time.mok.c.gefitinib = 0:19
+time = list( time.ferris.a.nivolumab = 0:17, 
+             time.ferris.standard  = 0:14
 )
 
 
@@ -65,8 +67,8 @@ time = list( time.mok.c.caroplatin = 0:13,
 #
 # arm indicator
 #
-# 1 = mok.c.caroplatin 
-# 2 = mok.c.gefitinib
+# 1 = ferris.a.nivolumab
+# 2 = ferris.standard
 #
 ################
 
@@ -92,8 +94,8 @@ for(ifile in 1:length(digitized.file.names)){
 }
 
 treatment.type = c(
-  rep("Carboplatin plus paclitaxel", length(which(individual.data[,"tmt.arm.number"] == 1))),
-  rep("Gefitinib", length(which(individual.data[,"tmt.arm.number"] == 2))))                   
+  rep("Nivolumab", length(which(individual.data[,"tmt.arm.number"] == 1))),
+  rep("Standard therapy", length(which(individual.data[,"tmt.arm.number"] == 2))))                   
 
 
 individual.data = as.data.frame(individual.data)

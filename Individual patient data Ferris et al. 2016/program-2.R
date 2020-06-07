@@ -68,11 +68,11 @@ Guyot.individual.data = function(condensed.data, nrisk.data, input.arm.id, tot.e
       if (n.int > 1){
       #Time intervals 1,...,(n.int-1)
           for (i in 1:(n.int-1)){
-#      print(paste("i is ", i))
+      print(paste("i is ", i))
                 #First approximation of no. censored on interval i
                 n.censor[i]<- round(n.risk[i]*S[lower[i+1]]/S[lower[i]]- n.risk[i+1])
 
-#      print(paste("n.censor[i] is ", n.censor[i]))
+      print(paste("n.censor[i] is ", n.censor[i]))
       #          ############# ADDED BY JAYA #############
                 if(n.censor[i] <= 0){
                   n.censor[i] <- 0
@@ -249,5 +249,6 @@ Guyot.individual.data = function(condensed.data, nrisk.data, input.arm.id, tot.e
 
     return(IPD)
 }
+
 
 

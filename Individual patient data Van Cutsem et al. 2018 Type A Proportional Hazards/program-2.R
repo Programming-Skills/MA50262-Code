@@ -23,7 +23,7 @@
 #############
 
 
-Guyot.individual.data = function(condensed.data, nrisk.data, input.arm.id, tot.events="158"){
+Guyot.individual.data = function(condensed.data, nrisk.data, input.arm.id, tot.events="NA"){
 
       #Algorithm to create a raw dataset from DigizeIt readings from a Kaplan-Meier curve
       library("MASS")
@@ -249,6 +249,5 @@ Guyot.individual.data = function(condensed.data, nrisk.data, input.arm.id, tot.e
 
     return(IPD)
 }
-
 
 
