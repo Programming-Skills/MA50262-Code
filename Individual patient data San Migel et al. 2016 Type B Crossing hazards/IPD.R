@@ -22,8 +22,8 @@ digitized.file.names = c("san.migel.panobinostat.tsv", "san.migel.placebo.tsv")
 ################################
 
 numbers.below.figure = list(  
-  san.migel.panobinostat = c(73, 69, 61, 55, 52, 49, 47, 45, 44, 40, 38, 38, 36, 30, 27, 27, 26, 24, 22, 21, 18, 14, 13, 11, 7, 6, 3, 2, 1,1),    
-  san.migel.placebo = c(74, 70, 63, 60, 57, 52, 48, 45, 41, 37, 34, 32, 32, 29, 29, 28, 28, 26, 24, 23, 21, 21, 16, 15, 11, 9, 4, 1,1)
+  san.migel.panobinostat = c(73, 69, 61, 55, 52, 49, 47, 45, 44, 40, 38, 38, 36, 30, 27, 27, 26, 24, 22, 21, 18, 14, 13, 11, 7, 6, 3, 2, 1, 1),    
+  san.migel.placebo = c(74, 70, 63, 60, 57, 52, 48, 45, 41, 37, 34, 32, 32, 29, 29, 28, 28, 26, 24, 23, 21, 21, 16, 15, 11, 9, 4, 1, 1)
   
 )
 
@@ -34,8 +34,8 @@ numbers.below.figure = list(
 #
 ####################
 
-time = list( time.san.migel.panobinostat = 0:28, 
-             time.san.migel.placebo = 0:28
+time = list( time.san.migel.panobinostat = 0:60, 
+             time.san.migel.placebo = 0:60
 )
 
 
