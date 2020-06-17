@@ -1,7 +1,7 @@
-#Algorithm to create a raw dataset from DigizeIt readings from a Kaplan-Meier curve
+# Libraries
 source("Libraries.R")
-###FUNCTION INPUTS
 
+###FUNCTION INPUTS
 tot.events<-"NA" #tot.events = total no. of events reported. If not reported, then tot.events="NA"
 arm.id <- 1 #arm indicator
 ###END FUNCTION INPUTS
@@ -11,20 +11,16 @@ digizeit <- read.csv("asceirto.2.a.10mg.csv", header=FALSE)
 t.S<-digizeit[,1]
 S<-digizeit[,2]
 
-
-
 #Read in published numbers at risk, n.risk, at time, t.risk, lower and upper
 # indexes for time interval
 t.risk<- seq(0, 45, by = 3)
 lower<- purrr::map_dbl(t.risk,
                        function(x) min(which(t.S >= x)))
 upper<- purrr::map_dbl(c(t.risk[-1], Inf),
-                        function(x) max(which(t.S < x)))
+                       function(x) max(which(t.S < x)))
 n.risk<- c(365,306,253,217,196,181,161,151,137,126,120,118,111,105,94,16)
 n.int<-length(n.risk)
 n.t<- upper[n.int]
-
-# c(609,363,212,76,24,5)
 
 #Initialise vectors
 arm<-rep(arm.id,n.risk[1])
@@ -189,70 +185,18 @@ IPD<-matrix(c(t.IPD,event.IPD,arm),ncol=3,byrow=F)
 # saveRDS(IPD, file = "IPD.ascierto.2.a.3mg.RDS") 
 # saveRDS(IPD, file = "IPD.ascierto.2.a.10mg.RDS") 
 
-# Restore the object
-# readRDS(file = "IPD.ascierto.2.a.gefitinib.RDS")
-# readRDS(file = "IPD.ascierto.2.a.carboplatin.RDS")
-
 IPD.ascierto.2.a <- rbind(IPD.ascierto.2.a.3mg, IPD.ascierto.2.a.10mg)
 
 # saveRDS(IPD.ascierto.2.a, file = "IPD.ascierto.2.a.RDS") 
 
-IPD.ascierto.2.a.time <- rbind(IPD.ascierto.2.a, IPD.ascierto.2.a)[,1]
-IPD.ascierto.2.a.event <- rbind(IPD.ascierto.2.a, IPD.ascierto.2.a)[,2]
-IPD.ascierto.2.a.arm <- rbind(IPD.ascierto.2.a, IPD.ascierto.2.a)[,3]
+# IPD.ascierto.2.a.time <- rbind(IPD.ascierto.2.a, IPD.ascierto.2.a)[,1]
+# IPD.ascierto.2.a.event <- rbind(IPD.ascierto.2.a, IPD.ascierto.2.a)[,2]
+# IPD.ascierto.2.a.arm <- rbind(IPD.ascierto.2.a, IPD.ascierto.2.a)[,3]
 
 IPD.ascierto.2.a <- as.data.frame(x = IPD.ascierto.2.a)
 
-km_trt_fit <- survfit(Surv(IPD.ascierto.2.a.time, IPD.ascierto.2.a.event) ~ IPD.ascierto.2.a.arm)
+colnames(IPD.ascierto.2.a) <- c("time", "event", "arm")
 
-ggsurv <- ggsurvplot(
-  km_trt_fit,               # survfit object with calculated statistics.
-  data = IPD.ascierto.2.a,  # data used to fit survival curves.
-  risk.table = TRUE,        # show risk table.
-  pval = FALSE,             # show p-value of log-rank test.
-  conf.int = FALSE,         # show confidence intervals for 
-  # point estimates of survival curves.
-  palette = c("#E7B800", "#2E9FDF"),
-  xlim = c(0,45),         # present narrower X axis, but not affect
-  # survival estimates.
-  xlab = "Time since randomisation (months)",   # customize X axis label.
-  ylab = "Overall survival (%)",   # customize X axis label.
-  break.time.by = 3,     # break X axis in time intervals by 500.
-  ggtheme = theme_light(), # customize plot and risk table with a theme.
-  risk.table.y.text.col = T,# colour risk table text annotations.
-  risk.table.height = 0.25, # the height of the risk table
-  risk.table.y.text = FALSE,# show bars instead of names in text annotations
-  # in legend of risk table.
-  ncensor.plot = FALSE,      # plot the number of censored subjects at time t
-  ncensor.plot.height = 0.25,
-  conf.int.style = "step",  # customize style of confidence intervals
-  surv.median.line = "hv",  # add the median survival pointer.
-  legend.labs = c("3mg", "10mg")    # change legend labels.
-)
+saveRDS(IPD.ascierto.2.a, file = "IPD.ascierto.2.a.RDS") 
 
-# Labels for Survival Curves (plot)
-ggsurv$plot <- ggsurv$plot + labs(
-  title    = "Kaplan-Meier Curves for Over-all Survival",                  
-  subtitle = "Overall survival in the intention-to-treat population."
-)
-
-# Changing the font size, style and color
-
-ggsurv <- ggpar(
-  ggsurv,
-  font.title    = c(16, "bold", "black"),         
-  font.subtitle = c(10, "bold.italic", "black"), 
-  font.caption  = c(14, "plain", "black"),        
-  font.x        = c(14, "bold.italic", "black"),          
-  font.y        = c(14, "bold.italic", "black"),      
-  font.xtickslab = c(12, "plain", "black"),
-  legend = "top"
-)
-
-ggsurv
-
-
-# Produce KM estimates of the Pr of survival over time
-km_fit <- survfit(Surv(IPD.ascierto.2.a.time, IPD.ascierto.2.a.event) ~ 1, data = IPD.ascierto.2.a)
-summary(km_fit)
-
+fwrite(IPD.ascierto.2.a, file = "IPD.ascierto.2.a.csv", sep = ",")
