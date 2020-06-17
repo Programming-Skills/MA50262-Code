@@ -2,7 +2,7 @@
 source("Libraries.R")
 
 # fit the KM model for the data 
-km.model <- survival::survfit(survival::Surv(time, event) ~ arm, data = IPD.ascierto.2.a)
+km.model <- survival::survfit(survival::Surv(time, event) ~ arm, data = IPD.Brahmer.a)
 
 # median survival and CI
 km.model
@@ -23,16 +23,16 @@ legend(18, 0.95, legend = c("arm=0", "arm=1"),
        col = c("red", "blue"), bty = "", cex = 0.6)
 
 # log-rank test
-survival::survdiff(survival::Surv(time, event)~arm, data = IPD.ascierto.2.a)
+survival::survdiff(survival::Surv(time, event)~arm, data = IPD.Brahmer.a)
 # Ho: survival in the two groups the same
 # H1: survival in the two groups not the same
 
-# Chisq= 3.5  on 1 degrees of freedom, p= 0.06 fail to reject.
+# Chisq= 3.5  on 1 degrees of freedom, p= 0.005 reject.
 
 # fit coxph model
-colnames(IPD.ascierto.2.a) <- c("time", "event", "Treatment 10mg")
+colnames(IPD.Brahmer.a) <- c("time", "event", "Nivolumab")
 
-cox.model <- survival::coxph(Surv(time, event) ~ `Treatment 10mg`,data = IPD.ascierto.2.a)
+cox.model <- survival::coxph(Surv(time, event) ~ Nivolumab ,data = IPD.Brahmer.a)
 
 # baseline hazard is unspeficied in the Cox model.
 
@@ -99,3 +99,20 @@ abline(h=0, col=2)
 
 # forest plot
 ggforest(cox.model)
+
+# weighted log-rank test
+IPD.Brahmer.a$Nivolumab <- ifelse(IPD.Brahmer.a$Nivolumab == 0, "control", "experimental")
+
+DT <- setDT(IPD.Brahmer.a)
+
+wlr.Stat(surv=DT$time, cnsr=DT$event, trt= DT$Nivolumab,
+         fparam=list(rho=c(0,0,1,1), gamma=c(0,1,1,0), wlr='FH(0,1)', APPLE=3))
+
+# max combo test
+DT <- setDT(IPD.Brahmer.a)
+
+rgs <- list(c(0, 0), c(0, 1), c(1, 1), c(1, 0))
+
+draws <- 1000
+
+combo.wlr(survival = DT$time, cnsr = DT$event, trt = DT$Nivolumab, fparam = list(rgs=rgs,draws=draws))
