@@ -34,34 +34,6 @@ colnames(IPD.Rittmeyer) <- c("time", "event", "Atezolizumab")
 
 cox.model <- survival::coxph(Surv(time, event) ~ Atezolizumab,data = IPD.Rittmeyer)
 
-# baseline hazard is unspeficied in the Cox model.
-
-# can't estimate the survival with the coxph model
-# as we are not estimating the intercept so can't
-# estimate the hazard, so in turn we can't estimate
-# the survival function.
-
-# can estimate the HR. coef is the model coefficient.
-# se(coef) is the se of coef. and the p-value for the 
-# test that the coef is actually zero.
-
-# exp(coef) is the HR. Here HR is 0.8496: At a given 
-# instant in time a patient recieving the 10mg treatment
-# is 0.85 times as likely to die as a patient who is on 
-# 3mg treatment.
-
-# if we subtract 1 from the HR we can interpret this as 
-# a percentage change. At a given instant a patient on the
-# 10mg tratment is 15% less likely to die than those patients 
-# on the 3mg dose. 
-
-# we are 95% confident the true HR lies between  0.7166 and 1.007.
-# exp(-coef) is 1/exp(coef) which is the HR of the 3mg treatment
-# relative to the 10mg treatment group. 
-
-# A patient on the 3mg dose is 1.177 times as likely to die
-# as a patient on the 10mg dose.
-
 # check a summary
 summary(cox.model)
 
@@ -108,9 +80,39 @@ DT <- setDT(IPD.Rittmeyer)
 wlr.Stat(surv=DT$time, cnsr=DT$event, trt= DT$Atezolizumab,
          fparam=list(rho=c(0,0,1,1), gamma=c(0,1,1,0), wlr='FH(0,1)', APPLE=3))
 
+#     pval pval_FH(0,0) pval_FH(0,1) pval_FH(1,1) pval_FH(1,0) pval_APPLE
+# 0.375714   0.05402906     0.375714    0.3806117   0.01043189  0.3760572
+
 # max combo test
 rgs <- list(c(0, 0), c(0, 1), c(1, 1), c(1, 0))
 
 draws <- 1000 
 
 combo.wlr(survival = DT$time, cnsr = DT$event, trt = DT$Atezolizumab, fparam = list(rgs=rgs,draws=draws))
+
+# $rho
+# [1] 1
+# 
+# $gamma
+# [1] 0
+# 
+# $Zmax
+# [1] 2.041203
+# 
+# $pval
+# [1] 0.041
+# 
+# $hr
+# [1] 0.7609729
+# 
+# $hrL
+# [1] 0.5857551
+# 
+# $hrU
+# [1] 0.988604
+# 
+# $hrL.bc
+# [1] 0.5608032
+# 
+# $hrU.bc
+# [1] 1.005224

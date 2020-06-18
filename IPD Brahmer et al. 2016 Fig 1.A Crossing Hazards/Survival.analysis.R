@@ -4,6 +4,12 @@ source("Libraries.R")
 # fit the KM model for the data 
 km.model <- survival::survfit(survival::Surv(time, event) ~ arm, data = IPD.Brahmer.a)
 
+# Call: survfit(formula = survival::Surv(time, event) ~ arm, data = IPD.Brahmer.a)
+# 
+# n events median 0.95LCL 0.95UCL
+# arm=0 290    220   9.94    8.41    11.0
+# arm=1 292    188  12.37   10.24    15.3
+
 # median survival and CI
 km.model
 
@@ -18,7 +24,7 @@ plot(km.model, conf.int = F, xlab = "Time (months)",
 
 abline(h=0.5, col="black")
 
-legend(18, 0.95, legend = c("arm=0", "arm=1"),
+legend(18, 0.95, legend = c("Docetaxel", "Nivolumab"),
        lty = 1, lwd = 2,
        col = c("red", "blue"), bty = "", cex = 0.6)
 
@@ -27,43 +33,42 @@ survival::survdiff(survival::Surv(time, event)~arm, data = IPD.Brahmer.a)
 # Ho: survival in the two groups the same
 # H1: survival in the two groups not the same
 
-# Chisq= 3.5  on 1 degrees of freedom, p= 0.005 reject.
+# survival::survdiff(formula = survival::Surv(time, event) ~ arm, 
+#                    data = IPD.Brahmer.a)
+# 
+# N Observed Expected (O-E)^2/E (O-E)^2/V
+# arm=0 290      220      192      4.01      7.79
+# arm=1 292      188      216      3.57      7.79
+# 
+# Chisq= 7.8  on 1 degrees of freedom, p= 0.005 
+
+# Chisq= 7.8 on 1 degrees of freedom, p= 0.005 reject.
 
 # fit coxph model
 colnames(IPD.Brahmer.a) <- c("time", "event", "Nivolumab")
 
 cox.model <- survival::coxph(Surv(time, event) ~ Nivolumab ,data = IPD.Brahmer.a)
 
-# baseline hazard is unspeficied in the Cox model.
-
-# can't estimate the survival with the coxph model
-# as we are not estimating the intercept so can't
-# estimate the hazard, so in turn we can't estimate
-# the survival function.
-
-# can estimate the HR. coef is the model coefficient.
-# se(coef) is the se of coef. and the p-value for the 
-# test that the coef is actually zero.
-
-# exp(coef) is the HR. Here HR is 0.8496: At a given 
-# instant in time a patient recieving the 10mg treatment
-# is 0.85 times as likely to die as a patient who is on 
-# 3mg treatment.
-
-# if we subtract 1 from the HR we can interpret this as 
-# a percentage change. At a given instant a patient on the
-# 10mg tratment is 15% less likely to die than those patients 
-# on the 3mg dose. 
-
-# we are 95% confident the true HR lies between  0.7166 and 1.007.
-# exp(-coef) is 1/exp(coef) which is the HR of the 3mg treatment
-# relative to the 10mg treatment group. 
-
-# A patient on the 3mg dose is 1.177 times as likely to die
-# as a patient on the 10mg dose.
-
 # check a summary
 summary(cox.model)
+
+# Call:
+#   survival::coxph(formula = Surv(time, event) ~ Nivolumab, data = IPD.Brahmer.a)
+# 
+# n= 582, number of events= 408 
+# 
+# coef exp(coef) se(coef)      z Pr(>|z|)   
+# Nivolumab -0.27919   0.75640  0.09997 -2.793  0.00523 **
+#   ---
+#   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+# 
+# exp(coef) exp(-coef) lower .95 upper .95
+# Nivolumab    0.7564      1.322    0.6218    0.9201
+# 
+# Concordance= 0.521  (se = 0.014 )
+# Likelihood ratio test= 7.83  on 1 df,   p=0.005
+# Wald test            = 7.8  on 1 df,   p=0.005
+# Score (logrank) test = 7.85  on 1 df,   p=0.005
 
 # summary(result.cox)
 
@@ -108,6 +113,11 @@ DT <- setDT(IPD.Brahmer.a)
 wlr.Stat(surv=DT$time, cnsr=DT$event, trt= DT$Nivolumab,
          fparam=list(rho=c(0,0,1,1), gamma=c(0,1,1,0), wlr='FH(0,1)', APPLE=3))
 
+#      pval pval_FH(0,0) pval_FH(0,1) pval_FH(1,1) pval_FH(1,0) pval_APPLE
+# 0.4284894    0.3592651    0.4284894    0.1652925    0.3140572  0.2039543
+
+# The w.l.r test is not significant. 
+
 # max combo test
 DT <- setDT(IPD.Brahmer.a)
 
@@ -116,3 +126,32 @@ rgs <- list(c(0, 0), c(0, 1), c(1, 1), c(1, 0))
 draws <- 1000
 
 combo.wlr(survival = DT$time, cnsr = DT$event, trt = DT$Nivolumab, fparam = list(rgs=rgs,draws=draws))
+
+# $rho
+# [1] 1
+# 
+# $gamma
+# [1] 1
+# 
+# $Zmax
+# [1] 1.082861
+# 
+# $pval
+# [1] 0.25
+# 
+# $hr
+# [1] 0.8328269
+# 
+# $hrL
+# [1] 0.5985
+# 
+# $hrU
+# [1] 1.158898
+# 
+# $hrL.bc
+# [1] 0.5754228
+# 
+# $hrU.bc
+# [1] 1.231861
+
+# The results are not significant.

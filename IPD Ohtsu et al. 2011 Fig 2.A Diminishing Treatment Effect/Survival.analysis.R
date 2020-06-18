@@ -34,34 +34,6 @@ colnames(IPD.Ohtsu) <- c("time", "event", "Bevacizumab")
 
 cox.model <- survival::coxph(Surv(time, event) ~ Bevacizumab,data = IPD.Ohtsu)
 
-# baseline hazard is unspeficied in the Cox model.
-
-# can't estimate the survival with the coxph model
-# as we are not estimating the intercept so can't
-# estimate the hazard, so in turn we can't estimate
-# the survival function.
-
-# can estimate the HR. coef is the model coefficient.
-# se(coef) is the se of coef. and the p-value for the 
-# test that the coef is actually zero.
-
-# exp(coef) is the HR. Here HR is 0.8496: At a given 
-# instant in time a patient recieving the 10mg treatment
-# is 0.85 times as likely to die as a patient who is on 
-# 3mg treatment.
-
-# if we subtract 1 from the HR we can interpret this as 
-# a percentage change. At a given instant a patient on the
-# 10mg tratment is 15% less likely to die than those patients 
-# on the 3mg dose. 
-
-# we are 95% confident the true HR lies between  0.7166 and 1.007.
-# exp(-coef) is 1/exp(coef) which is the HR of the 3mg treatment
-# relative to the 10mg treatment group. 
-
-# A patient on the 3mg dose is 1.177 times as likely to die
-# as a patient on the 10mg dose.
-
 # check a summary
 summary(cox.model)
 
@@ -108,9 +80,39 @@ DT <- setDT(IPD.Ohtsu)
 wlr.Stat(surv=DT$time, cnsr=DT$event, trt= DT$Bevacizumab,
          fparam=list(rho=c(0,0,1,1), gamma=c(0,1,1,0), wlr='FH(0,1)', APPLE=3))
 
+#       pval pval_FH(0,0) pval_FH(0,1) pval_FH(1,1) pval_FH(1,0) pval_APPLE
+# 0.03353598    0.1973005   0.03353598    0.3359253    0.4478928  0.2756842
+
 # max combo test
 rgs <- list(c(0, 0), c(0, 1), c(1, 1), c(1, 0))
 
 draws <- 1000 
 
 combo.wlr(survival = DT$time, cnsr = DT$event, trt = DT$Bevacizumab, fparam = list(rgs=rgs,draws=draws))
+
+# $rho
+# [1] 0
+# 
+# $gamma
+# [1] 1
+# 
+# $Zmax
+# [1] 1.831192
+# 
+# $pval
+# [1] 0.081
+# 
+# $hr
+# [1] 0.7630395
+# 
+# $hrL
+# [1] 0.572735
+# 
+# $hrU
+# [1] 1.016577
+# 
+# $hrL.bc
+# [1] 0.5529727
+# 
+# $hrU.bc
+# [1] 1.064516

@@ -23,7 +23,7 @@ ggsurv <- ggsurvplot(
   ncensor.plot.height = 0.25,
   conf.int.style = "step",  # customize style of confidence intervals
   surv.median.line = "hv",  # add the median survival pointer.
-  legend.labs = c("docetaxel", "nivolumab")    # change legend labels.
+  legend.labs = c("Nivolumab", "Docetaxel")    # change legend labels.
 )
 
 # Labels for Survival Curves (plot)

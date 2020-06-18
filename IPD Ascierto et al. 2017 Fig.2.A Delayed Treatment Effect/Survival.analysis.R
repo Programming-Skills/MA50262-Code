@@ -2,7 +2,7 @@
 source("Libraries.R")
 
 # fit the KM model for the data 
-km.model <- survival::survfit(survival::Surv(time, event) ~ arm, data = IPD.ascierto.2.a)
+km.model <- survival::survfit(survival::Surv(time, event) ~ IPD.ascierto.2.a$arm, data = IPD.ascierto.2.a)
 
 # median survival and CI
 km.model
@@ -18,12 +18,12 @@ plot(km.model, conf.int = F, xlab = "Time (months)",
 
 abline(h=0.5, col="black")
 
-legend(18, 0.95, legend = c("arm=0", "arm=1"),
+legend(18, 0.95, legend = c("3mg", "10mg"),
        lty = 1, lwd = 2,
        col = c("red", "blue"), bty = "", cex = 0.6)
 
 # log-rank test
-survival::survdiff(survival::Surv(time, event)~arm, data = IPD.ascierto.2.a)
+survival::survdiff(survival::Surv(time, event)~IPD.ascierto.2.a$arm, data = IPD.ascierto.2.a)
 # Ho: survival in the two groups the same
 # H1: survival in the two groups not the same
 
@@ -98,19 +98,54 @@ abline(h=0, col=2)
 # of the time.
 
 # forest plot
-ggforest(cox.model)
+ggforest(cox.model, data = IPD.ascierto.2.a)
 
 # weighted log-rank test
-IPD.ascierto.2.a$arm <- ifelse(IPD.ascierto.2.a$arm == 0, "control", "experimental")
+IPD.ascierto.2.a$`Treatment 10mg` <- ifelse(IPD.ascierto.2.a$`Treatment 10mg` == 0, "control", "experimental")
 
-wlr.Stat(surv=DT$time, cnsr=DT$event, trt= DT$arm,
-         fparam=list(rho=c(0,0,1,1), gamma=c(0,1,1,0), wlr='FH(0,1)', APPLE=3))
-
-# max combo test
 DT <- setDT(IPD.ascierto.2.a)
 
+wlr.Stat(surv=DT$time, cnsr=DT$event, trt= DT$`Treatment 10mg`,
+         fparam=list(rho=c(0,0,1,1), gamma=c(0,1,1,0), wlr='FH(0,1)', APPLE=3))
+
+#  pval pval_FH(0,0) pval_FH(0,1) pval_FH(1,1) pval_FH(1,0)   pval_APPLE
+#  0    0.001753487            0  1.74305e-14   0.06047079 0.0006565487
+
+# for this data the most highly significant Fleming Harrington WLR Test: p-value is 0.
+# which corresponds to the (0, 1) late differences combination of rho and gamma. 
+
+# max combo test
 rgs <- list(c(0, 0), c(0, 1), c(1, 1), c(1, 0))
 
-draws <- 1000 
+draws <- 10
 
-combo.wlr(survival = DT$time, cnsr = DT$event, trt = DT$arm, fparam = list(rgs=rgs,draws=draws))
+combo.wlr(survival = DT$time, cnsr = DT$event, trt = DT$`Treatment 10mg`, fparam = list(rgs=rgs,draws=draws))
+
+# $rho
+# 0
+# 
+# $gamma
+# 1
+# 
+# $Zmax
+# 8.471125
+# 
+# $pval
+# 0
+# 
+# $hr
+# 0.2383259
+# 
+# $hrL
+# 0.1898443
+# 
+# $hrU
+# 0.2991887
+# 
+# $hrL.bc
+# 0.2201616
+# 
+# $hrU.bc
+# 0.2735557
+
+# Max combo results: Highly significant. The weighted HR is 0.2383259. (0, 1) late differences combination of rho and gamma.

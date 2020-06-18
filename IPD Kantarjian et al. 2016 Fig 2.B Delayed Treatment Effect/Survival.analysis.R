@@ -10,6 +10,12 @@ km.model
 # model summary
 summary(km.model)
 
+# Call: survfit(formula = survival::Surv(time, event) ~ arm, data = IPD.Kantarjian.b)
+
+# n events median 0.95LCL 0.95UCL
+# arm=0 162     36  12.23    8.60      NA
+# arm=1 164    116   5.33    4.43    6.21
+
 # plot the model 
 plot(km.model, conf.int = F, xlab = "Time (months)",
      ylab = "%Alive = S(t)", main = "KM-Model",
@@ -18,7 +24,7 @@ plot(km.model, conf.int = F, xlab = "Time (months)",
 
 abline(h=0.5, col="black")
 
-legend(18, 0.95, legend = c("arm=0", "arm=1"),
+legend(18, 0.95, legend = c("Inotuzumab", "Standard"),
        lty = 1, lwd = 2,
        col = c("red", "blue"), bty = "", cex = 0.6)
 
@@ -27,43 +33,43 @@ survival::survdiff(survival::Surv(time, event)~arm, data = IPD.Kantarjian.b)
 # Ho: survival in the two groups the same
 # H1: survival in the two groups not the same
 
-# Chisq= 3.5  on 1 degrees of freedom, p= 0.06 fail to reject.
+# Call:
+#   survival::survdiff(formula = survival::Surv(time, event) ~ arm, 
+#                      data = IPD.Kantarjian.b)
+# 
+# N Observed Expected (O-E)^2/E (O-E)^2/V
+# arm=0 162       36     55.3      6.74      11.3
+# arm=1 164      116     96.7      3.86      11.3
+
+# Chisq= 11.3  on 1 degrees of freedom, p= 8e-04
+
+# Chisq= 11.3  on 1 degrees of freedom, p= 8e-04 reject.
 
 # fit coxph model
 colnames(IPD.Kantarjian.b) <- c("time", "event", "Inotuzumab")
 
 cox.model <- survival::coxph(Surv(time, event) ~ Inotuzumab,data = IPD.Kantarjian.b)
 
-# baseline hazard is unspeficied in the Cox model.
-
-# can't estimate the survival with the coxph model
-# as we are not estimating the intercept so can't
-# estimate the hazard, so in turn we can't estimate
-# the survival function.
-
-# can estimate the HR. coef is the model coefficient.
-# se(coef) is the se of coef. and the p-value for the 
-# test that the coef is actually zero.
-
-# exp(coef) is the HR. Here HR is 0.8496: At a given 
-# instant in time a patient recieving the 10mg treatment
-# is 0.85 times as likely to die as a patient who is on 
-# 3mg treatment.
-
-# if we subtract 1 from the HR we can interpret this as 
-# a percentage change. At a given instant a patient on the
-# 10mg tratment is 15% less likely to die than those patients 
-# on the 3mg dose. 
-
-# we are 95% confident the true HR lies between  0.7166 and 1.007.
-# exp(-coef) is 1/exp(coef) which is the HR of the 3mg treatment
-# relative to the 10mg treatment group. 
-
-# A patient on the 3mg dose is 1.177 times as likely to die
-# as a patient on the 10mg dose.
-
 # check a summary
 summary(cox.model)
+
+# Call:
+#   survival::coxph(formula = Surv(time, event) ~ Inotuzumab, data = IPD.Kantarjian.b)
+# 
+# n= 326, number of events= 152 
+# 
+# coef exp(coef) se(coef)     z Pr(>|z|)    
+# Inotuzumab 0.6496    1.9149   0.1943 3.344 0.000825 ***
+#   ---
+#   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+# 
+# exp(coef) exp(-coef) lower .95 upper .95
+# Inotuzumab     1.915     0.5222     1.309     2.802
+# 
+# Concordance= 0.566  (se = 0.023 )
+# Likelihood ratio test= 12.29  on 1 df,   p=5e-04
+# Wald test            = 11.18  on 1 df,   p=8e-04
+# Score (logrank) test = 11.55  on 1 df,   p=7e-04
 
 # summary(result.cox)
 
@@ -83,6 +89,10 @@ cox.model %>%
 
 # tests if the coef for variable(X) changes over time.
 cox.zph(cox.model) 
+
+# chisq df    p
+# Inotuzumab 0.238  1 0.63
+# GLOBAL     0.238  1 0.63
 
 # plot of "changes in b over time"
 par(mfrow=c(1,1))
@@ -108,11 +118,50 @@ DT <- setDT(IPD.Kantarjian.b)
 wlr.Stat(surv=DT$time, cnsr=DT$event, trt= DT$Inotuzumab,
          fparam=list(rho=c(0,0,1,1), gamma=c(0,1,1,0), wlr='FH(0,1)', APPLE=3))
 
-# max combo test
-DT <- setDT(IPD.Kantarjian.b)
+# pval pval_FH(0,0) pval_FH(0,1) pval_FH(1,1) pval_FH(1,0)   pval_APPLE
+#    0            0            0            0            0 1.110223e-16
 
+# max combo test
 rgs <- list(c(0, 0), c(0, 1), c(1, 1), c(1, 0))
 
-draws <- 1000
+draws <- 10
 
 combo.wlr(survival = DT$time, cnsr = DT$event, trt = DT$Inotuzumab, fparam = list(rgs=rgs,draws=draws))
+
+# Lower bound: coxph vs Mine 0.1276219 0.1287042 
+# Upper Bound: coxph vs Mine 0.2608321 0.2586387 
+# Z^2: coxph vs Mine 105.9228 108.2065 
+# Call:
+#   survdiff(formula = Surv(time, delta) ~ z)
+# 
+# N Observed Expected (O-E)^2/E (O-E)^2/V
+# z=FALSE 162      126       63      63.0       108
+# z=TRUE  164       48      111      35.8       108
+# 
+# Chisq= 108  on 1 degrees of freedom, p= <2e-16 
+# $rho
+# [1] 0
+# 
+# $gamma
+# [1] 0
+# 
+# $Zmax
+# [1] 10.40223
+# 
+# $pval
+# [1] 0
+# 
+# $hr
+# [1] 0.1824497
+# 
+# $hrL
+# [1] 0.1287042
+# 
+# $hrU
+# [1] 0.2586387
+# 
+# $hrL.bc
+# [1] 0.1361437
+# 
+# $hrU.bc
+# [1] 0.2628318

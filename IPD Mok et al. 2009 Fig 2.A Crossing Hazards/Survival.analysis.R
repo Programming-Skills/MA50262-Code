@@ -108,11 +108,41 @@ DT <- setDT(IPD.Mok.A)
 wlr.Stat(surv=DT$time, cnsr=DT$event, trt= DT$Gefitinib,
          fparam=list(rho=c(0,0,1,1), gamma=c(0,1,1,0), wlr='FH(0,1)', APPLE=3))
 
+#      pval pval_FH(0,0) pval_FH(0,1) pval_FH(1,1) pval_FH(1,0) pval_APPLE
+# 0.3768385  0.008589357    0.3768385    0.5382168  0.002816091  0.1774779
+
 # max combo test
 DT <- setDT(IPD.Mok.A)
 
 rgs <- list(c(0, 0), c(0, 1), c(1, 1), c(1, 0))
 
-draws <- 1000 
+draws <- 10
 
 combo.wlr(survival = DT$time, cnsr = DT$event, trt = DT$Gefitinib, fparam = list(rgs=rgs,draws=draws))
+
+# $rho
+# [1] 1
+# 
+# $gamma
+# [1] 0
+# 
+# $Zmax
+# [1] 2.76846
+# 
+# $pval
+# [1] 0.004
+# 
+# $hr
+# [1] 0.6820437
+# 
+# $hrL
+# [1] 0.521183
+# 
+# $hrU
+# [1] 0.8925532
+# 
+# $hrL.bc
+# [1] 0.5111008
+# 
+# $hrU.bc
+# [1] 0.9027897
