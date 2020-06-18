@@ -6,8 +6,8 @@ tot.events<-"NA" #tot.events = total no. of events reported. If not reported, th
 arm.id <- 0 #arm indicator
 ###END FUNCTION INPUTS
 #Read in survival times read by digizeit
-digizeit <- read.csv("reck.a.abpc.csv", header=FALSE)
-# digizeit <- read.csv("IPD.reck.a.abcp.csv", header=FALSE)
+# digizeit <- read.csv("mok.c.gefitinib.csv", header=FALSE)
+# digizeit <- read.csv("mok.c.carboplatin.csv", header=FALSE)
 t.S<-digizeit[,1]
 S<-digizeit[,2]
 
@@ -15,17 +15,15 @@ S<-digizeit[,2]
 
 #Read in published numbers at risk, n.risk, at time, t.risk, lower and upper
 # indexes for time interval
-t.risk<- seq(0, 26, by = 1)
+t.risk<- seq(0, 16, by = 4)
 lower<- purrr::map_dbl(t.risk,
                        function(x) min(which(t.S >= x)))
 upper<- purrr::map_dbl(c(t.risk[-1], Inf),
                         function(x) max(which(t.S < x)))
-n.risk<- c(356,332,311,298,290,265,232,210,186,151,124,111,87,77,58,55,42,39,27,24,16,12,4,3,2,2,2)
-# n.risk <- c(336,321,292,261,243,215,179,147,125,91,69,55,39,32,21,18,12,9,7,6,3,2,1,1)
+n.risk<- c(91,21,4,2,1)
 n.int<-length(n.risk)
 n.t<- upper[n.int]
 
-# c(609,363,212,76,24,5)
 
 #Initialise vectors
 arm<-rep(arm.id,n.risk[1])
@@ -161,7 +159,7 @@ if (tot.events != "NA"){
     }
   }
 }
-#write.table(matrix(c(t.S,n.hat[1:n.t],d,cen),ncol=4,byrow=F),paste(path,KMdatafile,sep=""),sep="\t")
+write.table(matrix(c(t.S,n.hat[1:n.t],d,cen),ncol=4,byrow=F),paste(path,KMdatafile,sep=""),sep="\t")
 ### Now form IPD ###
 #Initialise vectors
 t.IPD<-rep(t.S[n.t],n.risk[1])
@@ -187,76 +185,23 @@ for (j in 1:(n.t-1)){
 IPD<-matrix(c(t.IPD,event.IPD,arm),ncol=3,byrow=F)
 
 # Save an object to a file
-# saveRDS(IPD, file = "IPD.reck.a.bcp.RDS") 
-# saveRDS(IPD, file = "IPD.reck.a.abcp.RDS") 
-
+# saveRDS(IPD, file = "mok.c.gefitinib.RDS") 
+# saveRDS(IPD, file = "mok.c.carboplatin.RDS") 
 
 # Restore the object
-# readRDS(file = "IPD.reck.a.abcp.RDS")
-# readRDS(file = "IPD.reck.a.bcp.RDS")
+# readRDS(file = "mok.c.gefitinib.RDS")
+# readRDS(file = "mok.c.carboplatin.RDS")
 
-IPD.reck.a <- rbind(IPD.reck.a.abcp, IPD.reck.a.bcp)
+IPD.Mok.C <- rbind(IPD.mok.c.gefitinib, IPD.mok.c.carboplatin)
 
-saveRDS(IPD.reck.a, file = "IPD.reck.a.RDS") 
+# IPD.Mok.C.time <- rbind(mok.c.gefitinib, mok.c.carboplatin)[,1]
+# IPD.Mok.C.event <- rbind(mok.c.gefitinib, mok.c.carboplatin)[,2]
+# IPD.Mok.C.arm <- rbind(mok.c.gefitinib, mok.c.carboplatin)[,3]
 
-IPD.reck.a.time <- rbind(IPD.reck.a.abcp, IPD.reck.a.bcp)[,1]
-IPD.reck.a.event <- rbind(IPD.reck.a.abcp, IPD.reck.a.bcp)[,2]
-IPD.reck.a.arm <- rbind(IPD.reck.a.abcp, IPD.reck.a.bcp)[,3]
+IPD.Mok.C <- as.data.frame(x = IPD.Mok.C)
 
-IPD.reck.a <- as.data.frame(x = IPD.reck.a)
+colnames(IPD.Mok.C) <- c("time", "event", "arm")
 
-km_trt_fit <- survfit(Surv(IPD.reck.a.time, IPD.reck.a.event) ~ IPD.reck.a.arm)
+saveRDS(IPD.Mok.C, file = "IPD.Mok.C.RDS") 
 
-
-ggsurv <- ggsurvplot(
-  km_trt_fit,                     # survfit object with calculated statistics.
-  data = IPD.reck.a,             # data used to fit survival curves.
-  risk.table = TRUE,       # show risk table.
-  pval = FALSE,             # show p-value of log-rank test.
-  conf.int = FALSE,         # show confidence intervals for 
-  # point estimates of survival curves.
-  palette = c("#E7B800", "#2E9FDF"),
-  xlim = c(0,24),         # present narrower X axis, but not affect
-  # survival estimates.
-  xlab = "Months since Randomization",   # customize X axis label.
-  ylab = "Probability of Progression-free Survival",   # customize X axis label.
-  break.time.by = 1,     # break X axis in time intervals by 500.
-  ggtheme = theme_light(), # customize plot and risk table with a theme.
-  risk.table.y.text.col = T,# colour risk table text annotations.
-  risk.table.height = 0.25, # the height of the risk table
-  risk.table.y.text = FALSE,# show bars instead of names in text annotations
-  # in legend of risk table.
-  ncensor.plot = FALSE,      # plot the number of censored subjects at time t
-  ncensor.plot.height = 0.25,
-  conf.int.style = "step",  # customize style of confidence intervals
-  surv.median.line = "hv",  # add the median survival pointer.
-  legend.labs = c("ABCP", "BCP")    # change legend labels.
-)
-
-# Labels for Survival Curves (plot)
-ggsurv$plot <- ggsurv$plot + labs(
-  title    = "Kaplan Meier Estimates of Progression-free Survival",                  
-  subtitle = "Patients in the WT population"
-)
-
-# Changing the font size, style and color
-
-ggsurv <- ggpar(
-  ggsurv,
-  font.title    = c(16, "bold", "black"),         
-  font.subtitle = c(10, "bold.italic", "black"), 
-  font.caption  = c(14, "plain", "black"),        
-  font.x        = c(14, "bold.italic", "black"),          
-  font.y        = c(14, "bold.italic", "black"),      
-  font.xtickslab = c(12, "plain", "black"),
-  legend = "top"
-)
-
-ggsurv
-
-
-# Produce KM estimates of the Pr of survival over time
-km_fit <- survfit(Surv(IPD.reck.a..time, IPD.reck.a..event) ~ 1, data = IPD.reck.a.)
-summary(km_fit)
-
-
+fwrite(IPD.Mok.C, file = "IPD.Mok.C.csv", sep = ",")

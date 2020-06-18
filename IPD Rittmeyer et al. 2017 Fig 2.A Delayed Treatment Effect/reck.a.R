@@ -3,11 +3,11 @@ source("Libraries.R")
 ###FUNCTION INPUTS
 
 tot.events<-"NA" #tot.events = total no. of events reported. If not reported, then tot.events="NA"
-arm.id <- 1 #arm indicator
+arm.id <- 0 #arm indicator
 ###END FUNCTION INPUTS
 #Read in survival times read by digizeit
-digizeit <- read.csv("pla.csv", header=FALSE)
-# digizeit <- read.csv("IPD.Ohtsu.bevacizumab.csv", header=FALSE)
+#digizeit <- read.csv("Rittmeyer.atezolizumab.csv", header=FALSE)
+digizeit <- read.csv("Rittmeyer.docetaxel.csv", header=FALSE)
 t.S<-digizeit[,1]
 S<-digizeit[,2]
 
@@ -15,14 +15,13 @@ S<-digizeit[,2]
 
 #Read in published numbers at risk, n.risk, at time, t.risk, lower and upper
 # indexes for time interval
-t.risk<- seq(0, 22, by = 3)
+t.risk<- seq(0, 27, by = 1)
 lower<- purrr::map_dbl(t.risk,
                        function(x) min(which(t.S >= x)))
 upper<- purrr::map_dbl(c(t.risk[-1], Inf),
                         function(x) max(which(t.S < x)))
-
-# n.risk<- c(387,355,291,232,178,104,50,19)
-n.risk<- c(387,343,271,204,146,98,54,15)
+# n.risk<- c(425,407,382,363,342,326,305,279,260,248,234,223,218,205,198,188,175,163,157,141,116,74,54,41,28,15,4)
+n.risk <- c(425,390,365,336,311,286,263,236,219,195,179,168,151,140,132,123,116,104,98,90,70,51,37,28,16,6,3)
 n.int<-length(n.risk)
 n.t<- upper[n.int]
 
@@ -188,39 +187,40 @@ for (j in 1:(n.t-1)){
 IPD<-matrix(c(t.IPD,event.IPD,arm),ncol=3,byrow=F)
 
 # Save an object to a file
-#saveRDS(IPD, file = "IPD.Ohtsu.bevacizumab.RDS") 
-#saveRDS(IPD, file = "IPD.Ohtsu.placebo.RDS") 
+# saveRDS(IPD, file = "IPD.Rittmeyer.atezolizumab.RDS") 
+#saveRDS(IPD, file = "IPD.Rittmeyer.docetaxel.RDS") 
+
 
 # Restore the object
-# readRDS(file = "IPD.Ohtsu.bevacizumab.RDS")
-# readRDS(file = "IPD.Ohtsu.placebo.RDS")
+# readRDS(file = "IPD.reck.a.abcp.RDS")
+# readRDS(file = "IPD.reck.a.bcp.RDS")
 
-IPD.Ohtsu <- rbind(IPD.Ohtsu.bevacizumab, IPD.Ohtsu.placebo)
+IPD.reck.a <- rbind(IPD.reck.a.abcp, IPD.reck.a.bcp)
 
-saveRDS(IPD.Ohtsu, file = "IPD.Ohtsu.RDS") 
+saveRDS(IPD.reck.a, file = "IPD.reck.a.RDS") 
 
-IPD.Ohtsu.time <- rbind(IPD.Ohtsu.bevacizumab, IPD.Ohtsu.placebo)[,1]
-IPD.Ohtsu.event <- rbind(IPD.Ohtsu.bevacizumab, IPD.Ohtsu.placebo)[,2]
-IPD.Ohtsu.arm <- rbind(IPD.Ohtsu.bevacizumab, IPD.Ohtsu.placebo)[,3]
+IPD.reck.a.time <- rbind(IPD.reck.a.abcp, IPD.reck.a.bcp)[,1]
+IPD.reck.a.event <- rbind(IPD.reck.a.abcp, IPD.reck.a.bcp)[,2]
+IPD.reck.a.arm <- rbind(IPD.reck.a.abcp, IPD.reck.a.bcp)[,3]
 
-IPD.Ohtsu <- as.data.frame(x = IPD.Ohtsu)
+IPD.reck.a <- as.data.frame(x = IPD.reck.a)
 
-km_trt_fit <- survfit(Surv(IPD.Ohtsu.time, IPD.Ohtsu.event) ~ IPD.Ohtsu.arm)
+km_trt_fit <- survfit(Surv(IPD.reck.a.time, IPD.reck.a.event) ~ IPD.reck.a.arm)
 
 
 ggsurv <- ggsurvplot(
   km_trt_fit,                     # survfit object with calculated statistics.
-  data = IPD.Ohtsu,             # data used to fit survival curves.
+  data = IPD.reck.a,             # data used to fit survival curves.
   risk.table = TRUE,       # show risk table.
   pval = FALSE,             # show p-value of log-rank test.
   conf.int = FALSE,         # show confidence intervals for 
   # point estimates of survival curves.
   palette = c("#E7B800", "#2E9FDF"),
-  xlim = c(0,23),         # present narrower X axis, but not affect
+  xlim = c(0,24),         # present narrower X axis, but not affect
   # survival estimates.
   xlab = "Months since Randomization",   # customize X axis label.
-  ylab = "Survival (probability)",   # customize X axis label.
-  break.time.by = 3,     # break X axis in time intervals by 500.
+  ylab = "Probability of Progression-free Survival",   # customize X axis label.
+  break.time.by = 1,     # break X axis in time intervals by 500.
   ggtheme = theme_light(), # customize plot and risk table with a theme.
   risk.table.y.text.col = T,# colour risk table text annotations.
   risk.table.height = 0.25, # the height of the risk table
@@ -230,13 +230,13 @@ ggsurv <- ggsurvplot(
   ncensor.plot.height = 0.25,
   conf.int.style = "step",  # customize style of confidence intervals
   surv.median.line = "hv",  # add the median survival pointer.
-  legend.labs = c("bevacizumab", "Placebo")    # change legend labels.
+  legend.labs = c("ABCP", "BCP")    # change legend labels.
 )
 
 # Labels for Survival Curves (plot)
 ggsurv$plot <- ggsurv$plot + labs(
-  title    = "Kaplan-Meier estimates of overall survival",                  
-  subtitle = "Patients in the intention-to-treat population"
+  title    = "Kaplan Meier Estimates of Progression-free Survival",                  
+  subtitle = "Patients in the WT population"
 )
 
 # Changing the font size, style and color
@@ -256,7 +256,7 @@ ggsurv
 
 
 # Produce KM estimates of the Pr of survival over time
-km_fit <- survfit(Surv(IPD.Ohtsu.time, IPD.Ohtsu.event) ~ 1, data = IPD.Ohtsu)
+km_fit <- survfit(Surv(IPD.reck.a..time, IPD.reck.a..event) ~ 1, data = IPD.reck.a.)
 summary(km_fit)
 
 

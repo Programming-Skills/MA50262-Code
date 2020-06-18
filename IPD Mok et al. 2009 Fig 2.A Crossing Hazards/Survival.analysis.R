@@ -2,7 +2,7 @@
 source("Libraries.R")
 
 # fit the KM model for the data 
-km.model <- survival::survfit(survival::Surv(time, event) ~ arm, data = IPD.ascierto.2.a)
+km.model <- survival::survfit(survival::Surv(time, event) ~ arm, data = IPD.Mok.A)
 
 # median survival and CI
 km.model
@@ -23,16 +23,16 @@ legend(18, 0.95, legend = c("arm=0", "arm=1"),
        col = c("red", "blue"), bty = "", cex = 0.6)
 
 # log-rank test
-survival::survdiff(survival::Surv(time, event)~arm, data = IPD.ascierto.2.a)
+survival::survdiff(survival::Surv(time, event)~arm, data = IPD.Mok.A)
 # Ho: survival in the two groups the same
 # H1: survival in the two groups not the same
 
 # Chisq= 3.5  on 1 degrees of freedom, p= 0.06 fail to reject.
 
 # fit coxph model
-colnames(IPD.ascierto.2.a) <- c("time", "event", "Treatment 10mg")
+colnames(IPD.Mok.A) <- c("time", "event", "Gefitinib")
 
-cox.model <- survival::coxph(Surv(time, event) ~ `Treatment 10mg`,data = IPD.ascierto.2.a)
+cox.model <- survival::coxph(Surv(time, event) ~ Gefitinib,data = IPD.Mok.A)
 
 # baseline hazard is unspeficied in the Cox model.
 
@@ -101,16 +101,18 @@ abline(h=0, col=2)
 ggforest(cox.model)
 
 # weighted log-rank test
-IPD.ascierto.2.a$arm <- ifelse(IPD.ascierto.2.a$arm == 0, "control", "experimental")
+IPD.Mok.A$Gefitinib <- ifelse(IPD.Mok.A$Gefitinib == 0, "control", "experimental")
 
-wlr.Stat(surv=DT$time, cnsr=DT$event, trt= DT$arm,
+DT <- setDT(IPD.Mok.A)
+
+wlr.Stat(surv=DT$time, cnsr=DT$event, trt= DT$Gefitinib,
          fparam=list(rho=c(0,0,1,1), gamma=c(0,1,1,0), wlr='FH(0,1)', APPLE=3))
 
 # max combo test
-DT <- setDT(IPD.ascierto.2.a)
+DT <- setDT(IPD.Mok.A)
 
 rgs <- list(c(0, 0), c(0, 1), c(1, 1), c(1, 0))
 
 draws <- 1000 
 
-combo.wlr(survival = DT$time, cnsr = DT$event, trt = DT$arm, fparam = list(rgs=rgs,draws=draws))
+combo.wlr(survival = DT$time, cnsr = DT$event, trt = DT$Gefitinib, fparam = list(rgs=rgs,draws=draws))

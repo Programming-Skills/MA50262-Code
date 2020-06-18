@@ -3,11 +3,11 @@ source("Libraries.R")
 ###FUNCTION INPUTS
 
 tot.events<-"NA" #tot.events = total no. of events reported. If not reported, then tot.events="NA"
-arm.id <- 1 #arm indicator
+arm.id <- 0 #arm indicator
 ###END FUNCTION INPUTS
 #Read in survival times read by digizeit
-digizeit <- read.csv("inotuzumab.csv", header=FALSE)
-# digizeit <- read.csv("IPD.Kantarjian.b.standard.csv", header=FALSE)
+#digizeit <- read.csv("Rittmeyer.atezolizumab.csv", header=FALSE)
+digizeit <- read.csv("Rittmeyer.docetaxel.csv", header=FALSE)
 t.S<-digizeit[,1]
 S<-digizeit[,2]
 
@@ -15,12 +15,13 @@ S<-digizeit[,2]
 
 #Read in published numbers at risk, n.risk, at time, t.risk, lower and upper
 # indexes for time interval
-t.risk<- seq(0, 25, by = 5)
+t.risk<- seq(0, 27, by = 1)
 lower<- purrr::map_dbl(t.risk,
                        function(x) min(which(t.S >= x)))
 upper<- purrr::map_dbl(c(t.risk[-1], Inf),
                         function(x) max(which(t.S < x)))
-n.risk<- c(164,72,28,16,6,1)
+# n.risk<- c(425,407,382,363,342,326,305,279,260,248,234,223,218,205,198,188,175,163,157,141,116,74,54,41,28,15,4)
+n.risk <- c(425,390,365,336,311,286,263,236,219,195,179,168,151,140,132,123,116,104,98,90,70,51,37,28,16,6,3)
 n.int<-length(n.risk)
 n.t<- upper[n.int]
 
@@ -186,75 +187,27 @@ for (j in 1:(n.t-1)){
 IPD<-matrix(c(t.IPD,event.IPD,arm),ncol=3,byrow=F)
 
 # Save an object to a file
-# saveRDS(IPD, file = "IPD.Kantarjian.b.standard.RDS") 
-saveRDS(IPD, file = "IPD.Kantarjian.b.inotuzumab.RDS") 
+# saveRDS(IPD, file = "IPD.Rittmeyer.atezolizumab.RDS") 
+# saveRDS(IPD, file = "IPD.Rittmeyer.docetaxel.RDS") 
+
 
 # Restore the object
-# readRDS(file = "IPD.Kantarjian.b.standard.RDS")
-# readRDS(file = "IPD.Kantarjian.b.inotuzumab.RDS")
+# readRDS(file = "IPD.Rittmeyer.docetaxel.RDS")
+# readRDS(file = "IPD.Rittmeyer.atezolizumab.RDS")
 
-IPD.Kantarjian.b <- rbind(IPD.Kantarjian.b.standard, IPD.Kantarjian.b.inotuzumab)
+IPD.Rittmeyer <- rbind(IPD.Rittmeyer.docetaxel, IPD.Rittmeyer.atezolizumab)
 
-saveRDS(IPD.Kantarjian.b, file = "IPD.Kantarjian.b.RDS") 
+saveRDS(IPD.Rittmeyer, file = "IPD.Rittmeyer.RDS") 
 
-IPD.Kantarjian.b.time <- rbind(IPD.Kantarjian.b.standard, IPD.Kantarjian.b.inotuzumab)[,1]
-IPD.Kantarjian.b.event <- rbind(IPD.Kantarjian.b.standard, IPD.Kantarjian.b.inotuzumab)[,2]
-IPD.Kantarjian.b.arm <- rbind(IPD.Kantarjian.b.standard, IPD.Kantarjian.b.inotuzumab)[,3]
+# IPD.Rittmeyer.time <- rbind(IPD.Rittmeyer.docetaxel, IPD.Rittmeyer.atezolizumab)[,1]
+# IPD.Rittmeyer.event <- rbind(IPD.Rittmeyer.docetaxel, IPD.Rittmeyer.atezolizumab)[,2]
+# IPD.Rittmeyer.arm <- rbind(IPD.Rittmeyer.docetaxel, IPD.Rittmeyer.atezolizumab)[,3]
 
-IPD.Kantarjian.b <- as.data.frame(x = IPD.Kantarjian.b)
+IPD.Rittmeyer <- as.data.frame(x = IPD.Rittmeyer)
 
-km_trt_fit <- survfit(Surv(IPD.Kantarjian.b.time, IPD.Kantarjian.b.event) ~ IPD.Kantarjian.b.arm)
+colnames(IPD.Rittmeyer) <- c("time", "event", "arm")
 
+saveRDS(IPD.Rittmeyer, file = "IPD.Rittmeyer.RDS") 
 
-ggsurv <- ggsurvplot(
-  km_trt_fit,                     # survfit object with calculated statistics.
-  data = IPD.Kantarjian.b,             # data used to fit survival curves.
-  risk.table = TRUE,       # show risk table.
-  pval = FALSE,             # show p-value of log-rank test.
-  conf.int = FALSE,         # show confidence intervals for 
-  # point estimates of survival curves.
-  palette = c("#E7B800", "#2E9FDF"),
-  xlim = c(0,25),         # present narrower X axis, but not affect
-  # survival estimates.
-  xlab = "Months since Randomization",   # customize X axis label.
-  ylab = "Probability of Progression-free Survival",   # customize X axis label.
-  break.time.by = 5,     # break X axis in time intervals by 500.
-  ggtheme = theme_light(), # customize plot and risk table with a theme.
-  risk.table.y.text.col = T,# colour risk table text annotations.
-  risk.table.height = 0.25, # the height of the risk table
-  risk.table.y.text = FALSE,# show bars instead of names in text annotations
-  # in legend of risk table.
-  ncensor.plot = FALSE,      # plot the number of censored subjects at time t
-  ncensor.plot.height = 0.25,
-  conf.int.style = "step",  # customize style of confidence intervals
-  surv.median.line = "hv",  # add the median survival pointer.
-  legend.labs = c("standard", "inotuzumab")    # change legend labels.
-)
-
-# Labels for Survival Curves (plot)
-ggsurv$plot <- ggsurv$plot + labs(
-  title    = "Kaplan-Meier Curves for Progression-free Survival",                  
-  subtitle = "patients who were positive for the EGFR mutation"
-)
-
-# Changing the font size, style and color
-
-ggsurv <- ggpar(
-  ggsurv,
-  font.title    = c(16, "bold", "black"),         
-  font.subtitle = c(10, "bold.italic", "black"), 
-  font.caption  = c(14, "plain", "black"),        
-  font.x        = c(14, "bold.italic", "black"),          
-  font.y        = c(14, "bold.italic", "black"),      
-  font.xtickslab = c(12, "plain", "black"),
-  legend = "top"
-)
-
-ggsurv
-
-
-# Produce KM estimates of the Pr of survival over time
-km_fit <- survfit(Surv(IPD.Kantarjian.b.time, IPD.Kantarjian.b.event) ~ 1, data = IPD.Kantarjian.b)
-summary(km_fit)
-
+fwrite(IPD.Rittmeyer, file = "IPD.Rittmeyer.csv", sep = ",")
 
