@@ -1,0 +1,1277 @@
+# Reconstructing Data Based on the Guyot et al. 2016 Algorithm {#math-sci}
+
+<!-- Required to number equations in HTML files -->
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+
+## Mok et al. 2009 IPASS Study: Crossing Hazards
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.cap="Patients with unknown EGFR mutation status"}
+source("Libraries.R")
+
+IPD.Mok.A <- readRDS("data/IPD.Mok.A.RDS")
+
+km_trt_fit <- survfit(Surv(time, event) ~ arm, data = IPD.Mok.A)
+
+ggsurv <- ggsurvplot(
+  km_trt_fit,                     # survfit object with calculated statistics.
+  data = IPD.Mok.A,             # data used to fit survival curves.
+  risk.table = TRUE,       # show risk table.
+  pval = FALSE,             # show p-value of log-rank test.
+  conf.int = FALSE,         # show confidence intervals for 
+  # point estimates of survival curves.
+  palette = c("#E7B800", "#2E9FDF"),
+  xlim = c(0,20),         # present narrower X axis, but not affect
+  # survival estimates.
+  xlab = "Months since Randomization",   # customize X axis label.
+  ylab = "Pr of Progression-free Survival",   # customize X axis label.
+  break.time.by = 4,     # break X axis in time intervals by 500.
+  ggtheme = theme_light(), # customize plot and risk table with a theme.
+  risk.table.y.text.col = T,# colour risk table text annotations.
+  risk.table.height = 0.25, # the height of the risk table
+  risk.table.y.text = FALSE,# show bars instead of names in text annotations
+  # in legend of risk table.
+  ncensor.plot = FALSE,      # plot the number of censored subjects at time t
+  ncensor.plot.height = 0.25,
+  conf.int.style = "step",  # customize style of confidence intervals
+  surv.median.line = "hv",  # add the median survival pointer.
+  legend.labs = c("Carboplatin", "Gefitinib")    # change legend labels.
+)
+
+# Labels for Survival Curves (plot)
+ggsurv$plot <- ggsurv$plot + labs(
+  title    = "Kaplan-Meier Curves for Progression-free Survival",                  
+  subtitle = "patients who were positive for the EGFR mutation"
+)
+
+# Changing the font size, style and color
+
+ggsurv <- ggpar(
+  ggsurv,
+  font.title    = c(16, "bold", "black"),         
+  font.subtitle = c(10, "bold.italic", "black"), 
+  font.caption  = c(14, "plain", "black"),        
+  font.x        = c(14, "bold.italic", "black"),          
+  font.y        = c(14, "bold.italic", "black"),      
+  font.xtickslab = c(12, "plain", "black"),
+  legend = "top"
+)
+
+ggsurv
+```
+
+<br>
+<br>
+
+```{r, echo=FALSE, fig.cap="Summary Statistics", warning=FALSE, message=FALSE}
+source("Libraries.R")
+
+IPD.Mok.A <- readRDS("data/IPD.Mok.A.RDS")
+
+# rename columns 
+colnames(IPD.Mok.A) <- c("time", "event", "Gefitinib")
+
+IPD.Mok.A$Gefitinib <- ifelse(IPD.Mok.A$Gefitinib == 0, "Carboplatin", "Gefitinib")
+
+IPD.Mok.A %>%
+  tbl_summary(
+    by = Gefitinib,
+    missing = "no",
+    statistic = list(
+      all_continuous() ~ "{mean} ({sd})",
+      all_categorical() ~ "{n} / {N} ({p}%)")
+  ) %>%
+  modify_header(stat_by = md("**{level}**<br>N =  {n} ({style_percent(p)}%)")) %>%
+  bold_labels() %>%
+  modify_spanning_header(starts_with("stat_") ~ "**Gefitinib or Carboplatin-Paclitaxel**") %>% 
+  add_p(test = all_continuous() ~ "t.test") %>%
+  add_overall()
+```
+
+<br>
+<br>
+
+```{r echo=FALSE, fig.cap="Cox Proportional Hazards Model"}
+source("Libraries.R")
+
+IPD.Mok.A <- readRDS("data/IPD.Mok.A.RDS")
+
+colnames(IPD.Mok.A) <- c("time", "event", "arm")
+
+# fit coxph model
+cox.model <- coxph(Surv(time, event) ~ arm, data = IPD.Mok.A) 
+
+# format results into data frame with global p-values
+cox.model %>%
+  tbl_regression(
+    show_single_row = arm,
+    label = arm ~ "Gefitinib vs Carboplatin-Paclitaxel",
+    exponentiate = TRUE) %>%
+  bold_p(t = 0.10) %>%
+  bold_labels() %>%
+  italicize_levels()
+```
+
+<br>
+<br>
+
+```{r, echo=FALSE}
+source("Libraries.R")
+
+IPD.Mok.A <- readRDS("data/IPD.Mok.A.RDS")
+
+colnames(IPD.Mok.A) <- c("time", "event", "Gefitinib")
+
+# fit coxph model
+cox.model <- coxph(Surv(time, event) ~ Gefitinib, data = IPD.Mok.A) 
+
+# Schoenfeld plot
+ggcoxzph(cox.zph(cox.model), ylim = c(-5, 5)) 
+```
+
+
+```{r, echo=FALSE}
+source("Libraries.R")
+
+IPD.Mok.A <- readRDS("data/IPD.Mok.A.RDS")
+
+colnames(IPD.Mok.A) <- c("time", "event", "Gefitinib")
+
+# Schoenfeld plot
+par(mfrow=c(1,1))
+plot(cox.zph(cox.model), main = "Schoenfeld Individual Test p: 0.00")
+abline(h=0, col=2)
+```
+
+
+```{r, echo=FALSE, fig.cap="Forest Plot", eval=FALSE, eval=FALSE}
+knitr::include_graphics(path = "figure/mok.a.f.svg")
+```
+
+<br>
+<br>
+
+```{r, echo=FALSE, fig.cap="Weighted Log Rank Test"}
+source("Libraries.R")
+
+IPD.Mok.A <- readRDS("data/IPD.Mok.A.RDS")
+
+DT <- setDT(IPD.Mok.A)
+
+colnames(IPD.Mok.A) <- c("time", "event", "arm")
+
+result <- wlr.Stat(surv=DT$time, cnsr=DT$event, trt= DT$arm, fparam=list(rho=c(0,0,1,1), gamma=c(0,1,1,0), wlr='FH(0,1)', APPLE=NULL))
+
+result %>% 
+  kableExtra::kable()
+```
+
+<br>
+<br>
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+source("Libraries.R")
+
+IPD.Mok.C <- readRDS("data/IPD.Mok.A.RDS")
+
+rgs <- list(c(0, 0), c(0, 1), c(1, 1), c(1, 0))
+
+draws <- 10
+
+IPD.Mok.C$arm <- ifelse(IPD.Mok.C$arm == 0, "control", "experimental")
+
+result.mc <- nphsim::combo.wlr(survival = IPD.Mok.C$time, cnsr = IPD.Mok.C$event, trt = IPD.Mok.C$arm, fparam = list(rgs=rgs,draws=draws))
+
+result.mc <- lapply(result.mc, function(x) round(x, digits = 3))
+
+as.data.frame(result.mc) %>% kableExtra::kable()
+```
+
+<!-- ------------------------------------------------------------------------ -->
+<!--   Rho     Gamma   Zmax     Pval     HR     hrL    hrU    hrL.bc  hrU.bc                       -->
+<!-- -------- ------- ------- -------- ------ ------ ------- ------- --------  -->
+<!--    1        0     2.768   0.004   0.682  0.521   0.893   0.511   0.903           -->
+<!-- ------------------------------------------------------------------------ -->
+
+\clearpage 
+
+## Brehmer et al. 2016 Nivolumab versus Docetaxel Study: Crossing Hazards
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.cap="Kaplan–Meier curves for overall survival"}
+source("Libraries.R")
+
+IPD.Brahmer.a <- readRDS("data/IPD.Brahmer.a.RDS")
+
+km_trt_fit <- survfit(Surv(time, event) ~ arm, data = IPD.Brahmer.a)
+
+ggsurv <- ggsurvplot(
+  km_trt_fit,                     # survfit object with calculated statistics.
+  data = IPD.Brahmer.a,             # data used to fit survival curves.
+  risk.table = TRUE,       # show risk table.
+  pval = FALSE,             # show p-value of log-rank test.
+  conf.int = FALSE,         # show confidence intervals for 
+  # point estimates of survival curves.
+  palette = c("#E7B800", "#2E9FDF"),
+  xlim = c(0,25),         # present narrower X axis, but not affect
+  # survival estimates.
+  xlab = "Months",   # customize X axis label.
+  ylab = "Overall Survival (% of patients)",   # customize X axis label.
+  break.time.by = 3,     # break X axis in time intervals by 500.
+  ggtheme = theme_light(), # customize plot and risk table with a theme.
+  risk.table.y.text.col = T,# colour risk table text annotations.
+  risk.table.height = 0.25, # the height of the risk table
+  risk.table.y.text = FALSE,# show bars instead of names in text annotations
+  # in legend of risk table.
+  ncensor.plot = FALSE,      # plot the number of censored subjects at time t
+  ncensor.plot.height = 0.25,
+  conf.int.style = "step",  # customize style of confidence intervals
+  surv.median.line = "hv",  # add the median survival pointer.
+  legend.labs = c("Docetaxel","Nivolumab")    # change legend labels.
+)
+
+# Labels for Survival Curves (plot)
+ggsurv$plot <- ggsurv$plot + labs(
+  title    = "Kaplan-Meier Curves for overall survival"                
+  # subtitle = "Overall Survival (% of patients)"
+)
+
+# Changing the font size, style and color
+
+ggsurv <- ggpar(
+  ggsurv,
+  font.title    = c(16, "bold", "black"),         
+  font.subtitle = c(10, "bold.italic", "black"), 
+  font.caption  = c(14, "plain", "black"),        
+  font.x        = c(14, "bold.italic", "black"),          
+  font.y        = c(14, "bold.italic", "black"),      
+  font.xtickslab = c(12, "plain", "black"),
+  legend = "top"
+)
+
+ggsurv
+```
+
+<br>
+<br>
+
+```{r, echo=FALSE, fig.cap="Summary Statistics", warning=FALSE, message=FALSE}
+source("Libraries.R")
+
+IPD.Brahmer.a <- readRDS("data/IPD.Brahmer.a.RDS")
+
+# rename columns 
+colnames(IPD.Brahmer.a) <- c("time", "event", "Nivolumab")
+
+IPD.Brahmer.a$Nivolumab <- ifelse(IPD.Brahmer.a$Nivolumab == 0, "Docetaxel", "Nivolumab")
+
+IPD.Brahmer.a %>%
+  tbl_summary(
+    by = Nivolumab,
+    missing = "no",
+    statistic = list(
+      all_continuous() ~ "{mean} ({sd})",
+      all_categorical() ~ "{n} / {N} ({p}%)")
+  ) %>%
+  modify_header(stat_by = md("**{level}**<br>N =  {n} ({style_percent(p)}%)")) %>%
+  bold_labels() %>%
+  modify_spanning_header(starts_with("stat_") ~ "**Nivolumab vs Docetaxel**") %>% 
+  add_p(test = all_continuous() ~ "t.test") %>%
+  add_overall()
+```
+
+<br>
+<br>
+
+```{r echo=FALSE, fig.cap="Cox Proportional Hazards Model"}
+source("Libraries.R")
+
+IPD.Brahmer.a <- readRDS("data/IPD.Brahmer.a.RDS")
+
+colnames(IPD.Brahmer.a) <- c("time", "event", "arm")
+
+# fit coxph model
+cox.model <- coxph(Surv(time, event) ~ arm, data = IPD.Brahmer.a) 
+
+# format results into data frame with global p-values
+cox.model %>%
+  tbl_regression(
+    show_single_row = arm,
+    label = arm ~ "Nivolumab vs Docetaxel",
+    exponentiate = TRUE) %>%
+  bold_p(t = 0.10) %>%
+  bold_labels() %>%
+  italicize_levels()
+```
+
+<br>
+<br>
+
+```{r, echo=FALSE}
+source("Libraries.R")
+
+IPD.Brahmer.a <- readRDS("data/IPD.Brahmer.a.RDS")
+
+colnames(IPD.Brahmer.a) <- c("time", "event", "Nivolumab")
+
+cox.model <- coxph(Surv(time, event) ~ Nivolumab, data = IPD.Brahmer.a) 
+
+# Schoenfeld plot
+ggcoxzph(cox.zph(cox.model), ylim = c(-5, 5)) 
+```
+
+```{r, echo=FALSE}
+source("Libraries.R")
+
+IPD.Brahmer.a <- readRDS("data/IPD.Brahmer.a.RDS")
+
+colnames(IPD.Brahmer.a) <- c("time", "event", "Nivolumab")
+
+cox.model <- coxph(Surv(time, event) ~ Nivolumab, data = IPD.Brahmer.a) 
+
+# Schoenfeld plot
+par(mfrow=c(1,1))
+plot(cox.zph(cox.model), main = "Schoenfeld Individual Test p: 0.002")
+abline(h=0, col=2)
+```
+
+```{r, echo=FALSE, fig.cap="Forest Plot", eval=FALSE}
+knitr::include_graphics(path = "figure/brahmer.f.svg")
+```
+
+<br>
+<br>
+
+```{r, echo=FALSE, fig.cap="Weighted Log Rank Test"}
+source("Libraries.R")
+
+IPD.Brahmer.a <- readRDS("data/IPD.Brahmer.a.RDS")
+
+DT <- setDT(IPD.Brahmer.a)
+
+colnames(IPD.Brahmer.a) <- c("time", "event", "arm")
+
+result <- wlr.Stat(surv=DT$time, cnsr=DT$event, trt= DT$arm, fparam=list(rho=c(0,0,1,1), gamma=c(0,1,1,0), wlr='FH(0,1)', APPLE=3))
+
+result %>% 
+  kableExtra::kable()
+```
+
+<br>
+<br>
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+source("Libraries.R")
+
+IPD.Mok.C <- readRDS("data/IPD.Brahmer.a.RDS")
+
+rgs <- list(c(0, 0), c(0, 1), c(1, 1), c(1, 0))
+
+draws <- 10
+
+IPD.Brahmer.a$arm <- ifelse(IPD.Brahmer.a$arm == 0, "control", "experimental")
+
+result.mc <- nphsim::combo.wlr(survival = IPD.Brahmer.a$time, cnsr = IPD.Brahmer.a$event, trt = IPD.Brahmer.a$arm, fparam = list(rgs=rgs,draws=draws))
+
+result.mc <- lapply(result.mc, function(x) round(x, digits = 3))
+
+as.data.frame(result.mc) %>% kableExtra::kable()
+```
+
+<!-- ------------------------------------------------------------------------ -->
+<!--   Rho     Gamma   Zmax     Pval     HR     hrL    hrU    hrL.bc  hrU.bc                       -->
+<!-- -------- ------- ------- -------- ------ ------ ------- ------- --------  -->
+<!--    1        1     1.083   0.4000   0.833  0.599   1.159   0.655   1.042           -->
+<!-- ------------------------------------------------------------------------ -->
+
+\clearpage 
+
+## Mok et al. 2009 IPASS Study: Dimishing Treatment Effect
+
+```{r, echo = FALSE, fig.cap="Patients with unknown EGFR mutation status", warning=FALSE, message=FALSE}
+source("Libraries.R")
+
+IPD.Mok.C <- readRDS("data/IPD.Mok.C.RDS")
+
+km_trt_fit <- survfit(Surv(time, event) ~ arm, data = IPD.Mok.C)
+
+ggsurv <- ggsurvplot(
+  km_trt_fit,                     # survfit object with calculated statistics.
+  data = IPD.Mok.C,             # data used to fit survival curves.
+  risk.table = TRUE,       # show risk table.
+  pval = FALSE,             # show p-value of log-rank test.
+  conf.int = FALSE,         # show confidence intervals for 
+  # point estimates of survival curves.
+  palette = c("#E7B800", "#2E9FDF"),
+  xlim = c(0,12),         # present narrower X axis, but not affect
+  # survival estimates.
+  xlab = "Months since Randomization",   # customize X axis label.
+  ylab = "Pr of Progression-free Survival",   # customize X axis label.
+  break.time.by = 4,     # break X axis in time intervals by 500.
+  ggtheme = theme_light(), # customize plot and risk table with a theme.
+  risk.table.y.text.col = T,# colour risk table text annotations.
+  risk.table.height = 0.25, # the height of the risk table
+  risk.table.y.text = FALSE,# show bars instead of names in text annotations
+  # in legend of risk table.
+  ncensor.plot = FALSE,      # plot the number of censored subjects at time t
+  ncensor.plot.height = 0.25,
+  conf.int.style = "step",  # customize style of confidence intervals
+  surv.median.line = "hv",  # add the median survival pointer.
+  legend.labs = c("Carboplatin", "Gefitinib")    # change legend labels.
+)
+
+# Labels for Survival Curves (plot)
+ggsurv$plot <- ggsurv$plot + labs(
+  title    = "Kaplan-Meier Curves for Progression-free Survival",                  
+  subtitle = "Patients with unknown EGFR mutation status"
+)
+
+# Changing the font size, style and color
+
+ggsurv <- ggpar(
+  ggsurv,
+  font.title    = c(16, "bold", "black"),         
+  font.subtitle = c(10, "bold.italic", "black"), 
+  font.caption  = c(14, "plain", "black"),        
+  font.x        = c(14, "bold.italic", "black"),          
+  font.y        = c(14, "bold.italic", "black"),      
+  font.xtickslab = c(12, "plain", "black"),
+  legend = "top"
+)
+
+ggsurv
+```
+
+<br>
+<br>
+
+```{r, echo=FALSE, fig.cap="Summary Statistics", warning=FALSE, message=FALSE}
+source("Libraries.R")
+
+IPD.Mok.C <- readRDS("data/IPD.Mok.C.RDS")
+
+colnames(IPD.Mok.C) <- c("time", "event", "Gefitinib")
+
+IPD.Mok.C$Gefitinib <- ifelse(IPD.Mok.C$Gefitinib == 0, "Carboplatin", "Gefitinib")
+
+IPD.Mok.C %>%
+  tbl_summary(
+    by = Gefitinib,
+    missing = "no",
+    statistic = list(
+      all_continuous() ~ "{mean} ({sd})",
+      all_categorical() ~ "{n} / {N} ({p}%)")
+  ) %>%
+  modify_header(stat_by = md("**{level}**<br>N =  {n} ({style_percent(p)}%)")) %>%
+  bold_labels() %>%
+  modify_spanning_header(starts_with("stat_") ~ "**Gefitinib vs Carboplatin-Paclitaxel**") %>% 
+  add_p(test = all_continuous() ~ "t.test") %>%
+  add_overall()
+```
+
+<br>
+<br>
+
+```{r echo=FALSE, fig.cap="Cox Proportional Hazards Model"}
+source("Libraries.R")
+
+IPD.Mok.C <- readRDS("data/IPD.Mok.C.RDS")
+
+colnames(IPD.Mok.C) <- c("time", "event", "arm")
+
+# fit coxph model
+cox.model <- coxph(Surv(time, event) ~ arm, data = IPD.Mok.C) 
+
+# format results into data frame with global p-values
+cox.model %>%
+  tbl_regression(
+    show_single_row = arm,
+    label = arm ~ "Gefitinib vs Carboplatin-Paclitaxel",
+    exponentiate = TRUE) %>%
+  bold_p(t = 0.10) %>%
+  bold_labels() %>%
+  italicize_levels()
+```
+
+<br>
+<br>
+
+```{r, echo=FALSE, fig.cap="Forest Plot", eval=FALSE}
+knitr::include_graphics(path = "figure/mok.c.f.svg")
+```
+
+<br>
+<br>
+
+```{r, echo=FALSE}
+source("Libraries.R")
+
+IPD.Mok.C <- readRDS("data/IPD.Mok.C.RDS")
+
+colnames(IPD.Mok.C) <- c("time", "event", "Gefitinib")
+
+cox.model <- coxph(Surv(time, event) ~ Gefitinib, data = IPD.Mok.C) 
+
+# Schoenfeld plot
+ggcoxzph(cox.zph(cox.model), ylim = c(-5, 5)) 
+```
+
+```{r, echo=FALSE}
+source("Libraries.R")
+
+IPD.Mok.C <- readRDS("data/IPD.Mok.C.RDS")
+
+colnames(IPD.Mok.C) <- c("time", "event", "Gefitinib")
+
+cox.model <- coxph(Surv(time, event) ~ Gefitinib, data = IPD.Mok.C) 
+
+# Schoenfeld plot
+par(mfrow=c(1,1))
+plot(cox.zph(cox.model), main = "Schoenfeld Individual Test p: 0.00")
+abline(h=0, col=2)
+```
+
+<br>
+<br>
+
+```{r, echo=FALSE, fig.cap="Weighted Log Rank Test"}
+source("Libraries.R")
+
+IPD.Mok.C <- readRDS("data/IPD.Mok.C.RDS")
+
+DT <- setDT(IPD.Mok.C)
+
+colnames(IPD.Mok.C) <- c("time", "event", "arm")
+
+result <- wlr.Stat(surv=DT$time, cnsr=DT$event, trt= DT$arm==0, fparam=list(rho=c(0,0,1,1), gamma=c(0,1,1,0), wlr='FH(0,1)', APPLE=NULL))
+
+result %>% 
+  kableExtra::kable()
+```
+
+<br>
+<br>
+
+```{r, echo=FALSE}
+source("Libraries.R")
+
+IPD.Mok.C <- readRDS("data/IPD.Mok.C.RDS")
+
+rgs <- list(c(0, 0), c(0, 1), c(1, 1), c(1, 0))
+
+draws <- 10
+
+IPD.Mok.C$arm <- ifelse(IPD.Mok.C$arm == 0, "control", "experimental")
+
+result.mc <- nphsim::combo.wlr(survival = IPD.Mok.C$time, cnsr = IPD.Mok.C$event, trt = IPD.Mok.C$arm, fparam = list(rgs=rgs,draws=draws))
+
+result.mc <- lapply(result.mc, function(x) round(x, digits = 3))
+
+as.data.frame(result.mc) %>% kableExtra::kable()
+```
+
+
+<!-- ------------------------------------------------------------------------ -->
+<!--   Rho     Gamma   Zmax     Pval     HR     hrL    hrU    hrL.bc  hrU.bc                       -->
+<!-- -------- ------- ------- -------- ------ ------ ------- ------- --------  -->
+<!--    1        0     5.998   0.000   0.081  0.028   0.232   0.026   0.302           -->
+<!-- ------------------------------------------------------------------------ -->
+
+\clearpage 
+
+## Ohtsu et al. 2011 AVAGAST Study: Dimishing Treatment Effect
+
+```{r, echo=FALSE, fig.cap="Patients in the intention-to-treat population", warning=FALSE, message=FALSE}
+source("Libraries.R")
+
+IPD.Ohtsu <- readRDS("data/IPD.Ohtsu.RDS")
+
+km_trt_fit <- survfit(Surv(time, event) ~ arm, data = IPD.Ohtsu)
+
+ggsurv <- ggsurvplot(
+  km_trt_fit,                     # survfit object with calculated statistics.
+  data = IPD.Ohtsu,             # data used to fit survival curves.
+  risk.table = TRUE,       # show risk table.
+  pval = FALSE,             # show p-value of log-rank test.
+  conf.int = FALSE,         # show confidence intervals for 
+  # point estimates of survival curves.
+  palette = c("#E7B800", "#2E9FDF"),
+  xlim = c(0,21),         # present narrower X axis, but not affect
+  # survival estimates.
+  xlab = "Months since Randomization",   # customize X axis label.
+  ylab = "Survival (probability)",   # customize X axis label.
+  break.time.by = 3,     # break X axis in time intervals by 500.
+  ggtheme = theme_light(), # customize plot and risk table with a theme.
+  risk.table.y.text.col = T,# colour risk table text annotations.
+  risk.table.height = 0.25, # the height of the risk table
+  risk.table.y.text = FALSE,# show bars instead of names in text annotations
+  # in legend of risk table.
+  ncensor.plot = FALSE,      # plot the number of censored subjects at time t
+  ncensor.plot.height = 0.25,
+  conf.int.style = "step",  # customize style of confidence intervals
+  surv.median.line = "hv",  # add the median survival pointer.
+  legend.labs = c("bevacizumab", "Placebo")    # change legend labels.
+)
+
+# Labels for Survival Curves (plot)
+ggsurv$plot <- ggsurv$plot + labs(
+  title    = "Kaplan-Meier estimates of overall survival",                  
+  subtitle = "Patients in the intention-to-treat population"
+)
+
+# Changing the font size, style and color
+
+ggsurv <- ggpar(
+  ggsurv,
+  font.title    = c(16, "bold", "black"),         
+  font.subtitle = c(10, "bold.italic", "black"), 
+  font.caption  = c(14, "plain", "black"),        
+  font.x        = c(14, "bold.italic", "black"),          
+  font.y        = c(14, "bold.italic", "black"),      
+  font.xtickslab = c(12, "plain", "black"),
+  legend = "top"
+)
+
+ggsurv
+```
+
+<br>
+<br>
+
+```{r, echo=FALSE, fig.cap="Summary Statistics", warning=FALSE, message=FALSE}
+source("Libraries.R")
+
+IPD.Ohtsu <- readRDS("data/IPD.Ohtsu.RDS")
+
+colnames(IPD.Ohtsu) <- c("time", "event", "Bevacizumab")
+
+IPD.Ohtsu$Bevacizumab <- ifelse(IPD.Ohtsu$Bevacizumab, "Placebo", "Bevacizumab")
+
+IPD.Ohtsu %>%
+  tbl_summary(
+    by = Bevacizumab,
+    missing = "no",
+    statistic = list(
+      all_continuous() ~ "{mean} ({sd})",
+      all_categorical() ~ "{n} / {N} ({p}%)")
+  ) %>%
+  modify_header(stat_by = md("**{level}**<br>N =  {n} ({style_percent(p)}%)")) %>%
+  bold_labels() %>%
+  modify_spanning_header(starts_with("stat_") ~ "**Bevacizumab in Combination With Chemotherapy**") %>% 
+  add_p(test = all_continuous() ~ "t.test") %>%
+  add_overall()
+```
+
+<br>
+<br>
+
+```{r, echo=FALSE, fig.cap="Cox Proportional Hazards Model"}
+source("Libraries.R")
+
+IPD.Ohtsu <- readRDS("data/IPD.Ohtsu.RDS")
+
+colnames(IPD.Ohtsu) <- c("time", "event", "arm")
+
+# fit coxph model
+cox.model <- coxph(Surv(time, event) ~ arm, data = IPD.Ohtsu) 
+
+# format results into data frame with global p-values
+cox.model %>%
+  tbl_regression(
+    show_single_row = arm,
+    label = arm ~ "Bevacizumab vs Placebo",
+    exponentiate = TRUE) %>%
+  bold_p(t = 0.10) %>%
+  bold_labels() %>%
+  italicize_levels()
+
+```
+
+<br>
+<br>
+
+```{r, echo=FALSE, fig.cap="Forest Plot", eval=FALSE}
+knitr::include_graphics(path = "figure/ohtsu.f.svg")
+```
+
+<br>
+<br>
+
+```{r, echo=FALSE}
+source("Libraries.R")
+
+IPD.Ohtsu <- readRDS("data/IPD.Ohtsu.RDS")
+
+colnames(IPD.Ohtsu) <- c("time", "event", "Bevacizumab")
+
+cox.model <- coxph(Surv(time, event) ~ Bevacizumab, data = IPD.Ohtsu) 
+
+# Schoenfeld plot
+ggcoxzph(cox.zph(cox.model), ylim = c(-5, 5)) 
+```
+
+```{r, echo=FALSE}
+source("Libraries.R")
+
+IPD.Ohtsu <- readRDS("data/IPD.Ohtsu.RDS")
+
+colnames(IPD.Ohtsu) <- c("time", "event", "Bevacizumab")
+
+cox.model <- coxph(Surv(time, event) ~ Bevacizumab, data = IPD.Ohtsu) 
+
+# Schoenfeld plot
+par(mfrow=c(1,1))
+plot(cox.zph(cox.model), main = "Schoenfeld Individual Test p: 0.0139")
+abline(h=0, col=2)
+```
+
+<br>
+<br>
+
+```{r, echo=FALSE, fig.cap="Weighted Log Rank Test"}
+source("Libraries.R")
+
+IPD.Ohtsu <- readRDS("data/IPD.Ohtsu.RDS")
+
+DT <- setDT(IPD.Ohtsu)
+
+colnames(IPD.Ohtsu) <- c("time", "event", "arm")
+
+result <- wlr.Stat(surv=DT$time, cnsr=DT$event, trt= DT$arm, fparam=list(rho=c(0,0,1,1), gamma=c(0,1,1,0), wlr='FH(0,1)', APPLE=NULL))
+
+result %>% 
+  kableExtra::kable()
+```
+
+<br>
+<br>
+
+```{r, echo=FALSE}
+source("Libraries.R")
+
+IPD.Ohtsu <- readRDS("data/IPD.Ohtsu.RDS")
+
+rgs <- list(c(0, 0), c(0, 1), c(1, 1), c(1, 0))
+
+draws <- 10
+
+IPD.Ohtsu$arm <- ifelse(IPD.Ohtsu$arm == 0, "control", "experimental")
+
+result.mc <- nphsim::combo.wlr(survival = IPD.Ohtsu$time, cnsr = IPD.Ohtsu$event, trt = IPD.Ohtsu$arm, fparam = list(rgs=rgs,draws=draws))
+
+result.mc <- lapply(result.mc, function(x) round(x, digits = 3))
+
+as.data.frame(result.mc) %>% kableExtra::kable()
+```
+
+<!-- ------------------------------------------------------------------------ -->
+<!--   Rho     Gamma   Zmax     Pval     HR     hrL    hrU    hrL.bc  hrU.bc                       -->
+<!-- -------- ------- ------- -------- ------ ------ ------- ------- --------  -->
+<!--    0        1     1.831   0.000   0.763  0.573   1.017   0.687   0.931           -->
+<!-- ------------------------------------------------------------------------ -->
+
+\clearpage 
+
+## Ascierto et al. 2017 The Ipilimumab Study: Delayed Treatment Effect
+
+```{r, echo=FALSE, fig.cap="Patients in the intention-to-treat population", warning=FALSE, message=FALSE}
+source("Libraries.R")
+
+IPD.ascierto.2.a <- readRDS("data/IPD.ascierto.2.a.RDS")
+
+km_trt_fit <- survfit(Surv(time, event) ~ arm, data = IPD.ascierto.2.a)
+
+ggsurv <- ggsurvplot(
+  km_trt_fit,               # survfit object with calculated statistics.
+  data = IPD.ascierto.2.a,  # data used to fit survival curves.
+  risk.table = TRUE,        # show risk table.
+  pval = FALSE,             # show p-value of log-rank test.
+  conf.int = FALSE,         # show confidence intervals for 
+  # point estimates of survival curves.
+  palette = c("#E7B800", "#2E9FDF"),
+  xlim = c(0,45),         # present narrower X axis, but not affect
+  # survival estimates.
+  xlab = "Time since randomisation (months)",   # customize X axis label.
+  ylab = "Overall survival (%)",   # customize X axis label.
+  break.time.by = 3,     # break X axis in time intervals by 500.
+  ggtheme = theme_light(), # customize plot and risk table with a theme.
+  risk.table.y.text.col = T,# colour risk table text annotations.
+  risk.table.height = 0.25, # the height of the risk table
+  risk.table.y.text = FALSE,# show bars instead of names in text annotations
+  # in legend of risk table.
+  ncensor.plot = FALSE,      # plot the number of censored subjects at time t
+  ncensor.plot.height = 0.25,
+  conf.int.style = "step",  # customize style of confidence intervals
+  surv.median.line = "hv",  # add the median survival pointer.
+  legend.labs = c("3mg", "10mg")    # change legend labels.
+)
+
+# Labels for Survival Curves (plot)
+ggsurv$plot <- ggsurv$plot + labs(
+  title    = "Kaplan-Meier Curves for Over-all Survival",                  
+  subtitle = "Overall survival in the intention-to-treat population."
+)
+
+# Changing the font size, style and color
+
+ggsurv <- ggpar(
+  ggsurv,
+  font.title    = c(16, "bold", "black"),         
+  font.subtitle = c(10, "bold.italic", "black"), 
+  font.caption  = c(14, "plain", "black"),        
+  font.x        = c(14, "bold.italic", "black"),          
+  font.y        = c(14, "bold.italic", "black"),      
+  font.xtickslab = c(12, "plain", "black"),
+  legend = "top"
+)
+
+ggsurv
+```
+
+<br>
+<br>
+
+```{r, echo=FALSE, fig.cap="Summary Statistics", warning=FALSE, message=FALSE}
+source("Libraries.R")
+
+IPD.ascierto.2.a <- readRDS("data/IPD.ascierto.2.a.RDS")
+
+# rename columns 
+colnames(IPD.ascierto.2.a) <- c("time", "event", "10mg")
+
+IPD.ascierto.2.a$`10mg` <- ifelse(IPD.ascierto.2.a$`10mg` == 0, "3mg", "10mg")
+
+IPD.ascierto.2.a %>%
+  tbl_summary(
+    by = `10mg`,
+    missing = "no",
+    statistic = list(
+      all_continuous() ~ "{mean} ({sd})",
+      all_categorical() ~ "{n} / {N} ({p}%)")
+  ) %>%
+  modify_header(stat_by = md("**{level}**<br>N =  {n} ({style_percent(p)}%)")) %>%
+  bold_labels() %>%
+  modify_spanning_header(starts_with("stat_") ~ "**Ipilimumab 10 mg/kg versus ipilimumab 3 mg/kg**") %>% 
+  add_p(test = all_continuous() ~ "t.test") %>%
+  add_overall()
+```
+
+<br>
+<br>
+
+```{r echo=FALSE, fig.cap="Cox Proportional Hazards Model"}
+source("Libraries.R")
+
+IPD.ascierto.2.a <- readRDS("data/IPD.ascierto.2.a.RDS")
+
+colnames(IPD.ascierto.2.a) <- c("time", "event", "arm")
+
+# fit coxph model
+cox.model <- coxph(Surv(time, event) ~ arm, data = IPD.ascierto.2.a) 
+
+# format results into data frame with global p-values
+cox.model %>%
+  tbl_regression(
+    show_single_row = arm,
+    label = arm ~ "10mg vs 3mg",
+    exponentiate = TRUE) %>%
+  bold_p(t = 0.10) %>%
+  bold_labels() %>%
+  italicize_levels()
+```
+
+```{r, echo=FALSE, fig.cap="Forest Plot", eval=FALSE}
+knitr::include_graphics(path = "figure/ascierto.f.svg")
+```
+
+<br>
+<br>
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+source("Libraries.R")
+
+IPD.ascierto.2.a <- readRDS("data/IPD.ascierto.2.a.RDS")
+
+colnames(IPD.ascierto.2.a) <- c("time", "event", "10mg")
+
+cox.model <- coxph(Surv(time, event) ~ IPD.ascierto.2.a$`10mg` ,data = IPD.ascierto.2.a) 
+
+# Schoenfeld plot
+ggcoxzph(cox.zph(cox.model), ylim = c(-5, 5)) 
+```
+
+<br>
+<br>
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+source("Libraries.R")
+
+IPD.ascierto.2.a <- readRDS("data/IPD.ascierto.2.a.RDS")
+
+colnames(IPD.ascierto.2.a) <- c("time", "event", "10mg")
+
+cox.model <- coxph(Surv(time, event) ~ IPD.ascierto.2.a$`10mg`, data = IPD.ascierto.2.a) 
+
+# Schoenfeld plot
+par(mfrow=c(1,1))
+plot(cox.zph(cox.model), main = "Schoenfeld Individual Test p: 0.1812")
+abline(h=0, col=2)
+```
+
+<br>
+<br>
+
+```{r, echo=FALSE, fig.cap="Weighted Log Rank Test"}
+source("Libraries.R")
+
+IPD.ascierto.2.a <- readRDS("data/IPD.ascierto.2.a.RDS")
+
+DT <- setDT(IPD.ascierto.2.a)
+
+colnames(IPD.ascierto.2.a) <- c("time", "event", "arm")
+
+result <- wlr.Stat(surv=DT$time, cnsr=DT$event, trt= DT$arm, fparam=list(rho=c(0,0,1,1), gamma=c(0,1,1,0), wlr='FH(0,1)', APPLE=NULL))
+
+result %>% 
+  kableExtra::kable()
+```
+
+<br>
+<br>
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+source("Libraries.R")
+
+IPD.ascierto.2.a <- readRDS("data/IPD.ascierto.2.a.RDS")
+
+rgs <- list(c(0, 0), c(0, 1), c(1, 1), c(1, 0))
+
+draws <- 10
+
+IPD.ascierto.2.a$arm <- ifelse(IPD.ascierto.2.a$arm == 0, "control", "experimental")
+
+result.mc <- nphsim::combo.wlr(survival = IPD.ascierto.2.a$time, cnsr = IPD.ascierto.2.a$event, trt = IPD.ascierto.2.a$arm, fparam = list(rgs=rgs,draws=draws))
+
+result.mc <- lapply(result.mc, function(x) round(x, digits = 3))
+
+as.data.frame(result.mc) %>% kableExtra::kable()
+```
+
+<!-- ------------------------------------------------------------------------ -->
+<!--   Rho     Gamma   Zmax     Pval     HR     hrL    hrU    hrL.bc  hrU.bc                       -->
+<!-- -------- ------- ------- -------- ------ ------ ------- ------- --------  -->
+<!--    0        1     8.471   0.000   0.238  0.190   0.299   0.195   0.291           -->
+<!-- ------------------------------------------------------------------------ -->
+
+\clearpage 
+
+## Rittermeyer et al. 2017 The OAK Study: Delayed Treatment Effect
+
+```{r, echo = FALSE, fig.cap="Patients in the WT population", warning=FALSE, message=FALSE}
+source("Libraries.R")
+
+IPD.Rittmeyer <- readRDS("data/IPD.Rittmeyer.RDS")
+
+km_trt_fit <- survfit(Surv(time, event) ~ arm, data = IPD.Rittmeyer)
+
+ggsurv <- ggsurvplot(
+  km_trt_fit,                     # survfit object with calculated statistics.
+  data = IPD.Rittmeyer,             # data used to fit survival curves.
+  risk.table = TRUE,       # show risk table.
+  pval = FALSE,             # show p-value of log-rank test.
+  conf.int = FALSE,         # show confidence intervals for 
+  # point estimates of survival curves.
+  palette = c("#E7B800", "#2E9FDF"),
+  xlim = c(0,26),         # present narrower X axis, but not affect
+  # survival estimates.
+  xlab = "Months since Randomization",   # customize X axis label.
+  ylab = "Pr of Progression-free Survival",   # customize X axis label.
+  break.time.by = 2,     # break X axis in time intervals by 500.
+  ggtheme = theme_light(), # customize plot and risk table with a theme.
+  risk.table.y.text.col = T,# colour risk table text annotations.
+  risk.table.height = 0.25, # the height of the risk table
+  risk.table.y.text = FALSE,# show bars instead of names in text annotations
+  # in legend of risk table.
+  ncensor.plot = FALSE,      # plot the number of censored subjects at time t
+  ncensor.plot.height = 0.25,
+  conf.int.style = "step",  # customize style of confidence intervals
+  surv.median.line = "hv",  # add the median survival pointer.
+  legend.labs = c("Atezolizumab", "Docetaxel")    # change legend labels.
+)
+
+# Labels for Survival Curves (plot)
+ggsurv$plot <- ggsurv$plot + labs(
+  title    = "Kaplan Meier Estimates of Progression-free Survival",                  
+  subtitle = "Patients in the IIT population"
+)
+
+# Changing the font size, style and color
+
+ggsurv <- ggpar(
+  ggsurv,
+  font.title    = c(16, "bold", "black"),         
+  font.subtitle = c(10, "bold.italic", "black"), 
+  font.caption  = c(14, "plain", "black"),        
+  font.x        = c(14, "bold.italic", "black"),          
+  font.y        = c(14, "bold.italic", "black"),      
+  font.xtickslab = c(12, "plain", "black"),
+  legend = "top"
+)
+
+ggsurv
+```
+
+<br>
+<br>
+
+```{r, echo=FALSE, fig.cap="Summary Statistics", warning=FALSE, message=FALSE}
+source("Libraries.R")
+
+IPD.Rittmeyer <- readRDS("data/IPD.Rittmeyer.RDS")
+
+# rename columns 
+colnames(IPD.Rittmeyer) <- c("time", "event", "Atezolizumab")
+
+IPD.Rittmeyer$Atezolizumab <- ifelse(IPD.Rittmeyer$Atezolizumab == 0, "Docetaxel", "Atezolizumab")
+
+IPD.Rittmeyer %>%
+  tbl_summary(
+    by = Atezolizumab,
+    missing = "no",
+    statistic = list(
+      all_continuous() ~ "{mean} ({sd})",
+      all_categorical() ~ "{n} / {N} ({p}%)")
+  ) %>%
+  modify_header(stat_by = md("**{level}**<br>N =  {n} ({style_percent(p)}%)")) %>%
+  bold_labels() %>%
+  modify_spanning_header(starts_with("stat_") ~ "**Atezolizumab versus Docetaxel**") %>% 
+  add_p(test = all_continuous() ~ "t.test") %>%
+  add_overall()
+```
+
+<br>
+<br>
+
+```{r echo=FALSE, fig.cap="Cox Proportional Hazards Model"}
+source("Libraries.R")
+
+IPD.Rittmeyer <- readRDS("data/IPD.Rittmeyer.RDS")
+
+colnames(IPD.Rittmeyer) <- c("time", "event", "arm")
+
+# fit coxph model
+cox.model <- coxph(Surv(time, event) ~ arm, data = IPD.Rittmeyer) 
+
+# format results into data frame with global p-values
+cox.model %>%
+  tbl_regression(
+    show_single_row = arm,
+    label = arm ~ "Atezolizumab versus Docetaxel",
+    exponentiate = TRUE) %>%
+  bold_p(t = 0.10) %>%
+  bold_labels() %>%
+  italicize_levels()
+```
+
+<br>
+<br>
+
+```{r, echo=FALSE, fig.cap="Forest Plot", eval=FALSE}
+knitr::include_graphics(path = "figure/ritt.f.svg")
+```
+
+<br>
+<br>
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+source("Libraries.R")
+
+IPD.Rittmeyer <- readRDS("data/IPD.Rittmeyer.RDS")
+
+colnames(IPD.Rittmeyer) <- c("time", "event", "Atezolizumab")
+
+cox.model <- coxph(Surv(time, event) ~ IPD.Rittmeyer$`Atezolizumab`, data = IPD.Rittmeyer) 
+
+# Schoenfeld plot
+par(mfrow=c(1,1))
+plot(cox.zph(cox.model), main = "Schoenfeld Individual Test p: 0.3971")
+abline(h=0, col=2)
+```
+
+<br>
+<br>
+
+```{r, echo=FALSE}
+source("Libraries.R")
+
+IPD.Rittmeyer <- readRDS("data/IPD.Rittmeyer.RDS")
+
+colnames(IPD.Rittmeyer) <- c("time", "event", "Atezolizumab")
+
+cox.model <- coxph(Surv(time, event) ~ Atezolizumab, data = IPD.Rittmeyer) 
+
+# Schoenfeld plot
+ggcoxzph(cox.zph(cox.model), ylim = c(-5, 5)) 
+```
+
+<br>
+<br>
+
+```{r, echo=FALSE, fig.cap="Weighted Log Rank Test"}
+source("Libraries.R")
+
+IPD.Rittmeyer <- readRDS("data/IPD.Rittmeyer.RDS")
+
+DT <- setDT(IPD.Rittmeyer)
+
+colnames(IPD.Rittmeyer) <- c("time", "event", "arm")
+
+result <- wlr.Stat(surv=DT$time, cnsr=DT$event, trt= DT$arm, fparam=list(rho=c(0,0,1,1), gamma=c(0,1,1,0), wlr='FH(0,1)', APPLE=NULL))
+
+result %>% 
+  kableExtra::kable()
+```
+
+```{r, echo=FALSE}
+source("Libraries.R")
+
+IPD.Rittmeyer <- readRDS("data/IPD.Rittmeyer.RDS")
+
+rgs <- list(c(0, 0), c(0, 1), c(1, 1), c(1, 0))
+
+draws <- 10
+
+IPD.Rittmeyer$arm <- ifelse(IPD.Rittmeyer$arm == 0, "control", "experimental")
+
+result.mc <- nphsim::combo.wlr(survival = IPD.Rittmeyer$time, cnsr = IPD.Rittmeyer$event, trt = IPD.Rittmeyer$arm, fparam = list(rgs=rgs,draws=draws))
+
+result.mc <- lapply(result.mc, function(x) round(x, digits = 3))
+
+as.data.frame(result.mc) %>% kableExtra::kable()
+```
+
+<br>
+<br>
+
+<!-- ------------------------------------------------------------------------ -->
+<!--   Rho     Gamma   Zmax     Pval     HR     hrL    hrU    hrL.bc  hrU.bc                       -->
+<!-- -------- ------- ------- -------- ------ ------ ------- ------- --------  -->
+<!--    1        0     2.041   0.000   0.761  0.586   0.989   0.561   1.005          -->
+<!-- ------------------------------------------------------------------------ -->
+
+## Math
+
+\TeX\ is the best way to typeset mathematics. Donald Knuth designed \TeX\ when he got frustrated at how long it was taking the typesetters to finish his book, which contained a lot of mathematics.  One nice feature of _R Markdown_ is its ability to read LaTeX code directly.
+
+If you are doing a thesis that will involve lots of math, you will want to read the following section which has been commented out. If you're not going to use math, skip over or delete this next commented section.
+
+
+<!-- MATH and PHYSICS majors: Uncomment the following section -->
+<!--
+$$\sum_{j=1}^n (\delta\theta_j)^2 \leq {{\beta_i^2}\over{\delta_i^2 + \rho_i^2}}
+\left[ 2\rho_i^2 + {\delta_i^2\beta_i^2\over{\delta_i^2 + \rho_i^2}} \right] \equiv \omega_i^2
+$$
+
+From Informational Dynamics, we have the following (Dave Braden):
+
+After _n_ such encounters the posterior density for $\theta$ is
+
+$$
+\pi(\theta|X_1< y_1,\dots,X_n<y_n) \varpropto \pi(\theta) \prod_{i=1}^n\int_{-\infty}^{y_i}
+   \exp\left(-{(x-\theta)^2\over{2\sigma^2}}\right)\ dx
+$$
+
+Another equation:
+
+$$\det\left|\,\begin{matrix}%
+c_0&c_1\hfill&c_2\hfill&\ldots&c_n\hfill\cr
+c_1&c_2\hfill&c_3\hfill&\ldots&c_{n+1}\hfill\cr
+c_2&c_3\hfill&c_4\hfill&\ldots&c_{n+2}\hfill\cr
+\,\vdots\hfill&\,\vdots\hfill&
+  \,\vdots\hfill&&\,\vdots\hfill\cr
+c_n&c_{n+1}\hfill&c_{n+2}\hfill&\ldots&c_{2n}\hfill\cr
+\end{matrix}\right|>0$$
+
+
+Lapidus and Pindar, Numerical Solution of Partial Differential Equations in Science and
+Engineering.  Page 54
+
+$$
+\int_t\left\{\sum_{j=1}^3 T_j \left({d\phi_j\over dt}+k\phi_j\right)-kT_e\right\}w_i(t)\ dt=0,
+   \qquad\quad i=1,2,3.
+$$
+
+L\&P  Galerkin method weighting functions.  Page 55
+
+$$
+\sum_{j=1}^3 T_j\int_0^1\left\{{d\phi_j\over dt} + k\phi_j\right\} \phi_i\ dt
+   = \int_{0}^1k\,T_e\phi_idt, \qquad i=1,2,3 $$
+
+Another L\&P (p145)
+
+$$
+\int_{-1}^1\!\int_{-1}^1\!\int_{-1}^1 f\big(\xi,\eta,\zeta\big)
+   = \sum_{k=1}^n\sum_{j=1}^n\sum_{i=1}^n w_i w_j w_k f\big( \xi,\eta,\zeta\big).
+$$
+
+Another L\&P (p126)
+
+$$
+\int_{A_e} (\,\cdot\,) dx dy = \int_{-1}^1\!\int_{-1}^1 (\,\cdot\,) \det[J] d\xi d\eta.
+$$
+-->
+
+## Chemistry 101: Symbols
+
+Chemical formulas will look best if they are not italicized. Get around math mode's automatic italicizing in LaTeX by using the argument `$\mathrm{formula here}$`, with your formula inside the curly brackets.  (Notice the use of the backticks here which enclose text that acts as code.)
+
+So, $\mathrm{Fe_2^{2+}Cr_2O_4}$ is written `$\mathrm{Fe_2^{2+}Cr_2O_4}$`.
+
+<!--
+The \noindent command below does what you'd expect:  it forces the current line/paragraph to not indent. This was done here to match the format of the LaTeX thesis PDF.
+-->
+
+\noindent Exponent or Superscript: $\mathrm{O^-}$
+
+\noindent Subscript: $\mathrm{CH_4}$
+
+To stack numbers or letters as in $\mathrm{Fe_2^{2+}}$, the subscript is defined first, and then the superscript is defined.
+
+\noindent Bullet: CuCl $\bullet$ $\mathrm{7H_{2}O}$
+
+
+\noindent Delta: $\Delta$
+
+\noindent Reaction Arrows: $\longrightarrow$ or  $\xrightarrow{solution}$
+
+\noindent Resonance Arrows: $\leftrightarrow$
+
+\noindent Reversible Reaction Arrows: $\rightleftharpoons$
+
+### Typesetting reactions
+
+You may wish to put your reaction in an equation environment, which means that LaTeX will place the reaction where it fits and will number the equations for you. 
+
+\begin{equation}
+  \mathrm{C_6H_{12}O_6  + 6O_2} \longrightarrow \mathrm{6CO_2 + 6H_2O}
+  (\#eq:reaction)
+\end{equation}
+
+We can reference this combustion of glucose reaction via Equation \@ref(eq:reaction).
+
+### Other examples of reactions
+
+$\mathrm{NH_4Cl_{(s)}}$ $\rightleftharpoons$ $\mathrm{NH_{3(g)}+HCl_{(g)}}$
+
+\noindent $\mathrm{MeCH_2Br + Mg}$ $\xrightarrow[below]{above}$ $\mathrm{MeCH_2\bullet Mg \bullet Br}$
+
+## Physics
+
+Many of the symbols you will need can be found on the math page <https://web.reed.edu/cis/help/latex/math.html> and the Comprehensive LaTeX Symbol Guide (<https://mirror.utexas.edu/ctan/info/symbols/comprehensive/symbols-letter.pdf>).
+
+## Biology
+
+You will probably find the resources at <https://www.lecb.ncifcrf.gov/~toms/latex.html> helpful, particularly the links to bsts for various journals. You may also be interested in TeXShade for nucleotide typesetting (<https://homepages.uni-tuebingen.de/beitz/txe.html>).  Be sure to read the proceeding chapter on graphics and tables.
+
