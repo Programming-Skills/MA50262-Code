@@ -3,11 +3,11 @@ source("Libraries.R")
 ###FUNCTION INPUTS
 
 tot.events<-"NA" #tot.events = total no. of events reported. If not reported, then tot.events="NA"
-arm.id <- 1 #arm indicator
+arm.id <- 0 #arm indicator
 ###END FUNCTION INPUTS
 #Read in survival times read by digizeit
-# digizeit <- read.csv("IPD.Mok.A.carboplatin.csv", header=FALSE)
-# digizeit <- read.csv("IPD.Mok.A.gefitinib.csv", header=FALSE)
+digizeit <- read.csv("mok.A.carboplatin.csv", header=FALSE)
+# digizeit <- read.csv("mok.A.gefitinib.csv", header=FALSE)
 t.S<-digizeit[,1]
 S<-digizeit[,2]
 
@@ -20,7 +20,8 @@ lower<- purrr::map_dbl(t.risk,
                        function(x) min(which(t.S >= x)))
 upper<- purrr::map_dbl(c(t.risk[-1], Inf),
                         function(x) max(which(t.S < x)))
-n.risk<- c(609,363,212,76,24,5)
+n.risk<- c(608,412,118,22,3,1)
+#n.risk<- c(609,363,212,76,24,5)
 n.int<-length(n.risk)
 n.t<- upper[n.int]
 
@@ -186,8 +187,8 @@ for (j in 1:(n.t-1)){
 IPD<-matrix(c(t.IPD,event.IPD,arm),ncol=3,byrow=F)
 
 # Save an object to a file
-# saveRDS(IPD, file = "IPD.IPD.Mok.A.gefitinib.RDS") 
-# saveRDS(IPD, file = "IPD.IPD.Mok.A.carboplatin.RDS") 
+#saveRDS(IPD, file = "IPD.Mok.A.gefitinib.RDS") 
+#saveRDS(IPD, file = "IPD.Mok.A.carboplatin.RDS") 
 
 # Restore the object
 # readRDS(file = "IPD.Mok.A.gefitinib.RDS")

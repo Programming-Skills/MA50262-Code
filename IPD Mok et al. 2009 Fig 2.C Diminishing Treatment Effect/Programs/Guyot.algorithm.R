@@ -3,11 +3,11 @@ source("Libraries.R")
 ###FUNCTION INPUTS
 
 tot.events<-"NA" #tot.events = total no. of events reported. If not reported, then tot.events="NA"
-arm.id <- 0 #arm indicator
+arm.id <- 1 #arm indicator
 ###END FUNCTION INPUTS
 #Read in survival times read by digizeit
-# digizeit <- read.csv("mok.c.gefitinib.csv", header=FALSE)
-# digizeit <- read.csv("mok.c.carboplatin.csv", header=FALSE)
+digizeit <- read.csv("mok.c.gefitinib.csv", header=FALSE)
+#digizeit <- read.csv("mok.c.carboplatin.csv", header=FALSE)
 t.S<-digizeit[,1]
 S<-digizeit[,2]
 
@@ -15,12 +15,13 @@ S<-digizeit[,2]
 
 #Read in published numbers at risk, n.risk, at time, t.risk, lower and upper
 # indexes for time interval
-t.risk<- seq(0, 16, by = 4)
+t.risk<- seq(0, 12, by = 4)
 lower<- purrr::map_dbl(t.risk,
                        function(x) min(which(t.S >= x)))
 upper<- purrr::map_dbl(c(t.risk[-1], Inf),
                         function(x) max(which(t.S < x)))
-n.risk<- c(91,21,4,2,1)
+n.risk<- c(91,21,4,2)
+#n.risk<- c(85,58,14,1)
 n.int<-length(n.risk)
 n.t<- upper[n.int]
 
@@ -159,7 +160,7 @@ if (tot.events != "NA"){
     }
   }
 }
-write.table(matrix(c(t.S,n.hat[1:n.t],d,cen),ncol=4,byrow=F),paste(path,KMdatafile,sep=""),sep="\t")
+#write.table(matrix(c(t.S,n.hat[1:n.t],d,cen),ncol=4,byrow=F),paste(path,KMdatafile,sep=""),sep="\t")
 ### Now form IPD ###
 #Initialise vectors
 t.IPD<-rep(t.S[n.t],n.risk[1])
@@ -185,8 +186,8 @@ for (j in 1:(n.t-1)){
 IPD<-matrix(c(t.IPD,event.IPD,arm),ncol=3,byrow=F)
 
 # Save an object to a file
-# saveRDS(IPD, file = "mok.c.gefitinib.RDS") 
-# saveRDS(IPD, file = "mok.c.carboplatin.RDS") 
+#saveRDS(IPD, file = "IPD.mok.c.gefitinib.RDS") 
+#saveRDS(IPD, file = "IPD.mok.c.carboplatin.RDS") 
 
 # Restore the object
 # readRDS(file = "mok.c.gefitinib.RDS")

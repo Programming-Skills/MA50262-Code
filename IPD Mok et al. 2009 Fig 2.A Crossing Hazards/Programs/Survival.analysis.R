@@ -77,11 +77,11 @@ cox.model %>%
 
 colnames(IPD.Mok.A) <- c("time", "event", "Gefitinib")
 
-# Schoenfeld plot
-ggcoxzph(cox.zph(coxph(Surv(time,event) ~ Gefitinib, data=IPD.Mok.A))) 
-
-# plot of "changes in b over time"
+# fit coxph model
 cox.model <- coxph(Surv(time, event) ~ Gefitinib, data = IPD.Mok.A) 
+
+# Schoenfeld plot
+ggcoxzph(cox.zph(cox.model), ylim = c(-5, 5)) 
 
 # Schoenfeld plot
 par(mfrow=c(1,1))
