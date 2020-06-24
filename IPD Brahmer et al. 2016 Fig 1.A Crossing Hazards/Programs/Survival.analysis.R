@@ -95,28 +95,83 @@ ggforest(cox.model, data = IPD.Brahmer.a)
 ########################## Weighted Log-Rank Test #######################
 #########################################################################
 
+IPD.Brahmer.a$event <- ifelse(IPD.Brahmer.a$event == 0, 1, 0)
+
 colnames(IPD.Brahmer.a) <- c("time", "event", "arm")
 
-wlr.Stat(survival = IPD.Brahmer.a$time, cnsr = IPD.Brahmer.a$event, trt = IPD.Brahmer.a$arm,
-         fparam=list(rho=c(0,0,1,1), gamma=c(0,1,1,0), wlr='FH(0,1)', APPLE=3))
+result <- wlr.Stat(surv=IPD.Brahmer.a$time, 
+                   cnsr=IPD.Brahmer.a$event, 
+                   trt= IPD.Brahmer.a$arm, 
+                   fparam=list(rho=c(0,0,1,1), 
+                               gamma=c(0,1,1,0), 
+                               wlr='FH(0,1)', 
+                               APPLE=NULL))
 
-#      pval    pval_FH(0,0) pval_FH(0,1) pval_FH(1,1) pval_FH(1,0) pval_APPLE
-# 0.4284894    0.3592651    0.4284894    0.1652925    0.3140572    0.2039543
+result %>% kable()
+
+# pval	    pval_FH(0,0)	pval_FH(0,1)	pval_FH(1,1)	pval_FH(1,0)
+# 4.66e-05	0.0025083	    4.66e-05	    4.52e-05	    0.0372977
 
 #########################################################################
 ########################## Max-Combo Test ###############################
 #########################################################################
 
-# max combo test
+IPD.Brahmer.a$event <- ifelse(IPD.Brahmer.a$event == 0, 1, 0)
+
+IPD.Brahmer.a$arm <- ifelse(IPD.Brahmer.a$arm == 0, "control", "experimental")
+
 rgs <- list(c(0, 0), c(0, 1), c(1, 1), c(1, 0))
 
 draws <- 10
 
+result.mc <- nphsim::combo.wlr(survival = IPD.Brahmer.a$time, 
+                               cnsr = IPD.Brahmer.a$event, 
+                               trt = IPD.Brahmer.a$arm, 
+                               fparam = list(rgs=rgs,draws=draws))
+
+result.mc <- lapply(result.mc, function(x) round(x, digits = 3))
+
+as.data.frame(result.mc) %>% kable()
+
+# rho	gamma	Zmax	pval	  hr	  hrL	  hrU	  hrL.bc	hrU.bc
+# 0	  1	    4.032	0	      0.631	0.502	0.792	0.564	  0.759 
+
+########################################################################
+############################### RMST ###################################
+########################################################################
+
+# nphsim package
 IPD.Brahmer.a$arm <- ifelse(IPD.Brahmer.a$arm == 0, "control", "experimental")
 
-result.mc <- nphsim::combo.wlr(survival = IPD.Brahmer.a$time, cnsr = IPD.Brahmer.a$event, trt = IPD.Brahmer.a$arm, fparam = list(rgs=rgs,draws=draws))
+IPD.Brahmer.a$event <- ifelse(IPD.Brahmer.a$event == 0, 1, 0)
 
-unlist(result.mc)
+result.rmst <- rmst.Stat(survival = IPD.Brahmer.a$time, 
+                         cnsr = IPD.Brahmer.a$event, 
+                         trt = IPD.Brahmer.a$arm, 
+                         stra = NULL, 
+                         fparam = 25)
 
-# rho  gamma  Zmax       pval      hr        hrL       hrU       hrL.bc    hrU.bc 
-# 1    1      1.0828606 0.4000000 0.8328269 0.5985000 1.1588983 0.6554384 1.0417779 
+result.rmst <- lapply(result.rmst, function(x) round(x, digits = 4))
+
+as.data.frame(result.rmst) %>% kable()
+
+# rmst2 package
+result.rmst2 = rmst2(time = IPD.Brahmer.a$time, 
+                     status = IPD.Brahmer.a$event, 
+                     arm = IPD.Brahmer.a$arm, 
+                     tau = 25)
+
+result.rmst2
+
+# plot
+plot(
+  result.rmst2,
+  xlab = "Months",
+  ylab = "Probability",
+  col = "black",
+  col.RMST = "#E7B800", 
+  col.RMTL = "#2E9FDF",
+  density = 80,
+  angle = 85
+)
+

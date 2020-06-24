@@ -93,11 +93,19 @@ ggforest(cox.model, data = IPD.Mok.C)
 ########################## Weighted Log-Rank Test #######################
 #########################################################################
 
-wlr.Stat(survival = IPD.Mok.C$time, cnsr = IPD.Mok.C$event, trt = IPD.Mok.C$arm,
-         fparam=list(rho=c(0,0,1,1), gamma=c(0,1,1,0), wlr='FH(0,1)', APPLE=3))
+IPD.Mok.C$event <- ifelse(IPD.Mok.C$event == 0, 1, 0)
 
-#      pval	pval_FH(0,0)	pval_FH(0,1)	pval_FH(1,1)	pval_FH(1,0)	pval_APPLE
-# 0.3768385	0.0085894	   0.3768385	   0.5382168	    0.0028161	    0.1774779
+colnames(IPD.Mok.C) <- c("time", "event", "arm")
+
+result <- wlr.Stat(surv=IPD.Mok.C$time, 
+                   cnsr=IPD.Mok.C$event, 
+                   trt= IPD.Mok.C$arm==0, 
+                   fparam=list(rho=c(0,0,1,1), gamma=c(0,1,1,0), wlr='FH(0,1)', APPLE=NULL))
+
+result %>% kable()
+
+# pval	    pval_FH(0,0)	pval_FH(0,1)	pval_FH(1,1)	pval_FH(1,0)
+# 0.0007766	0	            0.0007766	    0	            0
 
 #########################################################################
 ########################## Max-Combo Test ###############################
@@ -107,11 +115,59 @@ rgs <- list(c(0, 0), c(0, 1), c(1, 1), c(1, 0))
 
 draws <- 10
 
+IPD.Mok.C$event <- ifelse(IPD.Mok.C$event == 0, 1, 0)
+
 IPD.Mok.C$arm <- ifelse(IPD.Mok.C$arm == 0, "control", "experimental")
 
-result.mc <- nphsim::combo.wlr(survival = IPD.Mok.C$time, cnsr = IPD.Mok.C$event, trt = IPD.Mok.C$arm, fparam = list(rgs=rgs,draws=draws))
+result.mc <- nphsim::combo.wlr(survival = IPD.Mok.C$time, 
+                               cnsr = IPD.Mok.C$event, 
+                               trt = IPD.Mok.C$arm, 
+                               fparam = list(rgs=rgs,draws=draws))
 
-unlist(result.mc)
+result.mc <- lapply(result.mc, function(x) round(x, digits = 3))
 
-# rho      gamma       Zmax       pval         hr        hrL        hrU     hrL.bc     hrU.bc 
-# 1.00000000 0.00000000 5.99783044 0.00000000 0.08054584 0.02798934 0.23178939 0.06161595 0.11150244 
+as.data.frame(result.mc) %>% kable()
+
+# rho	gamma	Zmax	  pval	hr	  hrL	  hrU	  hrL.bc	hrU.bc
+# 0	  1	    -3.254	1	    1.85	1.263	2.71	1.215	  2.468
+
+########################################################################
+############################### RMST ###################################
+########################################################################
+
+# nphsim package
+IPD.Mok.C$arm <- ifelse(IPD.Mok.C$arm == 0, "control", "experimental")
+
+IPD.Mok.C$event <- ifelse(IPD.Mok.C$event == 0, 1, 0)
+
+result.rmst <- rmst.Stat(survival = IPD.Mok.C$time, 
+                         cnsr = IPD.Mok.C$event, 
+                         trt = IPD.Mok.C$arm, 
+                         stra = NULL, 
+                         fparam = 12)
+
+result.rmst <- lapply(result.rmst, function(x) round(x, digits = 4))
+
+as.data.frame(result.rmst) %>% kable()
+
+# rmst2 package
+result.rmst2 = rmst2(time = IPD.Mok.C$time, 
+                     status = IPD.Mok.C$event, 
+                     arm = IPD.Mok.C$arm, 
+                     tau = 12)
+
+result.rmst2
+
+# plot
+plot(
+  result.rmst2,
+  xlab = "Months",
+  ylab = "Probability",
+  col = "black",
+  col.RMST = "#E7B800", 
+  col.RMTL = "#2E9FDF",
+  density = 80,
+  angle = 85
+)
+
+

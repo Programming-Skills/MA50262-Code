@@ -85,7 +85,7 @@ ggcoxzph(cox.zph(cox.model), ylim = c(-5, 5))
 
 # Schoenfeld plot
 par(mfrow=c(1,1))
-plot(cox.zph(cox.model), main = "Schoenfeld Individual Test p: 1.879e-26")
+plot(cox.zph(cox.model), main = "Schoenfeld Individual Test p: 0.00")
 abline(h=0, col=2)
 
 # forest plot
@@ -96,29 +96,46 @@ ggforest(cox.model, data = IPD.Mok.A)
 ########################## Weighted Log-Rank Test #######################
 #########################################################################
 
-wlr.Stat(survival = IPD.Mok.A$time, cnsr = IPD.Mok.A$event, trt = IPD.Mok.A$arm,
-         fparam=list(rho=c(0,0,1,1), gamma=c(0,1,1,0), wlr='FH(0,1)', APPLE=3))
+colnames(IPD.Mok.A) <- c("time", "event", "arm")
 
-#      pval	pval_FH(0,0)	pval_FH(0,1)	pval_FH(1,1)	pval_FH(1,0)	pval_APPLE
-# 0.3768385	0.0085894	   0.3768385	   0.5382168	    0.0028161	    0.1774779
+IPD.Mok.A$event <- ifelse(IPD.Mok.A$event == 0, 1, 0)
+
+result <- wlr.Stat(surv=IPD.Mok.A$time, 
+                   cnsr=IPD.Mok.A$event, 
+                   trt= IPD.Mok.A$arm, 
+                   fparam=list(rho=c(0,0,1,1), 
+                               gamma=c(0,1,1,0), 
+                               wlr='FH(0,1)', 
+                               APPLE=NULL))
+
+result %>% kable()
+
+# pval	pval_FH(0,0)	pval_FH(0,1)	pval_FH(1,1)	pval_FH(1,0)
+# 0	    1.28e-05	               0	           0	0.5877091
 
 #########################################################################
 ########################## Max-Combo Test ###############################
 #########################################################################
 
-# max combo test
 rgs <- list(c(0, 0), c(0, 1), c(1, 1), c(1, 0))
 
 draws <- 10
 
 IPD.Mok.A$arm <- ifelse(IPD.Mok.A$arm == 0, "control", "experimental")
 
-result.mc <- nphsim::combo.wlr(survival = IPD.Mok.A$time, cnsr = IPD.Mok.A$event, trt = IPD.Mok.A$arm, fparam = list(rgs=rgs,draws=draws))
+IPD.Mok.A$event <- ifelse(IPD.Mok.A$event == 0, 1, 0)
 
-unlist(result.mc)
+result.mc <- combo.wlr(survival = IPD.Mok.A$time, 
+                       cnsr = IPD.Mok.A$event, 
+                       trt = IPD.Mok.A$arm, 
+                       fparam = list(rgs=rgs,draws=draws))
 
-# rho     gamma      Zmax      pval        hr       hrL       hrU    hrL.bc    hrU.bc 
-# 1.0000000 0.0000000 2.7684605 0.0000000 0.6820437 0.5211830 0.8925532 0.6036899 0.8115025 
+result.mc <- lapply(result.mc, function(x) round(x, digits = 3))
+
+as.data.frame(result.mc) %>% kable()
+
+# rho	gamma	Zmax	pval	hr	    hrL	  hrU  	hrL.bc hrU.bc
+# 0	  1	    9.38	0	    0.495	  0.425	0.577	0.446	 0.532
 
 ########################################################################
 ############################### RMST ###################################
@@ -129,16 +146,35 @@ IPD.Mok.A$arm <- ifelse(IPD.Mok.A$arm == 0, "control", "experimental")
 
 IPD.Mok.A$event <- ifelse(IPD.Mok.A$event == 0, 1, 0)
 
-result.rmst <- rmst.Stat(survival = IPD.Mok.A$time, cnsr = IPD.Mok.A$event, trt = IPD.Mok.A$arm, stra = NULL, fparam = 20)
+result.rmst <- rmst.Stat(survival = IPD.Mok.A$time, 
+                         cnsr = IPD.Mok.A$event, 
+                         trt = IPD.Mok.A$arm, 
+                         stra = NULL, 
+                         fparam = 20)
 
 result.rmst <- lapply(result.rmst, function(x) round(x, digits = 4))
 
-as.data.frame(result.rmst) %>% kableExtra::kable()
+as.data.frame(result.rmst) %>% kable()
+
+# pval	tau	est	    estlb	  estub
+# 4e-05	20	1.21789	0.61318	1.82261
 
 # rmst2 package
-result.rmst2 = rmst2(time = IPD.Mok.A$time, status = IPD.Mok.A$event, arm = IPD.Mok.A$arm, tau = 20)
+result.rmst2 = rmst2(time = IPD.Mok.A$time, 
+                     status = IPD.Mok.A$event, 
+                     arm = IPD.Mok.A$arm, 
+                     tau = 20)
 
 result.rmst2
 
 # plot
-plot(result.rmst2, xlab="Years", ylab="Probability")
+plot(
+  result.rmst2,
+  xlab = "Months",
+  ylab = "Probability",
+  col = "black",
+  col.RMST = "#E7B800", 
+  col.RMTL = "#2E9FDF",
+  density = 80,
+  angle = 85
+)

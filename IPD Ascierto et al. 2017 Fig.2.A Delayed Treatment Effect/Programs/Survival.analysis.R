@@ -98,30 +98,85 @@ ggforest(cox.model, data = IPD.ascierto.2.a)
 #########################################################################
 ########################## Weighted Log-Rank Test #######################
 #########################################################################
+
+IPD.ascierto.2.a$event <- ifelse(IPD.ascierto.2.a$event == 0, 1, 0)
+
 colnames(IPD.ascierto.2.a) <- c("time", "event", "arm")
 
-DT <- setDT(IPD.ascierto.2.a)
+result <- wlr.Stat(surv=IPD.ascierto.2.a$time, 
+                   cnsr=IPD.ascierto.2.a$event,
+                   trt= IPD.ascierto.2.a$arm, 
+                   fparam=list(rho=c(0,0,1,1), gamma=c(0,1,1,0), wlr='FH(0,1)', APPLE=NULL))
 
-wlr.Stat(surv=DT$time, cnsr=DT$event, trt= DT$arm,
-         fparam=list(rho=c(0,0,1,1), gamma=c(0,1,1,0), wlr='FH(0,1)', APPLE=3))
+result %>% kable()
 
-#  pval pval_FH(0,0) pval_FH(0,1) pval_FH(1,1) pval_FH(1,0)   pval_APPLE
-#  0    0.001753487            0  1.74305e-14   0.06047079 0.0006565487
+# pval	    pval_FH(0,0)	pval_FH(0,1)	pval_FH(1,1)	pval_FH(1,0)
+# 0.0108167	0.0307526	    0.0108167	    0.0071524	    0.0928615
 
 #########################################################################
 ########################## Max-Combo Test ###############################
 #########################################################################
 
-# max combo test
 rgs <- list(c(0, 0), c(0, 1), c(1, 1), c(1, 0))
 
 draws <- 10
 
-DT$arm <- ifelse(DT$arm == 0, "control", "experimental")
+IPD.ascierto.2.a$event <- ifelse(IPD.ascierto.2.a$event == 0, 1, 0)
 
-result.mc <- nphsim::combo.wlr(surv=DT$time, cnsr=DT$event, trt= DT$arm, fparam = list(rgs=rgs,draws=draws))
+IPD.ascierto.2.a$arm <- ifelse(IPD.ascierto.2.a$arm == 0, "control", "experimental")
 
-unlist(result.mc)
+result.mc <- nphsim::combo.wlr(survival = IPD.ascierto.2.a$time, 
+                               cnsr = IPD.ascierto.2.a$event, 
+                               trt = IPD.ascierto.2.a$arm, 
+                               fparam = list(rgs=rgs,draws=draws))
 
-# rho     gamma      Zmax      pval        hr       hrL       hrU    hrL.bc    hrU.bc 
-# 0.0000000 1.0000000 8.3618583 0.0000000 0.2523997 0.2011542 0.3167004 0.2149434 0.2846335 
+result.mc <- lapply(result.mc, function(x) round(x, digits = 3))
+
+as.data.frame(result.mc) %>% kable()
+
+# rho	gamma	Zmax	pval	hr	   hrL	 hrU	  hrL.bc	hrU.bc
+# 1	  1	    2.45	0	    0.798	 0.666 0.956	0.668	  0.903
+
+########################################################################
+############################### RMST ###################################
+########################################################################
+
+# nphsim package
+IPD.ascierto.2.a$arm <- ifelse(IPD.ascierto.2.a$arm == 0, "control", "experimental")
+
+IPD.ascierto.2.a$event <- ifelse(IPD.ascierto.2.a$event == 0, 1, 0)
+
+result.rmst <- rmst.Stat(survival = IPD.ascierto.2.a$time, 
+                         cnsr = IPD.ascierto.2.a$event, 
+                         trt = IPD.ascierto.2.a$arm, 
+                         stra = NULL, 
+                         fparam = 45)
+
+result.rmst <- lapply(result.rmst, function(x) round(x, digits = 4))
+
+as.data.frame(result.rmst) %>% kable()
+
+# pval	  tau	est	    estlb	  estub
+# 0.01989	45	2.59362	0.12129	5.06595
+
+# rmst2 package
+result.rmst2 = rmst2(time = IPD.ascierto.2.a$time, 
+                     status = IPD.ascierto.2.a$event, 
+                     arm = IPD.ascierto.2.a$arm, 
+                     tau = 45)
+
+result.rmst2
+
+# plot
+plot(
+  result.rmst2,
+  xlab = "Months",
+  ylab = "Probability",
+  col = "black",
+  col.RMST = "#E7B800", 
+  col.RMTL = "#2E9FDF",
+  density = 80,
+  angle = 85
+)
+
+
