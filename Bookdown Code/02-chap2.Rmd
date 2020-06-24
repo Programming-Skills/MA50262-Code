@@ -177,7 +177,7 @@ result %>%
 <br>
 <br>
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+```{r, echo=FALSE, include=FALSE}
 source("Libraries.R")
 
 IPD.Mok.A <- readRDS("data/IPD.Mok.A.RDS")
@@ -198,6 +198,53 @@ result.mc <- lapply(result.mc, function(x) round(x, digits = 3))
 ```{r, echo=FALSE}
 as.data.frame(result.mc) %>% kableExtra::kable()
 ```
+
+<br>
+<br>
+
+```{r, include=FALSE, message=FALSE}
+source("Libraries.R")
+
+IPD.Mok.A <- readRDS("data/IPD.Mok.A.RDS")
+
+IPD.Mok.A$arm <- ifelse(IPD.Mok.A$arm == 0, "control", "experimental")
+
+IPD.Mok.A$event <- ifelse(IPD.Mok.A$event == 0, 1, 0)
+
+result.rmst <- rmst.Stat(survival = IPD.Mok.A$time, cnsr = IPD.Mok.A$event, trt = IPD.Mok.A$arm, stra = NULL, fparam = 20)
+
+result.rmst_ <- lapply(result.rmst, function(x) round(x, digits = 5))
+```
+
+```{r, echo=FALSE}
+as.data.frame(result.rmst_) %>% kableExtra::kable()
+```
+
+<br>
+<br>
+
+```{r, include=FALSE}
+source("Libraries.R")
+
+IPD.Mok.A <- readRDS("data/IPD.Mok.A.RDS")
+
+result.rmst2 = rmst2(time = IPD.Mok.A$time, status = IPD.Mok.A$event, arm = IPD.Mok.A$arm, tau = 20)
+
+result.rmst2
+```
+
+```{r, echo=FALSE}
+source("Libraries.R")
+
+IPD.Mok.A <- readRDS("data/IPD.Mok.A.RDS")
+
+result.rmst2 = rmst2(time = IPD.Mok.A$time, status = IPD.Mok.A$event, arm = IPD.Mok.A$arm, tau = 20)
+
+plot(result.rmst2, xlab="Years", ylab="Probability")
+```
+
+<br>
+<br>
 
 \clearpage 
 
@@ -388,6 +435,53 @@ result.mc <- lapply(result.mc, function(x) round(x, digits = 3))
 ```{r, echo=FALSE}
 as.data.frame(result.mc) %>% kableExtra::kable()
 ```
+
+<br>
+<br>
+
+```{r, include=FALSE, message=FALSE}
+source("Libraries.R")
+
+IPD.Brahmer.a <- readRDS("data/IPD.Brahmer.a.RDS")
+
+IPD.Brahmer.a$arm <- ifelse(IPD.Brahmer.a$arm == 0, "control", "experimental")
+
+IPD.Brahmer.a$event <- ifelse(IPD.Brahmer.a$event == 0, 1, 0)
+
+result.rmst <- rmst.Stat(survival = IPD.Brahmer.a$time, cnsr = IPD.Brahmer.a$event, trt = IPD.Brahmer.a$arm, stra = NULL, fparam = 20)
+
+result.rmst_ <- lapply(result.rmst, function(x) round(x, digits = 5))
+```
+
+```{r, echo=FALSE}
+as.data.frame(result.rmst_) %>% kableExtra::kable()
+```
+
+<br>
+<br>
+  
+```{r, include=FALSE}
+source("Libraries.R")
+
+IPD.Brahmer.a <- readRDS("data/IPD.Brahmer.a.RDS")
+
+result.rmst2 = rmst2(time = IPD.Brahmer.a$time, status = IPD.Brahmer.a$event, arm = IPD.Brahmer.a$arm, tau = 25)
+
+result.rmst2
+```
+
+```{r, echo=FALSE}
+source("Libraries.R")
+
+IPD.Brahmer.a <- readRDS("data/IPD.Brahmer.a.RDS")
+
+result.rmst2 = rmst2(time = IPD.Brahmer.a$time, status = IPD.Brahmer.a$event, arm = IPD.Brahmer.a$arm, tau = 25)
+
+plot(result.rmst2, xlab="Years", ylab="Probability")
+```
+
+<br>
+<br>
 
 \clearpage 
 
@@ -581,6 +675,53 @@ result.mc <- lapply(result.mc, function(x) round(x, digits = 3))
 as.data.frame(result.mc) %>% kableExtra::kable()
 ```
 
+<br>
+<br>
+  
+```{r, include=FALSE, message=FALSE}
+source("Libraries.R")
+
+IPD.Mok.C <- readRDS("data/IPD.Mok.C.RDS")
+
+IPD.Mok.C$arm <- ifelse(IPD.Mok.C$arm == 0, "control", "experimental")
+
+IPD.Mok.C$event <- ifelse(IPD.Mok.C$event == 0, 1, 0)
+
+result.rmst <- rmst.Stat(survival = IPD.Mok.C$time, cnsr = IPD.Mok.C$event, trt = IPD.Mok.C$arm, stra = NULL, fparam = 12)
+
+result.rmst_ <- lapply(result.rmst, function(x) round(x, digits = 5))
+```
+
+```{r, echo=FALSE}
+as.data.frame(result.rmst_) %>% kableExtra::kable()
+```
+
+<br>
+<br>
+  
+```{r, include=FALSE}
+source("Libraries.R")
+
+IPD.Mok.C <- readRDS("data/IPD.Mok.C.RDS")
+
+result.rmst2 = rmst2(time = IPD.Mok.C$time, status = IPD.Mok.C$event, arm = IPD.Mok.C$arm, tau = 12)
+
+result.rmst2
+```
+
+```{r, echo=FALSE}
+source("Libraries.R")
+
+IPD.Mok.C <- readRDS("data/IPD.Mok.C.RDS")
+
+result.rmst2 = rmst2(time = IPD.Mok.C$time, status = IPD.Mok.C$event, arm = IPD.Mok.C$arm, tau = 12)
+
+plot(result.rmst2, xlab="Years", ylab="Probability")
+```
+
+<br>
+<br>
+
 \clearpage 
 
 ## Ohtsu et al. 2011 AVAGAST Study: Dimishing Treatment Effect
@@ -772,6 +913,53 @@ result.mc <- lapply(result.mc, function(x) round(x, digits = 3))
 ```{r, echo=FALSE}
 as.data.frame(result.mc) %>% kableExtra::kable()
 ```
+
+<br>
+<br>
+  
+```{r, include=FALSE, message=FALSE}
+source("Libraries.R")
+
+IPD.Ohtsu <- readRDS("data/IPD.Ohtsu.RDS")
+
+IPD.Ohtsu$arm <- ifelse(IPD.Ohtsu$arm == 0, "control", "experimental")
+
+IPD.Ohtsu$event <- ifelse(IPD.Ohtsu$event == 0, 1, 0)
+
+result.rmst <- rmst.Stat(survival = IPD.Ohtsu$time, cnsr = IPD.Ohtsu$event, trt = IPD.Ohtsu$arm, stra = NULL, fparam = 22)
+
+result.rmst_ <- lapply(result.rmst, function(x) round(x, digits = 5))
+```
+
+```{r, echo=FALSE}
+as.data.frame(result.rmst_) %>% kableExtra::kable()
+```
+
+<br>
+<br>
+  
+```{r, include=FALSE}
+source("Libraries.R")
+
+IPD.Ohtsu <- readRDS("data/IPD.Ohtsu.RDS")
+
+result.rmst2 = rmst2(time = IPD.Ohtsu$time, status = IPD.Ohtsu$event, arm = IPD.Ohtsu$arm, tau = 22)
+
+result.rmst2
+```
+
+```{r, echo=FALSE}
+source("Libraries.R")
+
+IPD.Ohtsu <- readRDS("data/IPD.Ohtsu.RDS")
+
+result.rmst2 = rmst2(time = IPD.Ohtsu$time, status = IPD.Ohtsu$event, arm = IPD.Ohtsu$arm, tau = 22)
+
+plot(result.rmst2, xlab="Years", ylab="Probability")
+```
+
+<br>
+<br>
 
 \clearpage 
 
@@ -965,6 +1153,53 @@ result.mc <- lapply(result.mc, function(x) round(x, digits = 3))
 ```{r, echo=FALSE}
 as.data.frame(result.mc) %>% kableExtra::kable()
 ```
+
+<br>
+<br>
+  
+```{r, include=FALSE, message=FALSE}
+source("Libraries.R")
+
+IPD.ascierto.2.a <- readRDS("data/IPD.ascierto.2.a.RDS")
+
+IPD.ascierto.2.a$arm <- ifelse(IPD.ascierto.2.a$arm == 0, "control", "experimental")
+
+IPD.ascierto.2.a$event <- ifelse(IPD.ascierto.2.a$event == 0, 1, 0)
+
+result.rmst <- rmst.Stat(survival = IPD.ascierto.2.a$time, cnsr = IPD.ascierto.2.a$event, trt = IPD.ascierto.2.a$arm, stra = NULL, fparam = 45)
+
+result.rmst_ <- lapply(result.rmst, function(x) round(x, digits = 5))
+```
+
+```{r, echo=FALSE}
+as.data.frame(result.rmst_) %>% kableExtra::kable()
+```
+
+<br>
+<br>
+  
+```{r, include=FALSE}
+source("Libraries.R")
+
+IPD.ascierto.2.a <- readRDS("data/IPD.ascierto.2.a.RDS")
+
+result.rmst2 = rmst2(time = IPD.ascierto.2.a$time, status = IPD.ascierto.2.a$event, arm = IPD.ascierto.2.a$arm, tau = 45)
+
+result.rmst2
+```
+
+```{r, echo=FALSE}
+source("Libraries.R")
+
+IPD.ascierto.2.a <- readRDS("data/IPD.ascierto.2.a.RDS")
+
+result.rmst2 = rmst2(time = IPD.ascierto.2.a$time, status = IPD.ascierto.2.a$event, arm = IPD.ascierto.2.a$arm, tau = 45)
+
+plot(result.rmst2, xlab="Years", ylab="Probability")
+```
+
+<br>
+<br>
 
 \clearpage 
 
@@ -1161,6 +1396,53 @@ result.mc <- lapply(result.mc, function(x) round(x, digits = 3))
 ```{r, echo=FALSE}
 as.data.frame(result.mc) %>% kableExtra::kable()
 ```
+
+<br>
+<br>
+  
+```{r, include=FALSE, message=FALSE}
+source("Libraries.R")
+
+IPD.Rittmeyer <- readRDS("data/IPD.Rittmeyer.RDS")
+
+IPD.Rittmeyer$arm <- ifelse(IPD.Rittmeyer$arm == 0, "control", "experimental")
+
+IPD.Rittmeyer$event <- ifelse(IPD.Rittmeyer$event == 0, 1, 0)
+
+result.rmst <- rmst.Stat(survival = IPD.Rittmeyer$time, cnsr = IPD.Rittmeyer$event, trt = IPD.Rittmeyer$arm, stra = NULL, fparam = 26)
+
+result.rmst_ <- lapply(result.rmst, function(x) round(x, digits = 5))
+```
+
+```{r, echo=FALSE}
+as.data.frame(result.rmst_) %>% kableExtra::kable()
+```
+
+<br>
+<br>
+  
+```{r, include=FALSE}
+source("Libraries.R")
+
+IPD.Rittmeyer <- readRDS("data/IPD.Rittmeyer.RDS")
+
+result.rmst2 = rmst2(time = IPD.Rittmeyer$time, status = IPD.Rittmeyer$event, arm = IPD.Rittmeyer$arm, tau = 26)
+
+result.rmst2
+```
+
+```{r, echo=FALSE}
+source("Libraries.R")
+
+IPD.Rittmeyer <- readRDS("data/IPD.Rittmeyer.RDS")
+
+result.rmst2 = rmst2(time = IPD.Rittmeyer$time, status = IPD.Rittmeyer$event, arm = IPD.Rittmeyer$arm, tau = 26)
+
+plot(result.rmst2, xlab="Years", ylab="Probability")
+```
+
+<br>
+<br>
 
 ## Math
 

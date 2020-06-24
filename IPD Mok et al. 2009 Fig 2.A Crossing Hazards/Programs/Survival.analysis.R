@@ -119,3 +119,26 @@ unlist(result.mc)
 
 # rho     gamma      Zmax      pval        hr       hrL       hrU    hrL.bc    hrU.bc 
 # 1.0000000 0.0000000 2.7684605 0.0000000 0.6820437 0.5211830 0.8925532 0.6036899 0.8115025 
+
+########################################################################
+############################### RMST ###################################
+########################################################################
+
+# nphsim package
+IPD.Mok.A$arm <- ifelse(IPD.Mok.A$arm == 0, "control", "experimental")
+
+IPD.Mok.A$event <- ifelse(IPD.Mok.A$event == 0, 1, 0)
+
+result.rmst <- rmst.Stat(survival = IPD.Mok.A$time, cnsr = IPD.Mok.A$event, trt = IPD.Mok.A$arm, stra = NULL, fparam = 20)
+
+result.rmst <- lapply(result.rmst, function(x) round(x, digits = 4))
+
+as.data.frame(result.rmst) %>% kableExtra::kable()
+
+# rmst2 package
+result.rmst2 = rmst2(time = IPD.Mok.A$time, status = IPD.Mok.A$event, arm = IPD.Mok.A$arm, tau = 20)
+
+result.rmst2
+
+# plot
+plot(result.rmst2, xlab="Years", ylab="Probability")
