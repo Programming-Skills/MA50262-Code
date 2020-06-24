@@ -240,7 +240,17 @@ IPD.Mok.A <- readRDS("data/IPD.Mok.A.RDS")
 
 result.rmst2 = rmst2(time = IPD.Mok.A$time, status = IPD.Mok.A$event, arm = IPD.Mok.A$arm, tau = 20)
 
-plot(result.rmst2, xlab="Years", ylab="Probability")
+plot(
+result.rmst2,
+xlab = "Months",
+ylab = "Probability",
+col = "black",
+col.RMST = "#E7B800", 
+col.RMTL = "#2E9FDF",
+density = 80,
+angle = 85
+)
+
 ```
 
 <br>
@@ -477,7 +487,16 @@ IPD.Brahmer.a <- readRDS("data/IPD.Brahmer.a.RDS")
 
 result.rmst2 = rmst2(time = IPD.Brahmer.a$time, status = IPD.Brahmer.a$event, arm = IPD.Brahmer.a$arm, tau = 25)
 
-plot(result.rmst2, xlab="Years", ylab="Probability")
+plot(
+result.rmst2,
+xlab = "Months",
+ylab = "Probability",
+col = "black",
+col.RMST = "#E7B800", 
+col.RMTL = "#2E9FDF",
+density = 80,
+angle = 85
+)
 ```
 
 <br>
@@ -716,7 +735,16 @@ IPD.Mok.C <- readRDS("data/IPD.Mok.C.RDS")
 
 result.rmst2 = rmst2(time = IPD.Mok.C$time, status = IPD.Mok.C$event, arm = IPD.Mok.C$arm, tau = 12)
 
-plot(result.rmst2, xlab="Years", ylab="Probability")
+plot(
+result.rmst2,
+xlab = "Months",
+ylab = "Probability",
+col = "black",
+col.RMST = "#E7B800", 
+col.RMTL = "#2E9FDF",
+density = 80,
+angle = 85
+)
 ```
 
 <br>
@@ -955,7 +983,16 @@ IPD.Ohtsu <- readRDS("data/IPD.Ohtsu.RDS")
 
 result.rmst2 = rmst2(time = IPD.Ohtsu$time, status = IPD.Ohtsu$event, arm = IPD.Ohtsu$arm, tau = 22)
 
-plot(result.rmst2, xlab="Years", ylab="Probability")
+plot(
+result.rmst2,
+xlab = "Months",
+ylab = "Probability",
+col = "black",
+col.RMST = "#E7B800", 
+col.RMTL = "#2E9FDF",
+density = 80,
+angle = 85
+)
 ```
 
 <br>
@@ -1195,7 +1232,16 @@ IPD.ascierto.2.a <- readRDS("data/IPD.ascierto.2.a.RDS")
 
 result.rmst2 = rmst2(time = IPD.ascierto.2.a$time, status = IPD.ascierto.2.a$event, arm = IPD.ascierto.2.a$arm, tau = 45)
 
-plot(result.rmst2, xlab="Years", ylab="Probability")
+plot(
+result.rmst2,
+xlab = "Months",
+ylab = "Probability",
+col = "black",
+col.RMST = "#E7B800", 
+col.RMTL = "#2E9FDF",
+density = 80,
+angle = 85
+)
 ```
 
 <br>
@@ -1438,7 +1484,16 @@ IPD.Rittmeyer <- readRDS("data/IPD.Rittmeyer.RDS")
 
 result.rmst2 = rmst2(time = IPD.Rittmeyer$time, status = IPD.Rittmeyer$event, arm = IPD.Rittmeyer$arm, tau = 26)
 
-plot(result.rmst2, xlab="Years", ylab="Probability")
+plot(
+result.rmst2,
+xlab = "Months",
+ylab = "Probability",
+col = "black",
+col.RMST = "#E7B800", 
+col.RMTL = "#2E9FDF",
+density = 80,
+angle = 85
+)
 ```
 
 <br>
