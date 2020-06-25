@@ -91,6 +91,20 @@ abline(h=0, col=2)
 ggforest(cox.model, data = IPD.Ohtsu)
 
 #########################################################################
+########################## Weighted  Coxph Model ########################
+#########################################################################
+
+# weighted estimation of average hazard ratio
+coxphw.model <- coxphw(Surv(time, event) ~ arm, data = IPD.Ohtsu, template = "AHR")
+summary(coxphw.model)
+coxphw.model$cov.lw # robust covariance
+coxphw.model$cov.ls # Lin-Sasieni covariance
+
+# Weights used by weighted Cox regression are plotted against time
+plot(coxphw.model, 
+     main="Weights vs Time")
+
+#########################################################################
 ########################## Weighted Log-Rank Test #######################
 #########################################################################
 

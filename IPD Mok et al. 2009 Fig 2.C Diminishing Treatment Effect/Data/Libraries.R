@@ -9,7 +9,7 @@ library(survRM2)
 library(ggplot2)
 library(data.table)
 library(nphsim)
-library(foreign)
 library(gtsummary)
 library(gt)
+library(coxphw)
 
