@@ -171,6 +171,68 @@ In this study the increase in the censoring weights are small during the first s
 <br>
 <br>
 
+```{r, include=FALSE}
+source("Libraries.R")
+
+IPD.Mok.A <- readRDS("data/IPD.Mok.A.RDS")
+
+# Pooled Survival Function S(t-) or 1-S(t-) = S(t)
+S <- survfit(Surv(time, event) ~ 1, data = IPD.Mok.A)
+```
+
+<br>
+<br>
+
+```{r, echo=FALSE}
+# FH(1,0)  1-S(t-) vs t (Prentice-Wilcoxon)
+plot(x = S$time, y = S$surv,
+     main = "FH(1,0)  1-S(t-) vs Time (Prentice-Wilcoxon)", 
+     xlab = "Time",
+     ylab = "1-S(t-)",
+     col = "blue")
+```
+
+<br>
+<br>
+
+```{r, echo=FALSE}
+# FH(0,1) S(t) against t
+plot(x = S$time, y = (1-S$surv),
+     main = "FH(0,1) S(t) vs Time", 
+     xlab = "Time",
+     ylab = "S(t)",
+     col = "blue")
+```
+
+<br>
+<br>
+
+```{r, echo=FALSE}
+# Log.Rank 
+plot(x = S$time, 
+     y = rep(1, times = length(S$time)),
+     main = "FH(0,0) Constant Function One Vs Time", 
+     xlab = "Time",
+     ylab = "Constant Function 1",
+     col = "blue")
+```
+
+<br>
+<br>
+
+```{r, echo=FALSE}
+# FH(1,1) S(t)*(1-S(t))
+plot(x = S$time, 
+     y = (S$surv)*(1-(S$surv)), 
+     main = "FH(1,1) S(t)*(1-S(t))", 
+     xlab = "Time",
+     ylab = "S(t)*(1-S(t)",
+     col = "blue")
+```
+
+<br>
+<br>
+
 ```{r, echo=FALSE, fig.cap="Weighted Log Rank Test"}
 source("Libraries.R")
 
@@ -698,9 +760,11 @@ IPD.Mok.C <- readRDS("data/IPD.Mok.C.RDS")
 
 IPD.Mok.C$event <- ifelse(IPD.Mok.C$event == 0, 1, 0)
 
+IPD.Mok.C$arm <- ifelse(IPD.Mok.C$arm == 1, "control", "experimental")
+
 colnames(IPD.Mok.C) <- c("time", "event", "arm")
 
-result <- wlr.Stat(surv=IPD.Mok.C$time, cnsr=IPD.Mok.C$event, trt= IPD.Mok.C$arm==0, fparam=list(rho=c(0,0,1,1), gamma=c(0,1,1,0), wlr='FH(0,1)', APPLE=NULL))
+result <- wlr.Stat(surv=IPD.Mok.C$time, cnsr=IPD.Mok.C$event, trt= IPD.Mok.C$arm, fparam=list(rho=c(0,0,1,1), gamma=c(0,1,1,0), wlr='FH(0,1)', APPLE=NULL))
 
 result %>% 
   kableExtra::kable()
@@ -720,7 +784,7 @@ draws <- 10
 
 IPD.Mok.C$event <- ifelse(IPD.Mok.C$event == 0, 1, 0)
 
-IPD.Mok.C$arm <- ifelse(IPD.Mok.C$arm == 0, "control", "experimental")
+IPD.Mok.C$arm <- ifelse(IPD.Mok.C$arm == 1, "control", "experimental")
 
 result.mc <- nphsim::combo.wlr(survival = IPD.Mok.C$time, cnsr = IPD.Mok.C$event, trt = IPD.Mok.C$arm, fparam = list(rgs=rgs,draws=draws))
 
@@ -983,7 +1047,7 @@ draws <- 10
 
 result.mc <- nphsim::combo.wlr(survival = IPD.Ohtsu$time, cnsr = IPD.Ohtsu$event, trt = IPD.Ohtsu$arm, fparam = list(rgs=rgs,draws=draws))
 
-result.mc <- lapply(result.mc, function(x) round(x, digits = 3))
+result.mc <- lapply(result.mc, function(x) round(x, digits = 5))
 ```
 
 ```{r, echo=FALSE}
