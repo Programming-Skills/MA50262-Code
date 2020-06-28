@@ -128,6 +128,44 @@ result %>% kable()
 # 0.0108167	0.0307526	    0.0108167	    0.0071524	    0.0928615
 
 #########################################################################
+########################## Plots of Weights #############################
+#########################################################################
+
+# Pooled Survival Function S(t-) or 1-S(t-) = S(t)
+S <- survfit(Surv(time, event) ~ 1, data = IPD.ascierto.2.a)
+
+# FH(1,0)  1-S(t-) vs t (Prentice-Wilcoxon)
+plot(x = S$time, y = S$surv,
+     main = "FH(1,0)  1-S(t-) vs Time (Prentice-Wilcoxon)", 
+     xlab = "Time",
+     ylab = "1-S(t-)",
+     col = "blue")
+
+# FH(0,1) S(t) against t
+plot(x = S$time, y = (1-S$surv),
+     main = "FH(0,1) S(t) vs Time", 
+     xlab = "Time",
+     ylab = "S(t)",
+     col = "blue")
+
+# Log.Rank 
+plot(x = S$time, 
+     y = rep(1, times = length(S$time)),
+     main = "FH(0,0) Constant Function One Vs Time", 
+     xlab = "Time",
+     ylab = "Constant Function 1",
+     col = "blue")
+
+# FH(1,1) S(t)*(1-S(t))
+plot(x = S$time, 
+     y = (S$surv)*(1-(S$surv)), 
+     main = "FH(1,1) S(t)*(1-S(t))", 
+     xlab = "Time",
+     ylab = "S(t)*(1-S(t)",
+     col = "blue")
+
+
+#########################################################################
 ########################## Max-Combo Test ###############################
 #########################################################################
 
