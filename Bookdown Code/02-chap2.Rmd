@@ -1,4 +1,4 @@
-# Reconstructing Data Based on the Guyot et al. 2016 Algorithm {#math-sci}
+# Reconstructing Individual Patient Data  {#math-sci}
 
 <!-- Required to number equations in HTML files -->
 <script type="text/x-mathjax-config">
@@ -6,6 +6,52 @@ MathJax.Hub.Config({
   TeX: { equationNumbers: { autoNumber: "AMS" } }
 });
 </script>
+
+There has been an increasing need for researchers within academia and/or the pharmaceutical industry to gain access to individual clinical trial patient data (IPD) so that they can perform various secondary analyses. However, due to the often-large sums that drug companies invest into research and development, these firms are understandably reluctant to grant free access to their data until they have fully made use of this resource. Therefore, there is the need to try to recreate IPD from published clinical trial reports through various methods. 
+<br>
+
+As a postgraduate student on an industrial placement this project had originally sought to make use of study data applied for under the placement company’s data sharing scheme in order to investigate different methods for handling non-proportional hazards. However, this request was rejected on the grounds that the data was still business sensitive. 
+<br>
+
+Through various industrial and academic sources, researchers are often able to access published Kaplan Meier (KM) curves and their corresponding summary statistics (CI and p-values), the numbers at risk in the study and potentially the total number of events witnessed in the clinical trial. 
+<br>
+
+From the published KM curves and the patient at risk data Wan et al. 2015 identified four methods that are capable of re-creating Individual Patient Data (IPD). 
+<br>
+
+The four methods are:
+
+i. **The Least Squares approach**
+
+This method can estimate the parameters via the minimisation of the sum of the squared residuals, where the residuals are the difference between the actual and estimated data. 
+
+For example if 30 points of data $\left(\mathrm{x}_{1}, \mathrm{y}_{1}\right),\left(\mathrm{x}_{2}, \mathrm{y}_{2}\right), \ldots,\left(\mathrm{x}_{30}, \mathrm{y}_{30}\right)$ have been extracted from a KM curve, and are following a distribution that has a function in the form $\mathrm{y}=\mathrm{f}(\mathrm{x}, \beta)$ where $\beta=(\beta 1, \beta 2)$. The parameter $\beta$ vectors could be estimated via the method of Least Squares, in which the sum of the squared residuals has been minimised.
+
+<br>
+
+ii. **Graphical Approach**
+
+A parametric model can be estimated via the graphical method. This approach requires the researcher to make a transformation of the survival function to a function with a linear form. A linear line is then fitted to the collection of points that have been extracted from the published KM curve. 
+
+For example, the survival function of the Weibull distribution is: $$\log (S(t))=-\lambda t_{\gamma}$$ Where $\gamma$ is the shape and $\lambda$ is the scale parameter respectively. 
+
+A transformation of this distribution can be made by taking the logarithm of the preceding equation: $$\log (S(t))=-\lambda t_{\gamma}$$ 
+
+Taking the logarithm for the second time gives: $$\log (-\log (S(t)))=\log (\lambda)+ \gamma *\log (t)$$
+From this formula it is possible to plot $$\log (-\log (S(t)))\ versus\ \log (t)$$ and henceforth make an estimate of the parameters. 
+
+<br>
+
+iii. **Interval-censored data estimation approach**
+
+Hoyle and Henley put forward an approach to estimate IPD using the total number of patients, the respective numbers at risk, and the corresponding survival probabilities. However, this approach makes the assumption that there is constant censoring in each of the time intervals. 
+
+<br>
+
+iv. **Precise survival data approach**
+
+The method of Guyot et al will be used to recreate the IPD from studies where different non-proportional hazards have been present. (Examples of the different types include, crossing hazards, a delayed treatment effect or diminishing treatment effect). 
+
 
 ## Mok et al. 2009 IPASS Study: Crossing Hazards
 
@@ -63,10 +109,7 @@ ggsurv <- ggpar(
 ggsurv
 ```
 
-<br>
-<br>
-
-```{r, echo=FALSE, fig.cap="Summary Statistics", warning=FALSE, message=FALSE}
+```{r, echo=FALSE, fig.cap="Summary Statistics", warning=FALSE, message=FALSE, eval=FALSE}
 source("Libraries.R")
 
 IPD.Mok.A <- readRDS("data/IPD.Mok.A.RDS")
@@ -167,9 +210,6 @@ With a probability of 49.12% (95% CI:45.8%, 52.5%), a patient treated with Gefit
 knitr::include_graphics(path = "figure/mok.a.coxphw.svg")
 ```
 In this study the increase in the censoring weights are small during the first six months of treatment, after this they begin to rise rapidly. However, it should be noted that the normalised total weight range is [0,25, 2]. 
-
-<br>
-<br>
 
 ```{r, include=FALSE}
 source("Libraries.R")
@@ -390,7 +430,7 @@ ggsurv
 <br>
 <br>
 
-```{r, echo=FALSE, fig.cap="Summary Statistics", warning=FALSE, message=FALSE}
+```{r, echo=FALSE, fig.cap="Summary Statistics", warning=FALSE, message=FALSE, eval=FALSE}
 source("Libraries.R")
 
 IPD.Brahmer.a <- readRDS("data/IPD.Brahmer.a.RDS")
@@ -650,7 +690,7 @@ ggsurv
 <br>
 <br>
 
-```{r, echo=FALSE, fig.cap="Summary Statistics", warning=FALSE, message=FALSE}
+```{r, echo=FALSE, fig.cap="Summary Statistics", warning=FALSE, message=FALSE, eval=FALSE}
 source("Libraries.R")
 
 IPD.Mok.C <- readRDS("data/IPD.Mok.C.RDS")
@@ -911,7 +951,7 @@ ggsurv
 <br>
 <br>
 
-```{r, echo=FALSE, fig.cap="Summary Statistics", warning=FALSE, message=FALSE}
+```{r, echo=FALSE, fig.cap="Summary Statistics", warning=FALSE, message=FALSE, eval=FALSE}
 source("Libraries.R")
 
 IPD.Ohtsu <- readRDS("data/IPD.Ohtsu.RDS")
@@ -1170,7 +1210,7 @@ ggsurv
 <br>
 <br>
 
-```{r, echo=FALSE, fig.cap="Summary Statistics", warning=FALSE, message=FALSE}
+```{r, echo=FALSE, fig.cap="Summary Statistics", warning=FALSE, message=FALSE, eval=FALSE}
 source("Libraries.R")
 
 IPD.ascierto.2.a <- readRDS("data/IPD.ascierto.2.a.RDS")
@@ -1430,7 +1470,7 @@ ggsurv
 <br>
 <br>
 
-```{r, echo=FALSE, fig.cap="Summary Statistics", warning=FALSE, message=FALSE}
+```{r, echo=FALSE, fig.cap="Summary Statistics", warning=FALSE, message=FALSE, eval=FALSE}
 source("Libraries.R")
 
 IPD.Rittmeyer <- readRDS("data/IPD.Rittmeyer.RDS")
