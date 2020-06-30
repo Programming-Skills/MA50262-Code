@@ -19,7 +19,7 @@ The first platform searched was "PubMed" due to this database specialising in me
 <br/><br/>
 The first term "proportional hazards" returned 106158 results, "non-proportion hazards" returned 54126 results, whereas, "Cox non-proportional hazards" returned 68 results and from this the majority of the papers have been sourced after reading through the abstract, paying attention to citations and trying to find out which researchers might be the most prominent in the field, which techniques and evaluation seemed to make most logical sense in regard to furthering the aims of this project. Searches using the method of experimenting with different combinations of search terms returned. i Google Scholar using "Cox non-proportional hazards " returned 3,980 results, while "alternative Cox non-proportional hazards " returned 2,520, further attempting to refine the search by stipulating a ten year date range further reduced the results returned to 1,710 and from this visually trying to select relevant papers, which is highly problematic from an efficiency point of view. Searches of MathSciNet, Web of Science returned negligible results. The papers that were chosen, have been selected on merit due to the relative impact they have had on this subject area (via critical evaluation in other papers) and the recommendation of this project's supervisor.
 
-## First paper to be reviewed: Comparison of Treatment Effects Measured by the Hazard Ratio and by the Ratio of Restricted Mean Survival Times in Oncology Randomized Controlled Trials: Trinquart et al. 2016
+## Comparison of Treatment Effects Measured by the Hazard Ratio and by the Ratio of Restricted Mean Survival Times in Oncology Randomized Controlled Trials: Trinquart et al. 2016
 
 Trin16
 <br/><br/>
@@ -49,7 +49,7 @@ The authors conclude by discussing the limitations of their study. Importantly, 
 <br/><br/>
 This proposal will refer to the work of Royston $\textit{et al.}$ RK11 in an attempt to evaluate the research of Trinquart $\textit{et al.}$ Trin16 and how the results of the reviewed paper might impact this project. The main argument in favour of RMST is that this approach takes into account all the survival distribution up to the $\textit{t*}$ value, rather than just a point in time. Furthermore, the RMST is straightforward to interpret and so could have an immediate impact at the clinical level in providing professionals with as much accurate and relevant information when compared to HR's. Moreover, the fact that there is no proportional hazards assumption is an advantage as there is less scope for imprecise results . However, some limitations of RMST have been raised that can also be applied to this research, for example if the $\textit{t*}$ value has been incorrectly specified, then RMST can give results that are not appropriate, calling into question reproducibility by researchers without prior clinical background knowledge. As there is no mention of the risk of misspecification by the authors, it follows that the RMST approach is likely to be advantageous over using HR's in the presence of non-proportional hazards.
 
-## Second paper to be reviewed: Estimation of treatment effects in weighted log-rank tests Ray et al.
+## Estimation of treatment effects in weighted log-rank tests Lin et al.
 
 Lin17
 <br/><br/>
@@ -159,7 +159,7 @@ The authors concede that there are a multitude of different methods available to
 A clear strength of the authors approach is that they have identified the issue of when the treatment effect is delayed, for example in oncology trials. The approach proposed by the authors in an attempt to overcome these time varying effects clearly has the potential to bring real benefits to patients. On the other hand a weakness of the study is that real data was not used and the researchers relied completely on simulation, and this could have created results that do not reflect real life outcomes in terms of unexpected data structure. 
 <br/><br/>
 
-## Third paper to be reviewed: The use of restricted mean survival time to estimate the treatment effect in randomized clinical trials when the proportional hazards assumption is in doubt Patrick et al. 2011
+## The use of restricted mean survival time to estimate the treatment effect in randomized clinical trials when the proportional hazards assumption is in doubt Patrick et al. 2011
 
 RK11
 <br/><br/>

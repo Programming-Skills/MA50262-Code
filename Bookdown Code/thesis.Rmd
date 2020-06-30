@@ -1,3 +1,74 @@
+---
+title: 'MA50262: Evaluation of Methods to Accommodate Non-Proportional Hazards in the Analysis of Clinical Trials'
+author: 'Martin Adrian Hewing'
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+institution: 'University of Bath'
+division: 'Data Science and Statistics'
+advisor: 'Jonathan Bartlett'
+# If you have more two advisors, un-silence line 7
+#altadvisor: 'Your Other Advisor'
+department: 'Mathematics'
+degree: 'Master of Science'
+knit: bookdown::render_book
+site: bookdown::bookdown_site
+
+# This will automatically install the {remotes} package and {thesisdown}
+# Change this to FALSE if you'd like to install them manually on your own.
+params:
+  'Install needed packages for {thesisdown}': True
+  
+# Remove the hashtag to specify which version of output you would like.
+# Can only choose one at a time.
+output:
+#  thesisdown::thesis_pdf: default 
+   thesisdown::thesis_gitbook: default         
+#  thesisdown::thesis_word: default
+#  thesisdown::thesis_epub: default
+
+# If you are creating a PDF you'll need to write your preliminary content 
+# (e.g., abstract, acknowledgements) below or use code similar to line 25-26 
+# for the .RMD files. If you are NOT producing a PDF, delete or silence
+# lines 25-39 in this YAML header.
+abstract: '`r if(knitr:::is_latex_output()) paste(readLines(here::here("prelims", "00-abstract.Rmd")), collapse = "\n  ")`'
+# If you'd rather include the preliminary content in files instead of inline
+# like below, use a command like that for the abstract above.  Note that a tab 
+# is needed on the line after the `|`.
+acknowledgements: |
+  I want to thank a few people.
+dedication: |
+  You can have a dedication here if you wish. 
+preface: |
+  This is an example of a thesis setup to use the reed thesis document class 
+  (for LaTeX) and the R bookdown package, in general.
+  
+# Specify the location of the bibliography below
+bibliography: bib/thesis.bib
+# Download your specific csl file and refer to it in the line below.
+csl: csl/apa.csl
+lot: true
+lof: true
+---
+
+# If you have more two advisors, un-silence line 7
+
+Placeholder
+
+
+
+<!--chapter:end:index.Rmd-->
+
+
+# Literature Review {#rmd-basics}
+
+Placeholder
+
+
+## First paper to be reviewed: Comparison of Treatment Effects Measured by the Hazard Ratio and by the Ratio of Restricted Mean Survival Times in Oncology Randomized Controlled Trials: Trinquart et al. 2016
+## Second paper to be reviewed: Estimation of treatment effects in weighted log-rank tests Ray et al.
+## Third paper to be reviewed: The use of restricted mean survival time to estimate the treatment effect in randomized clinical trials when the proportional hazards assumption is in doubt Patrick et al. 2011
+
+<!--chapter:end:01-chap1.Rmd-->
+
 # Reconstructing Individual Patient Data  {#math-sci}
 
 <!-- Required to number equations in HTML files -->
@@ -8,18 +79,25 @@ MathJax.Hub.Config({
 </script>
 
 There has been an increasing need for researchers within academia and/or the pharmaceutical industry to gain access to individual clinical trial patient data (IPD) so that they can perform various secondary analyses. However, due to the often-large sums that drug companies invest into research and development, these firms are understandably reluctant to grant free access to their data until they have fully made use of this resource. Therefore, there is the need to try to recreate IPD from published clinical trial reports through various methods. 
+<br>
 
 As a postgraduate student on an industrial placement this project had originally sought to make use of study data applied for under the placement company’s data sharing scheme in order to investigate different methods for handling non-proportional hazards. However, this request was rejected on the grounds that the data was still business sensitive. 
+<br>
 
 Through various industrial and academic sources, researchers are often able to access published Kaplan Meier (KM) curves and their corresponding summary statistics (CI and p-values), the numbers at risk in the study and potentially the total number of events witnessed in the clinical trial. 
+<br>
 
 From the published KM curves and the patient at risk data Wan et al. 2015 identified four methods that are capable of re-creating Individual Patient Data (IPD). 
+
+<br>
 
 ## The Least Squares approach
 
 This method can estimate the parameters via the minimisation of the sum of the squared residuals, where the residuals are the difference between the actual and estimated data. 
 
 For example if 30 points of data $\left(\mathrm{x}_{1}, \mathrm{y}_{1}\right),\left(\mathrm{x}_{2}, \mathrm{y}_{2}\right), \ldots,\left(\mathrm{x}_{30}, \mathrm{y}_{30}\right)$ have been extracted from a KM curve, and are following a distribution that has a function in the form $\mathrm{y}=\mathrm{f}(\mathrm{x}, \beta)$ where $\beta=(\beta 1, \beta 2)$. The parameter $\beta$ vectors could be estimated via the method of Least Squares, in which the sum of the squared residuals has been minimised.
+
+<br>
 
 ## Graphical Approach
 
@@ -32,11 +110,15 @@ A transformation of this distribution can be made by taking the logarithm of the
 Taking the logarithm for the second time gives: $$\log (-\log (S(t)))=\log (\lambda)+ \gamma *\log (t)$$
 From this formula it is possible to plot $$\log (-\log (S(t)))\ versus\ \log (t)$$ and henceforth make an estimate of the parameters. 
 
+<br>
+
 ## Interval-censored data estimation approach
 
-Hoyle et al. put forward an approach to estimate IPD using the total number of patients, the respective numbers at risk, and the corresponding survival probabilities. However, this method assumes that there is constant censoring in each of the time intervals. Furthermore, the number of censorships and events in every time interval of a quarter length were estimated, which lead to a large improvement of the fit of the curves. Moreover, when information on patients at risk is not known, an estimate of the number of censorship and events can be made using the approach put forward by Tierney et al. 2007. Additionally, the authors note that the method will become more accurate if more intervals are used and that the estimated IPD will be interval censored. 
+Hoyle et al. put forward an approach to estimate IPD using the total number of patients, the respective numbers at risk, and the corresponding survival probabilities. However, this method assumes that there is constant censoring in each of the time intervals. Furthermore, the number of censorships and events in every time interval of a quarter length were estimated, which lead to a large improvement of the fit of the curves over traditional methods. Moreover, when information on patients at risk is not known, an estimate of the number of censorship and events can be made using the approach put forward by Tierney et al. 2007. Additionally, the authors note that the method will become more accurate if more intervals are used and that the estimated IPD will be interval censored. 
 
-The researchers compared their approach to the two traditional methods mentioned above (Least Squares and the Graphical approach) using a Monte Carlo simulation. The elements included in the simulation were the various combinations of parameters in the Weibull distribution, the sample size and the type of censoring. The authors proved that their approach was superior to the traditional method with respect to both fitting the curve and the estimation of the mean survival time. Importantly, the estimate of the mean survival time using the Hoyle et al. approach was as accurate as an estimate that was obtained by calculating the maximum likelihood estimator (MLE) on the actual IPD. Additionally, it is worth noting that another benefit over the traditional methods is that this method can capture uncertainty. Several drawbacks, of the authors research are that they did not vary their censoring proportions and only the Weibull distribution was considered in their Monte Carlo simulation.
+The researchers compared their approach to the two traditional methods mentioned above (Least Squares and the Graphical approach) using a Monte Carlo simulation. The elements included in the simulation were the various combinations of parameters in the Weibull distribution, the sample size and the type of censoring. The authors proved that their approach was superior to the traditional method with respect to both fitting the curve and the estimation of the mean survival time. Importantly, the estimate of the mean survival time using the Hoyle et al. approach was as accurate as an estimate that was obtained by calculating the maximum likelihood estimator on the actual IPD. Additionally, it is worth noting that another benefit over the traditional methods is that this method can capture uncertainty. Several drawbacks, of the authors research are that they did not vary their censoring proportions and only the Weibull distribution was considered in their Monte Carlo simulation, the lognormal distribution is much more widely used in oncology studies. Furthermore, it has been noted that in many studies there is a high censoring rate. Wu et al. estimate this to be as high as 70%, and Shen et al. found that the MLE approach undertaken by the authors was biased in the presence of heavily censored data. 
+
+<br>
 
 ## Precise survival data approach
 
@@ -44,39 +126,21 @@ An approach developed by Guyot et al. 2012 that can be used with data that is le
 
 A concise explaination of the Guyot et al. algorithm is now given: 
 
+<br>
+
 ```{r, echo=FALSE, fig.cap="Guyot Algorithm Flowchart"}
 knitr::include_graphics(path = "figure/guyot.flowchart.PNG")
 ```
+
+<br>
 
 The intitial estmate of the number of censored subjects is obtained for the $i^{th}$ interval. From this ititial estimate, a calculation of the number of censored subjects that occured between the extracted KM co-ordinate $k$ and $k+1$ is made. Now this calculation is used to estimate the number of events that occur at every extracted KM co-ordinate $k$ and also the numbers of patients at risk at $k+1$. This information is used to compare the estimate of the number of patients at risk at the start of the interval $i$ to the reported number at risk at the beginning of the interval $i$, and if the numbers are not equal the process repeats itself until the two numbers are equal and this matches the previous iteration. Conversely, in the situation where, the total number of the reported events is greater than the estimate of the number of events the process repeats itself until the two numbers equal from the previous iteration.
 
 Guyot et al. evaluated the accuracy of their approach by comparing the findings to the reported statistics in four papers that they selected to recreate, choosing not to carry any simulations. These included 22 probabilites of survival, 7 times of median survival, 6 hazard ratios and 4 log hazard ratio standard errors. The researchers discovered that their approach was highly accurate for both median survival times and survival probabilities and the accuracy was acceptable when the total number of events or the number of patients at risk was given. 
 
-## Evaluation of the Four Approaches
+Wan et al. 2015 compared all four approaches on simulated data and found that the least squares and graphical methods performed badly due to their tendency to over-estimate by a large margin in certain situations. Furthermore, when the Weibull distribution was used both the Hoyle et al. and Guyot et al. methods gave good estimates and uncertainty values of the mean survival time. In-fact the accuracy of the estimated values was as accurate as those obtained using the actual IPD. However, when the lognormal distribution was used the Guyot et al. approach was markedly more accurate when the simga value was 2 and the rate of censoring was high 42% and 76% respectively, when compared to the Hoyle et al. approach. 
 
-Wan et al. 2015 compared all four approaches on simulated data and found that the least squares and graphical methods performed badly due to their tendency to over-estimate by a large margin in certain situations. Furthermore, when the Weibull distribution was used both the Hoyle et al. and Guyot et al. methods gave good estimates and uncertainty values of the mean survival time. In-fact the accuracy of the estimated values was as accurate as those obtained using the actual IPD. However, when the lognormal distribution was used ($\sigma=2, \mu=0.303$ the hazard function falls over almost all values of time) the Guyot et al. approach was markedly more accurate (less MLE bias) when the rate of censoring was high 42% and 76% respectively, when compared to the Hoyle et al. approach (Shen et al. also found that the MLE approach was biased in the presence of heavily censored data). Moreover, Wu et al. noted that in many studies there is a high censoring rate, they estimate this to be as high as 70% in many clinical trials. Additionally, Tai et al. state that the lognormal distribution is much more widely used in fitting cancer site data. Therefore, this project concludes that in a situation where, there is a high level of censoring and the lognormal distribution is much more likely to be used it seems prudent to make use of the Guyot et al. approach over alternative methods.
-
-## Implementation of the Guyot et al. Approach
-
-To implement the Guyot et al. algorithm and reconstruct the IPD for a published KM curve a number of steps must be undertaken. Noting that it is imperative that the number of patients at risk and/or the total number of events must be known to apply this method.
-
-Several reseachers have made use of the Guyot et al. algorithm in their work, this project will be using the method used by Satagopan et al. and some adjustments proposed by Magirr D and Biao et al. .
-
-The first step was to source the studies that exhibit non-proportional hazards. (This project decided to source two studies for each type of non-proportional hazards, including, crossing hazards, a delayed treatment effect or diminishing treatment effect). 
-
-```{r, echo=FALSE, fig.cap="Various Types of Non-Proportional Hazards"}
-knitr::include_graphics(path = "figure/np.PNG")
-```
-
-The main source of research papers that feature non-proportional hazards have been via the techniques used in the literature review. This has involved a continued search via the Mathematical Sciences hub on the University of Bath library portal, various databases including "Pubmed" using a modified keyword search to locate studies that exhibit non-proportional hazards for example "Oncology non-proportional hazards" returned 878 results, while "Clinical Trial non-proportional hazards" returned 943 results. Furthermore, as this is a contemporary issue which is having a significant impact on clinical trials, especially those focusing on oncology and immunotherapy many pharmacuetical companies are now working together to discuss these challenges and propose solutions. The information from these working groups are often then freely distributed. An example of one such working group is: The public workshop hosted at the Duke, Robert J. Margolis, MD Center for Health Policy titled "Oncology Clinical Trials in the Presence of Non-Proportional Hazards". This session examined various studies that featured non-proportion hazards and how different approaches might be used to overcome the problem of the violation of non-proportional hazards, and a follow up research paper created by Lin et al. 2020 titled: "Alternative Analysis Methods for Time to Event Endpoints Under Nonproportional Hazards: A Comparative Analysis" (discussed in the literature review). 
-
-Once the relevant studies featuring non-proportional hazards have been sourced, as per the method undertaken by Satagopan et al. the first stage is to load the png image into Adobe Illustrator and to convert the image into a high fidelity photo. This enables the separate KM curves to be isolated from each other and saved to separate jpeg files. Then the separate images can be loaded into a software program such as "DigitalizeIT" that will facilitate the digital extraction of the survival and time probabilities. In this software program the researcher must stipulate the minimum and maximum X and Y values respectively and trace the outline of the KM curve either automatically or via a manual approach which involves tracing the curve with multiple mouse clicks. This data is then introduced to the algorithm after the researcher has stipulated which time ranges to consider. Noting that each treatment arm must be considered separately The output result will be IPD for each treatment arm which the researcher can bind together to create IPD for each study. This was carried out for the six studies that were selected for this project. 
-
-It is worth noting that an issue faced in this process was that the researcher must ensure that their data is monotonically decreasing and well defined. Furthermore, Biao et al. explains that if the researcher stipulates the number at risk parameter after the automatic collection of data points (the software can set too many instances of the same survival (y-axis) to different time points (x-axis)) there is the risk of upsetting the delicate balance between the amount of censored that are needed to ensure proportionality and overall numbers (of censored) between time points. If this relationship is broken then the vector of censored will contain negative numbers and break the algorithm. This problem occured during the creating of IPD for this project. However, a solution was to create a custom function that would remove values that where non-monotonically decreasing and to use the manual tracing method for the collection of some data-sets. 
-
-```{r, echo=FALSE, fig.cap="Red points show Non-Monotonically Decreasing Data"}
-knitr::include_graphics(path = "figure/mono3.PNG")
-```
+The method of Guyot et al will be used to recreate the IPD from studies where different non-proportional hazards have been present. (Examples of the different types include, crossing hazards, a delayed treatment effect or diminishing treatment effect). 
 
 ## Math
 
@@ -191,4 +255,74 @@ Many of the symbols you will need can be found on the math page <https://web.ree
 ## Biology
 
 You will probably find the resources at <https://www.lecb.ncifcrf.gov/~toms/latex.html> helpful, particularly the links to bsts for various journals. You may also be interested in TeXShade for nucleotide typesetting (<https://homepages.uni-tuebingen.de/beitz/txe.html>).  Be sure to read the proceeding chapter on graphics and tables.
+
+
+<!--chapter:end:02-chap2.Rmd-->
+
+
+# Analysis of Individual patient Data {#ref-labels}
+
+Placeholder
+
+
+## Mok et al. 2009 IPASS Study: Crossing Hazards
+## Brehmer et al. 2016 Nivolumab versus Docetaxel Study: Crossing Hazards
+## Mok et al. 2009 IPASS Study: Dimishing Treatment Effect
+## Ohtsu et al. 2011 AVAGAST Study: Dimishing Treatment Effect
+## Ascierto et al. 2017 The Ipilimumab Study: Delayed Treatment Effect
+## Rittermeyer et al. 2017 The OAK Study: Delayed Treatment Effect
+## Tables
+## Figures
+## Footnotes and Endnotes
+## Bibliographies
+## Anything else?
+
+<!--chapter:end:03-chap3.Rmd-->
+
+# Conclusion {-}
+
+If we don't want Conclusion to have a chapter number next to it, we can add the `{-}` attribute.
+
+**More info**
+
+And here's some other random info: the first paragraph after a chapter title or section head _shouldn't be_ indented, because indents are to tell the reader that you're starting a new paragraph. Since that's obvious after a chapter or section title, proper typesetting doesn't add an indent there.
+
+
+<!--chapter:end:04-conclusion.Rmd-->
+
+`r if(knitr:::is_latex_output()) '\\appendix'`
+
+`r if(!knitr:::is_latex_output()) '# (APPENDIX) Appendix {-}'` 
+
+
+# The First Appendix
+
+<!--
+If you feel it necessary to include an appendix, it goes here.
+-->
+
+This first appendix includes all of the R chunks of code that were hidden throughout the document (using the `include = FALSE` chunk tag) to help with readibility and/or setup.
+
+**In the main Rmd file**
+
+```{r ref.label='include_packages', results='hide', echo = TRUE}
+```
+
+**In Chapter \@ref(ref-labels):**
+
+```{r ref.label='include_packages_2', results='hide', echo = TRUE}
+```
+
+# The Second Appendix, for Fun
+
+<!--chapter:end:05-appendix.Rmd-->
+
+
+# References {-}
+
+Placeholder
+
+
+
+<!--chapter:end:99-references.Rmd-->
 
