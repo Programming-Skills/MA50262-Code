@@ -73,7 +73,13 @@ flights <- read.csv("data/flights.csv", stringsAsFactors = FALSE)
 
 # Analysis of Individual patient Data {#ref-labels}
 
+<br>
+<br>
+
 ## Mok et al. 2009 IPASS Study: Crossing Hazards
+
+<br>
+<br>
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.cap="Overall Study Results"}
 source("Libraries.R")
@@ -129,37 +135,21 @@ ggsurv <- ggpar(
 ggsurv
 ```
 
-```{r, echo=FALSE, fig.cap="Summary Statistics", warning=FALSE, message=FALSE, eval=FALSE}
-source("Libraries.R")
+<br>
+<br>
 
-IPD.Mok.A <- readRDS("data/IPD.Mok.A.RDS")
+The IPASS study which was titled: "Gefitinib or Carboplatin–Paclitaxel in Pulmonary Adenocarcinoma" was a phase 3 clinical trial (open label).
 
-IPD.Mok.A <- IPD.Mok.A[, 2:3]
+Previously untreated East Asian patients who were suffering from non–small-cell lung cancer (advanced pulmonary adenocarcinoma) and were either former light smokers or non-smokers were assigned randomly to be treated with either a daily dose of 250mg of gefitinib (609 subjects) or a dose of carboplatin of 5 to 6mg per mililiter per minute and a dose a 200mg per meter squared of body-surface area (608 subjects). 
 
-# rename columns 
-colnames(IPD.Mok.A) <- c("event", "Gefitinib")
+The primary endpoint of the trial was the progression free survival of the subject. 
 
-IPD.Mok.A$Gefitinib <- ifelse(IPD.Mok.A$Gefitinib == 0, "Carboplatin-Paclitaxel", "Gefitinib")
-
-IPD.Mok.A %>%
-  tbl_summary(
-    by = Gefitinib,
-    missing = "no",
-    statistic = list(
-      all_continuous() ~ "{mean} ({sd})",
-      all_categorical() ~ "{n} / {N} ({p}%)")
-  ) %>%
-  modify_header(stat_by = md("**{level}**<br>N =  {n} ({style_percent(p)}%)")) %>%
-  bold_labels() %>%
-  modify_spanning_header(starts_with("stat_") ~ "**Summary Statistics**") %>% 
-  add_p(test = all_continuous() ~ "t.test") %>%
-  add_overall()
-```
+From a visual inspection it is apparent that the experimental treatment begins with a greater hazard but there is a crossing of the treatment arms at around six months after that time the control arm presents the higher hazard.
 
 <br>
 <br>
 
-```{r, echo=FALSE, fig.cap= "Schoenfeld Test"}
+```{r, echo=FALSE, fig.cap= "Schoenfeld Plot for Mok et al. 2009 IPASS Study", warning=FALSE, message=FALSE}
 source("Libraries.R")
 
 IPD.Mok.A <- readRDS("data/IPD.Mok.A.RDS")
@@ -171,9 +161,12 @@ cox.model <- coxph(Surv(time, event) ~ Gefitinib, data = IPD.Mok.A)
 
 # Schoenfeld plot
 par(mfrow=c(1,1))
-plot(cox.zph(cox.model), main = "Schoenfeld Individual Test p: 0.00")
+plot(cox.zph(cox.model, transform = "km"), main = "Schoenfeld Individual Test p: 2e-16")
 abline(h=0, col=2)
+
+# cox.zph(cox.model)
 ```
+The Schoenfeld residual plot is an effective method to assess the proportional hazards assumption when combined with a visual inspection of the Kaplan Meier curves and a global test of non-proportional hazards. 
 
 <br>
 <br>
@@ -450,36 +443,6 @@ ggsurv
 <br>
 <br>
 
-```{r, echo=FALSE, fig.cap="Summary Statistics", warning=FALSE, message=FALSE, eval=FALSE}
-source("Libraries.R")
-
-IPD.Brahmer.a <- readRDS("data/IPD.Brahmer.a.RDS")
-
-IPD.Brahmer.a <- IPD.Brahmer.a[, 2:3]
-
-# rename columns 
-colnames(IPD.Brahmer.a) <- c("event", "Nivolumab")
-
-IPD.Brahmer.a$Nivolumab <- ifelse(IPD.Brahmer.a$Nivolumab == 0, "Docetaxel", "Nivolumab")
-
-IPD.Brahmer.a %>%
-  tbl_summary(
-    by = Nivolumab,
-    missing = "no",
-    statistic = list(
-      all_continuous() ~ "{mean} ({sd})",
-      all_categorical() ~ "{n} / {N} ({p}%)")
-  ) %>%
-  modify_header(stat_by = md("**{level}**<br>N =  {n} ({style_percent(p)}%)")) %>%
-  bold_labels() %>%
-  modify_spanning_header(starts_with("stat_") ~ "**Summary Statistics**") %>% 
-  add_p(test = all_continuous() ~ "t.test") %>%
-  add_overall()
-```
-
-<br>
-<br>
-
 ```{r, echo=FALSE}
 source("Libraries.R")
 
@@ -705,35 +668,6 @@ ggsurv <- ggpar(
 )
 
 ggsurv
-```
-
-<br>
-<br>
-
-```{r, echo=FALSE, fig.cap="Summary Statistics", warning=FALSE, message=FALSE, eval=FALSE}
-source("Libraries.R")
-
-IPD.Mok.C <- readRDS("data/IPD.Mok.C.RDS")
-
-IPD.Mok.C <- IPD.Mok.C[,2:3]
-
-colnames(IPD.Mok.C) <- c("event", "Gefitinib")
-
-IPD.Mok.C$Gefitinib <- ifelse(IPD.Mok.C$Gefitinib == 0, "Carboplatin", "Gefitinib")
-
-IPD.Mok.C %>%
-  tbl_summary(
-    by = Gefitinib,
-    missing = "no",
-    statistic = list(
-      all_continuous() ~ "{mean} ({sd})",
-      all_categorical() ~ "{n} / {N} ({p}%)")
-  ) %>%
-  modify_header(stat_by = md("**{level}**<br>N =  {n} ({style_percent(p)}%)")) %>%
-  bold_labels() %>%
-  modify_spanning_header(starts_with("stat_") ~ "**Summary Statistics**") %>% 
-  add_p(test = all_continuous() ~ "t.test") %>%
-  add_overall()
 ```
 
 <br>
@@ -971,35 +905,6 @@ ggsurv
 <br>
 <br>
 
-```{r, echo=FALSE, fig.cap="Summary Statistics", warning=FALSE, message=FALSE, eval=FALSE}
-source("Libraries.R")
-
-IPD.Ohtsu <- readRDS("data/IPD.Ohtsu.RDS")
-
-IPD.Ohtsu <- IPD.Ohtsu[, 2:3]
-
-colnames(IPD.Ohtsu) <- c("event", "Bevacizumab")
-
-IPD.Ohtsu$Bevacizumab <- ifelse(IPD.Ohtsu$Bevacizumab, "Placebo", "Bevacizumab")
-
-IPD.Ohtsu %>%
-  tbl_summary(
-    by = Bevacizumab,
-    missing = "no",
-    statistic = list(
-      all_continuous() ~ "{mean} ({sd})",
-      all_categorical() ~ "{n} / {N} ({p}%)")
-  ) %>%
-  modify_header(stat_by = md("**{level}**<br>N =  {n} ({style_percent(p)}%)")) %>%
-  bold_labels() %>%
-  modify_spanning_header(starts_with("stat_") ~ "**Summary Statistics**") %>% 
-  add_p(test = all_continuous() ~ "t.test") %>%
-  add_overall()
-```
-
-<br>
-<br>
-
 ```{r, echo=FALSE}
 source("Libraries.R")
 
@@ -1230,36 +1135,6 @@ ggsurv
 <br>
 <br>
 
-```{r, echo=FALSE, fig.cap="Summary Statistics", warning=FALSE, message=FALSE, eval=FALSE}
-source("Libraries.R")
-
-IPD.ascierto.2.a <- readRDS("data/IPD.ascierto.2.a.RDS")
-
-IPD.ascierto.2.a <- IPD.ascierto.2.a[, 2:3]
-
-# rename columns 
-colnames(IPD.ascierto.2.a) <- c("event", "10mg")
-
-IPD.ascierto.2.a$`10mg` <- ifelse(IPD.ascierto.2.a$`10mg` == 0, "Ipilimumab 3 mg/kg", "Ipilimumab 10 mg/kg")
-
-IPD.ascierto.2.a %>%
-  tbl_summary(
-    by = `10mg`,
-    missing = "no",
-    statistic = list(
-      all_continuous() ~ "{mean} ({sd})",
-      all_categorical() ~ "{n} / {N} ({p}%)")
-  ) %>%
-  modify_header(stat_by = md("**{level}**<br>N =  {n} ({style_percent(p)}%)")) %>%
-  bold_labels() %>%
-  modify_spanning_header(starts_with("stat_") ~ "**Summary statistics**") %>% 
-  add_p(test = all_continuous() ~ "t.test") %>%
-  add_overall()
-```
-
-<br>
-<br>
-
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 source("Libraries.R")
 
@@ -1485,36 +1360,6 @@ ggsurv <- ggpar(
 )
 
 ggsurv
-```
-
-<br>
-<br>
-
-```{r, echo=FALSE, fig.cap="Summary Statistics", warning=FALSE, message=FALSE, eval=FALSE}
-source("Libraries.R")
-
-IPD.Rittmeyer <- readRDS("data/IPD.Rittmeyer.RDS")
-
-IPD.Rittmeyer <- IPD.Rittmeyer[, 2:3]
-
-# rename columns 
-colnames(IPD.Rittmeyer) <- c("event", "Atezolizumab")
-
-IPD.Rittmeyer$Atezolizumab <- ifelse(IPD.Rittmeyer$Atezolizumab == 0, "Docetaxel", "Atezolizumab")
-
-IPD.Rittmeyer %>%
-  tbl_summary(
-    by = Atezolizumab,
-    missing = "no",
-    statistic = list(
-      all_continuous() ~ "{mean} ({sd})",
-      all_categorical() ~ "{n} / {N} ({p}%)")
-  ) %>%
-  modify_header(stat_by = md("**{level}**<br>N =  {n} ({style_percent(p)}%)")) %>%
-  bold_labels() %>%
-  modify_spanning_header(starts_with("stat_") ~ "**Summary Statistics**") %>% 
-  add_p(test = all_continuous() ~ "t.test") %>%
-  add_overall()
 ```
 
 <br>

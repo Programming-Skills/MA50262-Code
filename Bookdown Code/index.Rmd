@@ -1,5 +1,5 @@
 ---
-title: 'MA50262: Evaluation of Methods to Accommodate Non-Proportional Hazards in the Analysis of Clinical Trials'
+title: 'Methods to Accommodate Non-Proportional Hazards in the Analysis of Clinical Trials'
 author: 'Martin Adrian Hewing'
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 institution: 'University of Bath'
@@ -191,3 +191,69 @@ $$\hat{h}\left(t, X^{*}\right)=\hat{\theta} \hat{h}(t, X)$$
 
 By letting $\hat{\theta}$ equal to $\exp \left[\sum_{i=1}^{p} \hat{\beta}_{i}\left(X_{i}^{*}-X_{i}\right)\right]$ it follows that $\frac{\hat{h}\left(t, \mathbf{X}^{*}\right)}{\hat{h}(t, \mathbf{X})}=\hat{\theta}$ and so $\hat{h}\left(t, X^{*}\right)=\hat{\theta} \hat{h}(t, X)$ where the constant of proportionality $\hat{\theta}$ is not dependent on $\textit{t}$. Therefore, one subjects hazard function is in proportion to another subjects hazard. 
 Klein05
+
+## Diagnostics
+
+Moore D explains that Schoenfeld residuals can be used to assess the proportional hazards assumption:
+
+The partial log-likelihood function is given by: 
+
+<br>
+<br>
+
+$$l(\beta)=\sum_{i \in D}\left\{\log \left(\psi_{i}\right)-\log \left(\sum_{k \in R_{i}} \psi_{k}\right)\right\}=\sum_{i \in D}\left\{z_{i} \beta-\log \left(\sum_{k \in R_{i}} e^{z_{k} \beta}\right)\right\}$$
+
+<br>
+<br>
+
+The score function is obtained by taking the derivative of the partial log-likelihood function:
+
+<br>
+<br>
+
+$$l^{\prime}(\beta)=\sum_{i \in D}\left\{z_{i}-\sum_{k \in R_{i}} z_{k} \cdot p\left(\beta, z_{k}\right)\right\},$$
+where
+$$p\left(\beta, z_{k}\right)=\frac{e^{z_{k} \beta}}{\sum_{j \in R_{k}} e^{z_{j} \beta}}$$
+The Schoenfeld residuals are the score function's individual terms, and every term is calculated by subtracting the expected values* from the observed values of the covariate for the $i^{th}$ patient.
+
+*The expected value is $E\left(Z_{i}\right)=\bar{z}\left(t_{i}\right)$, this is a weighted sum (weight is $p_{k}(\beta)$) of the values of the covariates for at risk patients at that particular time point.
+
+An alternative way to understand the weights is that they are the chance of choosing an indivual from the risk set at time $t$.
+
+Therefore, the residual for $\hat{\beta}$ for the $i^{th}$ event time is:
+
+<br>
+<br>
+
+$$\hat{r}_{i}=z_{i}-\sum_{k \in R_{i}} z_{k} \cdot p\left(\hat{\beta}, z_{k}\right)=z_{i}-\bar{z}\left(t_{i}\right)$$
+<br>
+<br>
+
+When the proportional hazards assumption is not violated a plot of $\hat{r}_{i}$ against the covariate $z_{i}$ will create a collection of points that are centered at zero. Noting that the residuals apply to just the event and not the censoring times. 
+
+<br>
+<br>
+
+A further development was put forward by Gramsch et al. in order to make the residuals easier to interpret. The researchers put forward the idea of scaling $\hat{r}_{i}$ by its variance estimate to create a scaled residual: 
+
+<br>
+<br>
+
+$$r_{i}^{*}=r_{i} \cdot d \cdot \operatorname{var}(\hat{\beta})$$
+where the sum of events is given by $d$ and $\operatorname{var}(\hat{\beta})$ is the parameter estimate variance. 
+
+<br>
+<br>
+
+When the hazard ratio is a function of $\beta(t)$ and $t$ it follows that the expectation of the scaled residuals is: 
+$$E\left(r_{i}^{*}\right) \approx \beta+\beta(t)$$
+
+<br>
+<br>
+
+In this way an approximation of $\beta(t)$ can be obtained by adding the Cox Proportional Hazards estimate $\hat{\beta}$ to the standardised residuals.
+
+<br>
+<br>
+
+Finally a Schoenfeld plot of $r_{i}^{*}$ versus $t$ or $log(t)$ can be created to examine the residuals.

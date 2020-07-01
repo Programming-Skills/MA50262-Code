@@ -78,6 +78,15 @@ It is worth noting that an issue faced in this process was that the researcher m
 knitr::include_graphics(path = "figure/mono3.PNG")
 ```
 
+<br>
+<br>
+
+The Reconstructed vursus the Published Kaplan Meier Curves placed side by side for comparson.
+
+```{r, echo=FALSE, fig.cap="Mok et al. 2009 Figure A - Reconstructed vs Published Kaplan Meier Curves and Patients at Risk"}
+knitr::include_graphics(path = "figure/mok.combined.svg")
+```
+
 ## Math
 
 \TeX\ is the best way to typeset mathematics. Donald Knuth designed \TeX\ when he got frustrated at how long it was taking the typesetters to finish his book, which contained a lot of mathematics.  One nice feature of _R Markdown_ is its ability to read LaTeX code directly.
