@@ -82,7 +82,6 @@ knitr::include_graphics(path = "figure/mono3.PNG")
 <br>
 
 The Reconstructed vursus the Published Kaplan Meier Curves placed side by side for comparson.
-
 ```{r, echo=FALSE, fig.cap="Mok et al. 2009 Figure A - Reconstructed vs Published Kaplan Meier Curves and Patients at Risk"}
 knitr::include_graphics(path = "figure/mok.combined.svg")
 ```

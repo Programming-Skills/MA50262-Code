@@ -144,7 +144,7 @@ Previously untreated East Asian patients who were suffering from non–small-cel
 
 The primary endpoint of the trial was the progression free survival of the subject. 
 
-From a visual inspection it is apparent that the experimental treatment begins with a greater hazard but there is a crossing of the treatment arms at around six months after that time the control arm presents the higher hazard.
+From a visual inspection it is apparent that the experimental treatment begins with a greater hazard but there is a crossing of the treatment arms at around six months after that time the control arm presents the higher hazard, for overall patient outcome.
 
 <br>
 <br>
@@ -166,7 +166,20 @@ abline(h=0, col=2)
 
 # cox.zph(cox.model)
 ```
+
+<br>
+<br>
+
 The Schoenfeld residual plot is an effective method to assess the proportional hazards assumption when combined with a visual inspection of the Kaplan Meier curves and a global test of non-proportional hazards. 
+
+The Schoenfeld residuals are calculated by subtracting the expected value of the model from the scaled covariate value of the $i^{th}$ observed event. (Please see 0.1 Diagnosics for more information) and Adam O gives an explanation of the the pattern of the Schoenfeld residuals: for this model the dummy covariate "Gefitinib" which takes 1 if the patient is on the gifitinib treatment arm or 0 if the patient is on the carboplatin–paclitaxel treatment arm. If there is zero association and subjects are balanced in the trial (equal numbers in both arms), it would follow that the covariates expection would be 0.5. Alternatively, it could be said that a subject would equally likely to experience the event (death) in either treatment arm at any time point. If this were the case we would see no variability in the Schoenfeld residuals (a definite trend). 
+Moore D explains that the smooth (loess) curve's shape gives a visual representation of an estimate of the difference parameter as function of $t$. Additionally, a 95% confidence interval is given by the dashed lines.
+
+Due to the very large test statistic (chisq = 113) value and small p value (p = 2e-16), there is significant evidence of non-proportional hazards. 
+
+In Fig 3.1 the estimate shows a steady decline in the hazard until approximately the seven month mark, after that there is a slow constant increase in hazard. This reflects the effect seen in the KM curve, where the gefitinib treatment is at first detrimental to the patient compared to those treated with carboplatin, but at around seven months starts to give benefit when compared to the carboplatin.
+
+From this analysis, there is clear evidence that the proportional hazards assumption has been violated and the results of the Cox proportional hazards model could be biased, giving the rationale to examine alternative methods to the overcome this issue.
 
 <br>
 <br>
@@ -202,6 +215,9 @@ cox.model %>%
 ------------------------- ---------------------------------- ---------------------
 Table: (\#tab:inher) Weighted Cox Proportional Hazards Model
 
+<br>
+<br>
+
 At a given instant in time a patient recieving the Gefitinib treatment is 0.965 times as likely to die as a patient who is on the Carboplatin-Paclitaxel treatment. The 95% confidence interval was (0.844, 1.104) with p value 0.605.
 
 <br>
@@ -214,6 +230,9 @@ At a given instant in time a patient recieving the Gefitinib treatment is 0.965 
 ------------------------- ---------------------------------- ---------------------
 Table: (\#tab:inher1) Weighted Cox Proportional Hazards Model (Generalized Concordance)
 
+<br>
+<br>
+
 With a probability of 49.12% (95% CI:45.8%, 52.5%), a patient treated with Gefitinib expected (at the baseline value) to die earlier than a patient treated with Carboplatin-Paclitaxel with p value 0.605.
 
 <br>
@@ -222,66 +241,11 @@ With a probability of 49.12% (95% CI:45.8%, 52.5%), a patient treated with Gefit
 ```{r, echo=FALSE, fig.cap="Weights used by weighted Cox regression are plotted against time"}
 knitr::include_graphics(path = "figure/mok.a.coxphw.svg")
 ```
+
+<br>
+<br>
+
 In this study the increase in the censoring weights are small during the first six months of treatment, after this they begin to rise rapidly. However, it should be noted that the normalised total weight range is [0,25, 2]. 
-
-```{r, include=FALSE}
-source("Libraries.R")
-
-IPD.Mok.A <- readRDS("data/IPD.Mok.A.RDS")
-
-# Pooled Survival Function S(t-) or 1-S(t-) = S(t)
-S <- survfit(Surv(time, event) ~ 1, data = IPD.Mok.A)
-```
-
-<br>
-<br>
-
-```{r, echo=FALSE}
-# FH(1,0)  1-S(t-) vs t (Prentice-Wilcoxon)
-plot(x = S$time, y = S$surv,
-     main = "FH(1,0)  1-S(t-) vs Time (Prentice-Wilcoxon)", 
-     xlab = "Time",
-     ylab = "1-S(t-)",
-     col = "blue")
-```
-
-<br>
-<br>
-
-```{r, echo=FALSE}
-# FH(0,1) S(t) against t
-plot(x = S$time, y = (1-S$surv),
-     main = "FH(0,1) S(t) vs Time", 
-     xlab = "Time",
-     ylab = "S(t)",
-     col = "blue")
-```
-
-<br>
-<br>
-
-```{r, echo=FALSE}
-# Log.Rank 
-plot(x = S$time, 
-     y = rep(1, times = length(S$time)),
-     main = "FH(0,0) Constant Function One Vs Time", 
-     xlab = "Time",
-     ylab = "Constant Function 1",
-     col = "blue")
-```
-
-<br>
-<br>
-
-```{r, echo=FALSE}
-# FH(1,1) S(t)*(1-S(t))
-plot(x = S$time, 
-     y = (S$surv)*(1-(S$surv)), 
-     main = "FH(1,1) S(t)*(1-S(t))", 
-     xlab = "Time",
-     ylab = "S(t)*(1-S(t)",
-     col = "blue")
-```
 
 <br>
 <br>
@@ -357,6 +321,9 @@ result.rmst2 = rmst2(time = IPD.Mok.A$time, status = IPD.Mok.A$event, arm = IPD.
 result.rmst2
 ```
 
+<br>
+<br>
+
 The point estimate indicated that patients on the Gefitinib treatment survive `r round(result.rmst2$unadjusted.result[1,1],1)` months longer than those on Carboplatin-Paclitaxel group on average, when following up the patients `r result.rmst2$tau` months. The 95% confidence interval was (`r round(result.rmst2$unadjusted.result[1,2],1)` to `r round(result.rmst2$unadjusted.result[1,3],1)`) with p value `r round(result.rmst2$unadjusted.result[1,4],2)`.
 
 ```{r, echo=FALSE}
@@ -385,6 +352,9 @@ angle = 85
 \clearpage 
 
 ## Brehmer et al. 2016 Nivolumab versus Docetaxel Study: Crossing Hazards
+
+<br>
+<br>
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.cap="Kaplan–Meier curves for overall survival"}
 source("Libraries.R")
@@ -443,6 +413,17 @@ ggsurv
 <br>
 <br>
 
+The Brehmer et al. 2015 study titled: "Nivolumab versus Docetaxel in Advanced Nonsquamous Non–Small-Cell Lung Cancer" was an open labelled randomised phase 3 trial which was global in scope. Patients who had previously been treated with a dose of 75mg docetaxel per square meter of body-area every each 3 week period or platinum-based doublet chemotherapy before or after progression of nonsquamous non–small-cell lung cancer (NSCLC) were assigned a dose of nivolumab of 3mg per kilogram of body-weight every two  weeks. 
+
+The trial's primary end point was overall survival.
+
+*nivolumab is a "a fully human IgG4 programmed death 1 (PD-1) immune-checkpoint–inhibitor antibody, disrupts PD-1–mediated signaling and may restore antitumor immunity. 
+
+From a visual inspection it is apparent that the experimental treatment begins with a greater hazard but there is a crossing of the treatment arms at around seven months after that time the control arm presents the higher hazard, for overall patient survival. survival.
+
+<br>
+<br>
+
 ```{r, echo=FALSE}
 source("Libraries.R")
 
@@ -456,7 +437,15 @@ cox.model <- coxph(Surv(time, event) ~ Nivolumab, data = IPD.Brahmer.a)
 par(mfrow=c(1,1))
 plot(cox.zph(cox.model), main = "Schoenfeld Individual Test p: 0.002")
 abline(h=0, col=2)
+
+#cox.zph(cox.model)
 ```
+<br>
+<br>
+
+Due to the large test statistic (chisq = 9.56) value and small p value (p = 0.002), there is significant evidence of non-proportional hazards. 
+
+In Fig 3.2 the estimate shows a slow steady decline in the hazard until approximately the ten month mark, after that there is a rapid increase in hazard. This reflects the effect seen in the KM curve, where the nivolumab treatment is at first detrimental to the patient compared to those treated with docetaxel, but at around ten months starts to give benefit when compared to the docetaxel arm.
 
 <br>
 <br>
@@ -492,6 +481,9 @@ cox.model %>%
 ------------------------- ---------------------------------- ---------------------
 Table: (\#tab:inher) Weighted Cox Proportional Hazards Model
 
+<br>
+<br>
+
 At a given instant in time a patient recieving the Nivolumab treatment is 0.846 times as likely to die as a patient who is on the Docetaxel treatment. The 95% confidence interval was (0.691, 1.0348) with p value 0.104.
 
 <br>
@@ -504,6 +496,9 @@ At a given instant in time a patient recieving the Nivolumab treatment is 0.846 
 ------------------------- ---------------------------------- ---------------------
 Table: (\#tab:inher1) Weighted Cox Proportional Hazards Model (Generalized Concordance)
 
+<br>
+<br>
+
 With a probability of 45.82% (95% CI:45.8%, 52.5%), a patient treated with Nivolumab expected (at the baseline value) to die earlier than a patient treated with Docetaxel with p value 0.104.
 
 <br>
@@ -512,6 +507,10 @@ With a probability of 45.82% (95% CI:45.8%, 52.5%), a patient treated with Nivol
 ```{r, echo=FALSE, fig.cap="Weights used by weighted Cox regression are plotted against time"}
 knitr::include_graphics(path = "figure/brehmer.coxphw.svg")
 ```
+
+<br>
+<br>
+
 In this study the increase in the censoring weights are small during the first nine months of treatment, after this they begin to rise rapidly. However, it should be noted that the normalised total weight range is [1, 2]. 
 
 <br>
@@ -587,6 +586,8 @@ result.rmst2 = rmst2(time = IPD.Brahmer.a$time, status = IPD.Brahmer.a$event, ar
 
 result.rmst2
 ```
+<br>
+<br>
 
 The point estimate indicated that patients on the Nivolumab treatment survive `r round(result.rmst2$unadjusted.result[1,1],1)` months longer than those on Docetaxel group on average, when following up the patients `r round(result.rmst2$tau, 0)` months. The 95% confidence interval was (`r round(result.rmst2$unadjusted.result[1,2],1)` to `r round(result.rmst2$unadjusted.result[1,3],1)`) with p value `r round(result.rmst2$unadjusted.result[1,4],2)`.
 
@@ -615,6 +616,9 @@ angle = 85
 \clearpage 
 
 ## Mok et al. 2009 IPASS Study: Dimishing Treatment Effect
+
+<br>
+<br>
 
 ```{r, echo = FALSE, fig.cap="Patients with unknown EGFR mutation status", warning=FALSE, message=FALSE}
 source("Libraries.R")
@@ -673,6 +677,17 @@ ggsurv
 <br>
 <br>
 
+The IPASS study which was titled: "Gefitinib or Carboplatin–Paclitaxel in Pulmonary Adenocarcinoma" was a phase 3 clinical trial (open label).
+
+Previously untreated East Asian patients who were suffering from non–small-cell lung cancer (advanced pulmonary adenocarcinoma) and were either former light smokers or non-smokers were assigned randomly to be treated with either a daily dose of 250mg of gefitinib (609 subjects) or a dose of carboplatin of 5 to 6mg per mililiter per minute and a dose a 200mg per meter squared of body-surface area (608 subjects). 
+
+The primary endpoint of the trial was the progression free survival of the subject. 
+
+From a visual inspection it is apparent that the experimental treatment begins with a greater hazard but there is a crossing of the treatment arms at around six months after that time the control arm presents the higher hazard, for EGFR-Mutation–Negative patient group outcome.
+
+<br>
+<br>
+
 ```{r, echo=FALSE}
 source("Libraries.R")
 
@@ -686,7 +701,16 @@ cox.model <- coxph(Surv(time, event) ~ Gefitinib, data = IPD.Mok.C)
 par(mfrow=c(1,1))
 plot(cox.zph(cox.model), main = "Schoenfeld Individual Test p: 0.00")
 abline(h=0, col=2)
+
+# cox.zph(cox.model)
 ```
+
+<br>
+<br>
+
+Due to the large test statistic (chisq = 17) value and small p value (p = 3.7e-05), there is significant evidence of non-proportional hazards. 
+
+In Fig 3.1 the estimate shows a steady decline in the hazard until approximately the ten month mark. This reflects the effect seen in the KM curve, where the gefitinib treatment is detrimental to the patient compared to those treated with carboplatin, giving no benefit to patients within this group when compared to the standard of care.
 
 <br>
 <br>
@@ -722,6 +746,9 @@ cox.model %>%
 ------------------------- ---------------------------------- ---------------------
 Table: (\#tab:inher) Weighted Cox Proportional Hazards Model
 
+<br>
+<br>
+
 At a given instant in time a patient recieving the Nivolumab treatment is 3.863 times as likely to die as a patient who is on the Docetaxel treatment. The 95% confidence interval was (2.699, 5.531) with p value 0.00 .
 
 <br>
@@ -734,6 +761,9 @@ At a given instant in time a patient recieving the Nivolumab treatment is 3.863 
 ------------------------- ---------------------------------- ---------------------
 Table: (\#tab:inher1) Weighted Cox Proportional Hazards Model (Generalized Concordance)
 
+<br>
+<br>
+
 With a probability of 79.44% (95% CI:72.96%, 84.69%), a patient treated with Gefitinib expected (at the baseline value) to die earlier than a patient treated with Carboplatin-Paclitaxel with p value 0.000.
 
 <br>
@@ -742,6 +772,10 @@ With a probability of 79.44% (95% CI:72.96%, 84.69%), a patient treated with Gef
 ```{r, echo=FALSE, fig.cap="Weights used by weighted Cox regression are plotted against time"}
 knitr::include_graphics(path = "figure/mok.c.coxph.svg")
 ```
+
+<br>
+<br>
+
 In this study the increase in the censoring weights are large during the course of the treatment. However, it should be noted that the normalised total weight range is [0, 2]. 
 
 <br>
@@ -820,7 +854,13 @@ result.rmst2 = rmst2(time = IPD.Mok.C$time, status = IPD.Mok.C$event, arm = IPD.
 result.rmst2
 ```
 
+<br>
+<br>
+
 The point estimate indicated that patients on the Gefitinib treatment survive `r round(result.rmst2$unadjusted.result[1,1],1)` months longer than those on Carboplatin-Paclitaxel group on average, when following up the patients `r result.rmst2$tau` months. The 95% confidence interval was (`r round(result.rmst2$unadjusted.result[1,2],1)` to `r round(result.rmst2$unadjusted.result[1,3],1)`) with p value `r round(result.rmst2$unadjusted.result[1,4],1)`.
+
+<br>
+<br>
 
 ```{r, echo=FALSE}
 source("Libraries.R")
@@ -847,6 +887,9 @@ angle = 85
 \clearpage 
 
 ## Ohtsu et al. 2011 AVAGAST Study: Dimishing Treatment Effect
+
+<br>
+<br>
 
 ```{r, echo=FALSE, fig.cap="Patients in the intention-to-treat population", warning=FALSE, message=FALSE}
 source("Libraries.R")
@@ -901,6 +944,26 @@ ggsurv <- ggpar(
 
 ggsurv
 ```
+<br>
+<br>
+
+The IPASS study which was titled: "Gefitinib or Carboplatin–Paclitaxel in Pulmonary Adenocarcinoma" was a phase 3 clinical trial (open label).
+
+Previously untreated East Asian patients who were suffering from non–small-cell lung cancer (advanced pulmonary adenocarcinoma) and were either former light smokers or non-smokers were assigned randomly to be treated with either a daily dose of 250mg of gefitinib (609 subjects) or a dose of carboplatin of 5 to 6mg per mililiter per minute and a dose a 200mg per meter squared of body-surface area (608 subjects). 
+
+The primary endpoint of the trial was the progression free survival of the subject. 
+
+From a visual inspection it is apparent that the experimental treatment begins with a greater hazard but there is a crossing of the treatment arms at around six months after that time the control arm presents the higher hazard, for EGFR-Mutation–Negative patient group outcome.
+
+
+The AVAGAST study which was titled "Bevacizumab in Combination With Chemotherapy As
+First-Line Therapy in Advanced Gastric Cancer" was an randomised international study that compared a placebo to a combination of bevacizumab to capecitabine-cisplatin in the treatment of advanced gastric cancer.
+
+The study participants recieved a placebo or bevacizumab 7.5 mg/kg on the first day plus a dose of capecitabine 1,000 mg/m2 twice a day for 14 days every three weeks. For patients not able to take oral medications Fluorouracil was given. Futhermore, six cycles of Cisplatin were administered; bevacizumab and cisplatin were given until the toxity was too high or the patient suffered disease progression.
+
+The primary endpoint of the trial was the progression free survival of the subject. 
+
+From a visual inspection it is seen that the bevacizumab hazard is less that the placebo throughout the course of the trial but the hazard is the same as the control arm by the end of the trial, point to the suposition that the treatment is ineffective.
 
 <br>
 <br>
@@ -918,7 +981,16 @@ cox.model <- coxph(Surv(time, event) ~ Bevacizumab, data = IPD.Ohtsu)
 par(mfrow=c(1,1))
 plot(cox.zph(cox.model), main = "Schoenfeld Individual Test p: 0.0139")
 abline(h=0, col=2)
+
+#cox.zph(cox.model)
 ```
+
+<br>
+<br>
+
+Due to the large test statistic (chisq = 6.05) value and small p value (p = 0.014), there is significant evidence of non-proportional hazards. 
+
+In Fig 3.1 the estimate shows a steady increase in the hazard until approximately the five month mark, then the hazard is constant until around the ten month time mark, after that it is seen to rise until the end of the treatment period. This reflects the effect seen in the KM curve, where the bevacizumab treatment is benefical to the patient compared to those treated with with a placebo, however, by the end of the treatment period the experimental treatment seems to offer no additional benefit to the patient.
 
 <br>
 <br>
@@ -954,6 +1026,9 @@ cox.model %>%
 ------------------------- ---------------------------------- ---------------------
 Table: (\#tab:inher) Weighted Cox Proportional Hazards Model
 
+<br>
+<br>
+
 At a given instant in time a patient recieving the Nivolumab treatment is 0.852 times as likely to die as a patient who is on the Docetaxel treatment. The 95% confidence interval was (0.716, 1.015) with p value 0.073.
 
 <br>
@@ -966,6 +1041,9 @@ At a given instant in time a patient recieving the Nivolumab treatment is 0.852 
 ------------------------- ---------------------------------- ---------------------
 Table: (\#tab:inher1) Weighted Cox Proportional Hazards Model (Generalized Concordance)
 
+<br>
+<br>
+
 With a probability of 46.01% (95% CI:41.71%, 50.37%), a patient treated with Gefitinib expected (at the baseline value) to die earlier than a patient treated with Carboplatin-Paclitaxel with p value 0.073.
 
 <br>
@@ -974,6 +1052,10 @@ With a probability of 46.01% (95% CI:41.71%, 50.37%), a patient treated with Gef
 ```{r, echo=FALSE, fig.cap="Weights used by weighted Cox regression are plotted against time"}
 knitr::include_graphics(path = "figure/ohtsu.coxphw.svg")
 ```
+
+<br>
+<br>
+
 In this study the increase in the censoring weights are small during the first 12 months of treatment, after this they begin to rise rapidly. However, it should be noted that the normalised total weight range is [1,25, 2]. 
 
 <br>
@@ -1050,7 +1132,13 @@ result.rmst2 = rmst2(time = IPD.Ohtsu$time, status = IPD.Ohtsu$event, arm = IPD.
 result.rmst2
 ```
 
+<br>
+<br>
+
 The point estimate indicated that patients on the Gefitinib treatment survive `r round(result.rmst2$unadjusted.result[1,1],1)` months longer than those on Carboplatin-Paclitaxel group on average, when following up the patients `r result.rmst2$tau` months. The 95% confidence interval was (`r round(result.rmst2$unadjusted.result[1,2],1)` to `r round(result.rmst2$unadjusted.result[1,3],1)`) with p value `r round(result.rmst2$unadjusted.result[1,4],1)`.
+
+<br>
+<br>
 
 ```{r, echo=FALSE}
 source("Libraries.R")
@@ -1077,6 +1165,9 @@ angle = 85
 \clearpage 
 
 ## Ascierto et al. 2017 The Ipilimumab Study: Delayed Treatment Effect
+
+<br>
+<br>
 
 ```{r, echo=FALSE, fig.cap="Patients in the intention-to-treat population", warning=FALSE, message=FALSE}
 source("Libraries.R")
@@ -1135,6 +1226,16 @@ ggsurv
 <br>
 <br>
 
+The Ipilimumab Study: titled "Ipilimumab 10 mg/kg versus ipilimumab 3 mg/kg in
+patients with unresectable or metastatic melanoma" was a mutlinational double-blind phase 3 trial that recruited patients suffering from previously untreated or treated advanced skin cancer and who had not previously been treated with immune checkpoint or BRAF inhibitors. The subjects were randomly assigned (all participants were masked to which treatment arm they were assigned to) to recieve either ipilimumab 10 mg/kg or 3 mg/kg, which was delivered intravenously every 3 weeks for 90 minutes. Furthermore, patients were stratified by disease progression status.
+
+The primary endpoint of the trial was the progression free survival of the subject in the intend to treat population. 
+
+From a visual inspection it is seen that the ipilimumab 10 mg/kg and the 3 mg/kg hazard are the same for the first seven months of the study. After seven months the treatment arms separate and ipilimumab 10 mg/kg hazard is less than 3 mg/kg hazard for the remainder of the treatment period.
+
+<br>
+<br>
+
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 source("Libraries.R")
 
@@ -1148,7 +1249,16 @@ cox.model <- coxph(Surv(time, event) ~ IPD.ascierto.2.a$`10mg`, data = IPD.ascie
 par(mfrow=c(1,1))
 plot(cox.zph(cox.model), main = "Schoenfeld Individual Test p: 0.1812")
 abline(h=0, col=2)
+
+# cox.zph(cox.model)
 ```
+
+<br>
+<br>
+
+Due to the test statistic (chisq = 1.79) value and large p value (p = 0.18), there is not significant evidence of non-proportional hazards. However, from the observed KM curves there clearly show non-proportional hazards at the beginning of the time period.
+
+In Fig 3.1 the estimate shows the hazard is constant until approximately the two month mark, then the hazard slowly declines until around the twelve month mark, after that it is seen to rise until the end of the treatment period. This reflects the effect seen in the KM curve, where the 10mg and 3mg treatment seem to offer the same level of benefit to the patient in the first nine months.However, by the end of the treatment period the 10mg seems to offer additional benefit to the patient comared to the 3mg dose.
 
 <br>
 <br>
@@ -1184,6 +1294,9 @@ cox.model %>%
 ------------------------- ---------------------------------- ---------------------
 Table: (\#tab:inher) Weighted Cox Proportional Hazards Model
 
+<br>
+<br>
+
 At a given instant in time a patient recieving the Nivolumab treatment is 0.846 times as likely to die as a patient who is on the Docetaxel treatment. The 95% confidence interval was (0.691, 1.0348) with p value 0.179.
 
 <br>
@@ -1196,6 +1309,9 @@ At a given instant in time a patient recieving the Nivolumab treatment is 0.846 
 ------------------------- ---------------------------------- ---------------------
 Table: (\#tab:inher1) Weighted Cox Proportional Hazards Model (Generalized Concordance)
 
+<br>
+<br>
+
 With a probability of 46.93% (95% CI:42.5%, 51.41%), a patient treated with Gefitinib expected (at the baseline value) to die earlier than a patient treated with Carboplatin-Paclitaxel with p value 0.179.
 
 <br>
@@ -1204,6 +1320,10 @@ With a probability of 46.93% (95% CI:42.5%, 51.41%), a patient treated with Gefi
 ```{r, echo=FALSE, fig.cap="Weights used by weighted Cox regression are plotted against time"}
 knitr::include_graphics(path = "figure/asc.coxphw.svg")
 ```
+
+<br>
+<br>
+
 In this study the increase in the censoring weights are large during the first 3 months of treatment, after this they begin to rise slowly until after 40 months and then increase very quickly. However, it should be noted that the normalised total weight range is [0.5, 1.75]. 
 
 <br>
@@ -1280,7 +1400,13 @@ result.rmst2 = rmst2(time = IPD.ascierto.2.a$time, status = IPD.ascierto.2.a$eve
 result.rmst2
 ```
 
+<br>
+<br>
+
 The point estimate indicated that patients on the Ipilimumab 10 mg/kg treatment survive `r round(result.rmst2$unadjusted.result[1,1],1)` months longer than those on Ipilimumab 3 mg/kg group on average, when following up the patients `r result.rmst2$tau` months. The 95% confidence interval was (`r round(result.rmst2$unadjusted.result[1,2],1)` to `r round(result.rmst2$unadjusted.result[1,3],1)`) with p value `r round(result.rmst2$unadjusted.result[1,4],1)`.
+
+<br>
+<br>
 
 ```{r, echo=FALSE}
 source("Libraries.R")
@@ -1307,6 +1433,9 @@ angle = 85
 \clearpage 
 
 ## Rittermeyer et al. 2017 The OAK Study: Delayed Treatment Effect
+
+<br>
+<br>
 
 ```{r, echo = FALSE, fig.cap="Patients in the WT population", warning=FALSE, message=FALSE}
 source("Libraries.R")
@@ -1362,6 +1491,14 @@ ggsurv <- ggpar(
 ggsurv
 ```
 
+The OAK study 2017: was titled "Atezolizumab versus docetaxel in patients with previously treated non-small-cell lung cancer" investigated if randomly assigned cancer patients aged 18 and above and had not recieved some forms of prior treatment including docetaxel to recieve either docetaxel 75 mg/m2 every 3 weeks or an intravenous dose of 1200mg of atezolizumab
+
+The primary endpoint of the trial was the progression free survival of the subject in the intend to treat population and and PD-L1-expression population on their cancers. 
+
+*Atezolizumab is a "humanised antiprogrammed death-ligand 1 (PD-L1) monoclonal antibody that inhibits PD-L1 and programmed death-1 (PD-1) and PD-L1 and B7–1 interactions, reinvigorating anticancer immunity".
+
+From a visual inspection it can be seen that the atezolizumab and docetaxel hazard are the same for the first three months of the study. After three months the treatment arms separate and atezolizumab is less than and docetaxel hazard for the remainder of the treatment period.
+
 <br>
 <br>
 
@@ -1378,7 +1515,16 @@ cox.model <- coxph(Surv(time, event) ~ IPD.Rittmeyer$`Atezolizumab`, data = IPD.
 par(mfrow=c(1,1))
 plot(cox.zph(cox.model), main = "Schoenfeld Individual Test p: 0.3971")
 abline(h=0, col=2)
+
+# cox.zph(cox.model)
 ```
+
+<br>
+<br>
+
+Due to the test statistic (chisq = 0.717) value and large p value (p = 0.4), there is not significant evidence of non-proportional hazards. However, from the observed KM curves there clearly show non-proportional hazards at the beginning of the time period.
+
+In Fig 3.1 the estimate shows the hazard is declining very slowly until around the nine month mark, then the hazard slowly increases until around the twenty-two month mark. This reflects the effect seen in the KM curve, where the atezolizumab and docetaxel treatment seem to offer the same level of benefit to the patient in the first five months. However, by the end of the treatment period the atezolizumab seems to offer additional benefit to the patient compared to the standard of care.
 
 <br>
 <br>
@@ -1414,6 +1560,9 @@ cox.model %>%
 ------------------------- ---------------------------------- ---------------------
 Table: (\#tab:inher) Weighted Cox Proportional Hazards Model
 
+<br>
+<br>
+
 At a given instant in time a patient recieving the Atezolizumab treatment is 0.0.728 times as likely to die as a patient who is on the Docetaxel treatment. The 95% confidence interval was (0.614, 0.863) with p value 0.000.
 
 <br>
@@ -1426,6 +1575,9 @@ At a given instant in time a patient recieving the Atezolizumab treatment is 0.0
 ------------------------- ---------------------------------- ---------------------
 Table: (\#tab:inher1) Weighted Cox Proportional Hazards Model (Generalized Concordance)
 
+<br>
+<br>
+
 With a probability of 49.12% (95% CI:45.8%, 52.5%), a patient treated with Gefitinib expected (at the baseline value) to die earlier than a patient treated with Carboplatin-Paclitaxel with p value 0.000.
 
 <br>
@@ -1434,6 +1586,10 @@ With a probability of 49.12% (95% CI:45.8%, 52.5%), a patient treated with Gefit
 ```{r, echo=FALSE, fig.cap="Weights used by weighted Cox regression are plotted against time"}
 knitr::include_graphics(path = "figure/ritt.coxphw.svg")
 ```
+
+<br>
+<br>
+
 In this study the increase in the censoring weights are small during the first 18 months of treatment, after this they begin to rise rapidly. However, it should be noted that the normalised total weight range is [1.5, 2]. 
 
 <br>
@@ -1510,7 +1666,13 @@ result.rmst2 = rmst2(time = IPD.Rittmeyer$time, status = IPD.Rittmeyer$event, ar
 result.rmst2
 ```
 
+<br>
+<br>
+
 The point estimate indicated that patients on the Atezolizumab treatment survive `r round(result.rmst2$unadjusted.result[1,1],1)` months longer than those on Docetaxel group on average, when following up the patients `r result.rmst2$tau` months. The 95% confidence interval was (`r round(result.rmst2$unadjusted.result[1,2],1)` to `r round(result.rmst2$unadjusted.result[1,3],1)`) with p value `r round(result.rmst2$unadjusted.result[1,4],1)`.
+
+<br>
+<br>
 
 ```{r, echo=FALSE}
 source("Libraries.R")
