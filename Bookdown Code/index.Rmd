@@ -118,13 +118,7 @@ Alternatively, you can put that content in files like 00--prelim.Rmd and
 
 # Technical Section {.unnumbered}
 
-<br>
-<br>
-
 ## The Cox Proportional Hazards model
-
-<br>
-<br>
 
 This paper will now proceed to give a concise outline of censoring, the hazard function, the Cox model and some of the most important characteristics of this particular approach.
 <br/><br/>
@@ -201,13 +195,7 @@ $$\hat{h}\left(t, X^{*}\right)=\hat{\theta} \hat{h}(t, X)$$
 By letting $\hat{\theta}$ equal to $\exp \left[\sum_{i=1}^{p} \hat{\beta}_{i}\left(X_{i}^{*}-X_{i}\right)\right]$ it follows that $\frac{\hat{h}\left(t, \mathbf{X}^{*}\right)}{\hat{h}(t, \mathbf{X})}=\hat{\theta}$ and so $\hat{h}\left(t, X^{*}\right)=\hat{\theta} \hat{h}(t, X)$ where the constant of proportionality $\hat{\theta}$ is not dependent on $\textit{t}$. Therefore, one subjects hazard function is in proportion to another subjects hazard. 
 Klein05
 
-<br>
-<br>
-
 ## Cox Proportional Hazards model Diagnostics
-
-<br>
-<br>
 
 Moore D explains that Schoenfeld residuals can be used to assess the proportional hazards assumption:
 
@@ -277,13 +265,49 @@ In this way an approximation of $\beta(t)$ can be obtained by adding the Cox Pro
 
 Finally a Schoenfeld plot of $r_{i}^{*}$ versus $t$ or $log(t)$ can be created to examine the residuals.
 
+## The Weighted Log Rank Test
+
+Jimenez et al. gives a definition of the Weighted Log Rank Test (WLRT): 
+
 <br>
 <br>
 
-## Weights for the Weighted Log Rank Test
+$$Z_{r}=\frac{\sum_{i=1}^{D} r_{i}\left(d_{1 i}-\mathrm{E}\left(d_{1 i}\right)\right)}{\sqrt{\sum_{i=1}^{D} r_{i}^{2} \operatorname{Var}\left(d_{1 i}\right)}}$$
+
+$\text { where } \mathrm{E}\left(d_{1 i}\right)=n_{1 i} \times\left(\frac{d_{i}}{n_{i}}\right), \operatorname{Var}\left(d_{1 i}\right)=\frac{n_{1 i} n_{2 i} d_{i}\left(n_{i}-d_{i}\right)}{n_{i}^{2}\left(n_{i}-1\right)}$
+$\begin{aligned} &\text { and } Z_{r}^{\text {appr. }} N(0,1) \text { under the null hypothesis }\ H 0: h_{1} / h_{2}=1\end{aligned}$
 
 <br>
 <br>
+
+Fleming et al. developed the technique of using $r_{i}$ to weight early, middle or late differences via the $G^{\rho, \gamma}$ collection of weighted log rank tests. The time $t_{i}$ weight function is given by: 
+
+<br>
+<br>
+
+$$r_{i}=\hat{S}\left(t_{i}\right)^{\rho}\left(1-\hat{S}\left(t_{i}\right)\right)^{\gamma}$$
+
+Where $\hat{S}\left(t_{i}\right)$ is the  Kaplan-Meier estimator.
+
+<br>
+<br>
+
+In the above equation choices of $\rho$ and $\gamma$ values serve to create different weights for the WLRT. 
+
+---------------------------------------------------------------------------- -------------------
+  Rho $\rho$        Gamma $\gamma$     Difference            Function                Name              
+--------------- -------------------- --------------- ----------------------- --------------------
+      0                  0               None                 $W(t)$               Log Rank
+
+      1                  0               Early                $S(t-)$         Prentice-Wilcoxon
+
+      1                  1               Middle           $S(t-)*(1-S(t))$            -
+
+      0                  1               Late                $1-S(t-)$                -
+------------------------------------------------------------------------------------------------
+Table: (\#tab:inher) Weighted Log Rank Test Weight Functions
+
+## Weights for the WLRT
 
 ```{r, include=FALSE}
 source("Libraries.R")
@@ -294,13 +318,10 @@ IPD.Mok.A <- readRDS("data/IPD.Mok.A.RDS")
 S <- survfit(Surv(time, event) ~ 1, data = IPD.Mok.A)
 ```
 
-<br>
-<br>
-
 ```{r, echo=FALSE}
-# FH(1,0)  1-S(t-) vs t (Prentice-Wilcoxon)
+# FH(1,0) S(t-) vs t (Prentice-Wilcoxon)
 plot(x = S$time, y = S$surv,
-     main = "FH(1,0)  1-S(t-) vs Time (Prentice-Wilcoxon)", 
+     main = "FH(1,0)  S(t-) vs Time (Prentice-Wilcoxon)", 
      xlab = "Time",
      ylab = "1-S(t-)",
      col = "blue")

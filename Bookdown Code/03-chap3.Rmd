@@ -175,6 +175,17 @@ The Schoenfeld residual plot is an effective method to assess the proportional h
 The Schoenfeld residuals are calculated by subtracting the expected value of the model from the scaled covariate value of the $i^{th}$ observed event. (Please see 0.1 Diagnosics for more information) and Adam O gives an explanation of the the pattern of the Schoenfeld residuals: for this model the dummy covariate "Gefitinib" which takes 1 if the patient is on the gifitinib treatment arm or 0 if the patient is on the carboplatin–paclitaxel treatment arm. If there is zero association and subjects are balanced in the trial (equal numbers in both arms), it would follow that the covariates expection would be 0.5. Alternatively, it could be said that a subject would equally likely to experience the event (death) in either treatment arm at any time point. If this were the case we would see no variability in the Schoenfeld residuals (a definite trend). 
 Moore D explains that the smooth (loess) curve's shape gives a visual representation of an estimate of the difference parameter as function of $t$. Additionally, a 95% confidence interval is given by the dashed lines.
 
+This project will now check proportional hazards by using the Schoenfeld test for proportion hazards:
+
+<br>
+<br>
+
+$$Ho: Hazards\ are\ proportional$$
+$$Ha: Hazards\ are\ not\ proportional$$
+
+<br>
+<br>
+
 Due to the very large test statistic (chisq = 113) value and small p value (p = 2e-16), there is significant evidence of non-proportional hazards. 
 
 In Fig 3.1 the estimate shows a steady decline in the hazard until approximately the seven month mark, after that there is a slow constant increase in hazard. This reflects the effect seen in the KM curve, where the gefitinib treatment is at first detrimental to the patient compared to those treated with carboplatin, but at around seven months starts to give benefit when compared to the carboplatin.
@@ -184,7 +195,7 @@ From this analysis, there is clear evidence that the proportional hazards assump
 <br>
 <br>
 
-```{r echo=FALSE, fig.cap="Cox Proportional Hazards Model"}
+```{r echo=FALSE, fig.cap="Cox Proportional Hazards Model", message=FALSE, warning=FALSE}
 source("Libraries.R")
 
 IPD.Mok.A <- readRDS("data/IPD.Mok.A.RDS")
@@ -204,6 +215,19 @@ cox.model %>%
   bold_labels() %>%
   italicize_levels()
 ```
+
+<br>
+<br>
+
+The baseline hazard is unspecified in the Cox model. Therefore, the researcher cannot estimate the survival with the Cox Proportional Hazards Model. Furthermore, because the model does not estimate the intercept it is not possible to estimate the hazard, or make an estimation of the survival function.
+
+The Cox Proportional Hazards Model can provide an estimation of the hazard ratio (HR) (A measure of how likely a particular event is to occur in one group cpmpared to another group over time). 
+
+The reported HR for the Cox Model in the gefitinib treatment arm is: 0.76 (carboplatin-paclitaxel is the reference group). An interpretation of the HR is that; at an instant in time a patient receiving the gefitinib is 0.76 times as likely to die as a patient who is on carboplatin treatment. Conversely a patient on the standard of care is 1.2438 times as likely to experience the event as a patient on the experimental treatment.
+
+By subtracting one from the HR, this ratio can be interpreted this as a percentage change. At a given instant a patient on the gefitinib tratment is ((1-0.76)*100) 24% less likely to die than those patients on the carboplatin dose if the assumptions of the model are satified.  
+
+Furthermore, the model is 95% confident that the true HR lies between 0.66 and 0.86 and the p-value for the test that the gefitinib coefficient is actually zero is less than 0.001.
 
 <br>
 <br>
@@ -417,7 +441,7 @@ The Brehmer et al. 2015 study titled: "Nivolumab versus Docetaxel in Advanced No
 
 The trial's primary end point was overall survival.
 
-*nivolumab is a "a fully human IgG4 programmed death 1 (PD-1) immune-checkpoint–inhibitor antibody, disrupts PD-1–mediated signaling and may restore antitumor immunity. 
+*Nivolumab is a "a fully human IgG4 programmed death 1 (PD-1) immune-checkpoint–inhibitor antibody, disrupts PD-1–mediated signaling and may restore antitumor immunity. 
 
 From a visual inspection it is apparent that the experimental treatment begins with a greater hazard but there is a crossing of the treatment arms at around seven months after that time the control arm presents the higher hazard, for overall patient survival. survival.
 
@@ -470,6 +494,15 @@ cox.model %>%
   bold_labels() %>%
   italicize_levels()
 ```
+
+<br>
+<br>
+
+The reported HR for the Cox Model in the nivolumab treatment arm is: 0.76 (docetaxel is the reference group). An interpretation of the HR is that; at an instant in time a patient receiving the nivolumab is 0.76 times as likely to die as a patient who is on docetaxel treatment. Conversely a patient on the standard of care is 1.2436 times as likely to experience the event as a patient on the experimental treatment.
+
+By subtracting one from the HR, this ratio can be interpreted this as a percentage change. At a given instant a patient on the nivolumab treatment is ((1-0.76)*100) 24% less likely to die than those patients on the docetaxel dose if the assumptions of the model are satified.  
+
+Furthermore, the model is 95% confident that the true HR lies between 0.62, 0.92 and the p-value for the test that the nivolumab coefficient is actually zero is less than 0.005.
 
 <br>
 <br>
@@ -739,6 +772,15 @@ cox.model %>%
 <br>
 <br>
 
+The reported HR for the Cox Model in the gefitinib treatment arm is: 2.80 (carboplatin-paclitaxel is the reference group). An interpretation of the HR is that; at an instant in time a patient receiving the gefitinib is 2.80 times as likely to die as a patient who is on carboplatin treatment. Conversely a patient on the standard of care is 1.8 times less likely to experience the event as a patient on the experimental treatment.
+
+By subtracting one from the HR, this ratio can be interpreted this as a percentage change. At a given instant a patient on the gefitinib tratment is ((1-2.80)*100) 180% more likely to die than those patients on the carboplatin dose if the assumptions of the model are satified.  
+
+Furthermore, the model is 95% confident that the true HR lies between 2.02 and 3.89 and the p-value for the test that the gefitinib coefficient is actually zero is less than 0.001.
+
+<br>
+<br>
+
 ----------------------------------------------------------------------------------
   Average HR                           95% CI	                      p-value
 ------------------------- ---------------------------------- ---------------------
@@ -947,15 +989,6 @@ ggsurv
 <br>
 <br>
 
-The IPASS study which was titled: "Gefitinib or Carboplatin–Paclitaxel in Pulmonary Adenocarcinoma" was a phase 3 clinical trial (open label).
-
-Previously untreated East Asian patients who were suffering from non–small-cell lung cancer (advanced pulmonary adenocarcinoma) and were either former light smokers or non-smokers were assigned randomly to be treated with either a daily dose of 250mg of gefitinib (609 subjects) or a dose of carboplatin of 5 to 6mg per mililiter per minute and a dose a 200mg per meter squared of body-surface area (608 subjects). 
-
-The primary endpoint of the trial was the progression free survival of the subject. 
-
-From a visual inspection it is apparent that the experimental treatment begins with a greater hazard but there is a crossing of the treatment arms at around six months after that time the control arm presents the higher hazard, for EGFR-Mutation–Negative patient group outcome.
-
-
 The AVAGAST study which was titled "Bevacizumab in Combination With Chemotherapy As
 First-Line Therapy in Advanced Gastric Cancer" was an randomised international study that compared a placebo to a combination of bevacizumab to capecitabine-cisplatin in the treatment of advanced gastric cancer.
 
@@ -1015,6 +1048,16 @@ cox.model %>%
   bold_labels() %>%
   italicize_levels()
 ```
+
+<br>
+<br>
+
+The reported HR for the Cox Model in the bevacizumab treatment arm is: 0.87 (placebo is the reference group). An interpretation of the HR is that; at an instant in time a patient receiving the bevacizumab is 0.87 times as likely to die as a patient who is on placebo treatment. Conversely a patient on the standard of care is 1.13 times as likely to experience the event as a patient on the experimental treatment.
+
+By subtracting one from the HR, this ratio can be interpreted this as a percentage change. At a given instant a patient on the bevacizumab tratment is ((1-0.87)*100) 13% less likely to die than those patients on the placebo dose if the assumptions of the model are satified.  
+
+Furthermore, the model is 95% confident that the true HR lies between 0.73 and 1.04 and the p-value for the test that the bevacizumab coefficient is actually zero is less than 0.12.
+
 
 <br>
 <br>
@@ -1287,6 +1330,15 @@ cox.model %>%
 <br>
 <br>
 
+The reported HR for the Cox Model in the ipilimumab 10 mg/kg treatment arm is: 0.85 (ipilimumab 3 mg/kg is the reference group). An interpretation of the HR is that; at an instant in time a patient receiving the ipilimumab 10 mg/kg is 0.85 times as likely to die as a patient who is on ipilimumab 3 mg/kg treatment. Conversely a patient on the standard of care is 1.15 times as likely to experience the event as a patient on the experimental treatment.
+
+By subtracting one from the HR, this ratio can be interpreted this as a percentage change. At a given instant a patient on the ipilimumab 10 mg/kg treatment is ((1-0.85)*100) 15% less likely to die than those patients on the ipilimumab 3 mg/kg dose if the assumptions of the model are satified.  
+
+Furthermore, the model is 95% confident that the true HR lies between 0.72 and 1.01 and the p-value for the test that the ipilimumab 10 mg/kg coefficient is actually zero is less than 0.061.
+
+<br>
+<br>
+
 ----------------------------------------------------------------------------------
   Average HR                           95% CI	                      p-value
 ------------------------- ---------------------------------- ---------------------
@@ -1491,6 +1543,9 @@ ggsurv <- ggpar(
 ggsurv
 ```
 
+<br>
+<br>
+
 The OAK study 2017: was titled "Atezolizumab versus docetaxel in patients with previously treated non-small-cell lung cancer" investigated if randomly assigned cancer patients aged 18 and above and had not recieved some forms of prior treatment including docetaxel to recieve either docetaxel 75 mg/m2 every 3 weeks or an intravenous dose of 1200mg of atezolizumab
 
 The primary endpoint of the trial was the progression free survival of the subject in the intend to treat population and and PD-L1-expression population on their cancers. 
@@ -1549,6 +1604,15 @@ cox.model %>%
   bold_labels() %>%
   italicize_levels()
 ```
+
+<br>
+<br>
+
+The reported HR for the Cox Model in the atezolizumab treatment arm is: 0.72 (docetaxel is the reference group). An interpretation of the HR is that; at an instant in time a patient receiving the atezolizumab is 0.72 times as likely to die as a patient who is on docetaxel treatment. Conversely a patient on the standard of care is 1.15 times as likely to experience the event as a patient on the experimental treatment.
+
+By subtracting one from the HR, this ratio can be interpreted this as a percentage change. At a given instant a patient on the atezolizumab treatment is ((1-0.72)*100) 28% less likely to die than those patients on the docetaxel dose if the assumptions of the model are satified.  
+
+Furthermore, the model is 95% confident that the true HR lies between 0.61 and 0.85 and the p-value for the test that the atezolizumab coefficient is actually zero is less than 0.001.
 
 <br>
 <br>
