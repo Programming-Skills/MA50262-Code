@@ -64,7 +64,7 @@ Several reseachers have made use of the Guyot et al. algorithm in their work, th
 
 The first step was to source the studies that exhibit non-proportional hazards. (This project decided to source two studies for each type of non-proportional hazards, including, crossing hazards, a delayed treatment effect or diminishing treatment effect). 
 
-```{r, echo=FALSE, fig.cap="Various Types of Non-Proportional Hazards"}
+```{r, echo=FALSE, fig.cap="Knezevic et al. Various Types of Non-Proportional Hazards"}
 knitr::include_graphics(path = "figure/np.PNG")
 ```
 

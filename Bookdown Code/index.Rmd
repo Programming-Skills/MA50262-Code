@@ -1,5 +1,5 @@
 ---
-title: 'Methods to Accommodate Non-Proportional Hazards in the Analysis of Clinical Trials'
+title: 'Methods to Accommodate NPH in the Analysis of Clinical Trials'
 author: 'Martin Adrian Hewing'
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 institution: 'University of Bath'
@@ -195,7 +195,7 @@ $$\hat{h}\left(t, X^{*}\right)=\hat{\theta} \hat{h}(t, X)$$
 By letting $\hat{\theta}$ equal to $\exp \left[\sum_{i=1}^{p} \hat{\beta}_{i}\left(X_{i}^{*}-X_{i}\right)\right]$ it follows that $\frac{\hat{h}\left(t, \mathbf{X}^{*}\right)}{\hat{h}(t, \mathbf{X})}=\hat{\theta}$ and so $\hat{h}\left(t, X^{*}\right)=\hat{\theta} \hat{h}(t, X)$ where the constant of proportionality $\hat{\theta}$ is not dependent on $\textit{t}$. Therefore, one subjects hazard function is in proportion to another subjects hazard. 
 Klein05
 
-## Cox Proportional Hazards model Diagnostics
+## Model Diagnostics
 
 Moore D explains that Schoenfeld residuals can be used to assess the proportional hazards assumption:
 
@@ -265,9 +265,18 @@ In this way an approximation of $\beta(t)$ can be obtained by adding the Cox Pro
 
 Finally a Schoenfeld plot of $r_{i}^{*}$ versus $t$ or $log(t)$ can be created to examine the residuals.
 
-## The Weighted Log Rank Test
+## The Weighted Log Rank Test (WLRT)
 
-Jimenez et al. gives a definition of the Weighted Log Rank Test (WLRT): 
+Roychoudhury et al. explain that the most frequently used rank-based test to compare two survival curves is the log-rank test (LRT).
+
+As the LRT is a non-parametric test, it performs well when the non-proportional hazards (NPH) assumption is not violated. However, when this assumption is broken the LRT is not sufficiently powerful. Furthermore, if the proportional hazards assumption is broken, it makes the hazard ratio (can be thought of as an average hazard ratio, which is subject to to the overall follow-up of study participants) difficult to interpret. 
+
+Therefore, when NPH are present it is not apparent which estimand the hazard ratio and LRT are associated with. However, it should be noted that the LRT gives good performance in regard to type I error. This gives the rationale to consider the WLRT when NPH are present.
+
+<br>
+<br>
+
+Jimenez et al. gives a definition of the WLRT: 
 
 <br>
 <br>
@@ -275,6 +284,7 @@ Jimenez et al. gives a definition of the Weighted Log Rank Test (WLRT):
 $$Z_{r}=\frac{\sum_{i=1}^{D} r_{i}\left(d_{1 i}-\mathrm{E}\left(d_{1 i}\right)\right)}{\sqrt{\sum_{i=1}^{D} r_{i}^{2} \operatorname{Var}\left(d_{1 i}\right)}}$$
 
 $\text { where } \mathrm{E}\left(d_{1 i}\right)=n_{1 i} \times\left(\frac{d_{i}}{n_{i}}\right), \operatorname{Var}\left(d_{1 i}\right)=\frac{n_{1 i} n_{2 i} d_{i}\left(n_{i}-d_{i}\right)}{n_{i}^{2}\left(n_{i}-1\right)}$
+
 $\begin{aligned} &\text { and } Z_{r}^{\text {appr. }} N(0,1) \text { under the null hypothesis }\ H 0: h_{1} / h_{2}=1\end{aligned}$
 
 <br>
@@ -287,12 +297,14 @@ Fleming et al. developed the technique of using $r_{i}$ to weight early, middle 
 
 $$r_{i}=\hat{S}\left(t_{i}\right)^{\rho}\left(1-\hat{S}\left(t_{i}\right)\right)^{\gamma}$$
 
-Where $\hat{S}\left(t_{i}\right)$ is the  Kaplan-Meier estimator.
+Where $\hat{S}\left(t_{i}\right)$ is the Kaplan-Meier estimator.
 
 <br>
 <br>
 
 In the above equation choices of $\rho$ and $\gamma$ values serve to create different weights for the WLRT. 
+
+<br>
 
 ---------------------------------------------------------------------------- -------------------
   Rho $\rho$        Gamma $\gamma$     Difference            Function                Name              
@@ -305,9 +317,11 @@ In the above equation choices of $\rho$ and $\gamma$ values serve to create diff
 
       0                  1               Late                $1-S(t-)$                -
 ------------------------------------------------------------------------------------------------
-Table: (\#tab:inher) Weighted Log Rank Test Weight Functions
+Table: (\#tab:wlr) Weighted Log Rank Test Weight Functions 
 
-## Weights for the WLRT
+<br>
+
+The information in table \@ref(tab:wlr) is used to create four visualisations corresponding to the different $G^{\rho, \gamma}$ functions using the data from the [Mok et al. 2009 IPASS Study](#mok.a). 
 
 ```{r, include=FALSE}
 source("Libraries.R")
@@ -318,49 +332,63 @@ IPD.Mok.A <- readRDS("data/IPD.Mok.A.RDS")
 S <- survfit(Surv(time, event) ~ 1, data = IPD.Mok.A)
 ```
 
-```{r, echo=FALSE}
-# FH(1,0) S(t-) vs t (Prentice-Wilcoxon)
-plot(x = S$time, y = S$surv,
-     main = "FH(1,0)  S(t-) vs Time (Prentice-Wilcoxon)", 
-     xlab = "Time",
-     ylab = "1-S(t-)",
-     col = "blue")
-```
-
-<br>
-<br>
-
-```{r, echo=FALSE}
-# FH(0,1) S(t) against t
-plot(x = S$time, y = (1-S$surv),
-     main = "FH(0,1) S(t) vs Time", 
-     xlab = "Time",
-     ylab = "S(t)",
-     col = "blue")
-```
-
-<br>
-<br>
-
-```{r, echo=FALSE}
+```{r, echo=FALSE, fig.cap="FH(0,0) Log-Rank Test"}
 # Log.Rank 
 plot(x = S$time, 
      y = rep(1, times = length(S$time)),
-     main = "FH(0,0) Constant Function One Vs Time", 
+     main = "Constant Function One Vs Time", 
      xlab = "Time",
      ylab = "Constant Function 1",
      col = "blue")
 ```
 
+If the NPH assumption were not violated this project would expect to see a hazard ratio of one throughout the treatment time period $t$. This suggests events will be evenly spaced accross $t$.
+
 <br>
 <br>
 
 ```{r, echo=FALSE}
-# FH(1,1) S(t)*(1-S(t))
+# FH(1,0) S(t-) vs t (Prentice-Wilcoxon) (early effect)
+plot(x = S$time, y = S$surv,
+     main = "FH(1,0) S(t-) vs Time (Prentice-Wilcoxon) (Early effect)", 
+     xlab = "Time",
+     ylab = "S(t-)",
+     col = "blue")
+```
+
+<br>
+<br>
+
+Lin et al. explain this weight would correspond to a early positive treatment effect. If the experimental treatment were to have the strongest positive impact on survival at the start of the treatment time period $t$ but this decreases as the treatment period progesses. This would suggest that more events will occur later in the study treatment period $t$.
+
+<br>
+<br>
+
+```{r, echo=FALSE}
+# FH(1,1) S(t)*(1-S(t)) (middle effect)
 plot(x = S$time, 
      y = (S$surv)*(1-(S$surv)), 
-     main = "FH(1,1) S(t)*(1-S(t))", 
+     main = "FH(1,1) S(t)*(1-S(t)) (Middle effect)", 
      xlab = "Time",
      ylab = "S(t)*(1-S(t)",
      col = "blue")
 ```
+
+<br>
+<br>
+
+Lin et al. explain this weight would correspond to a diminishing treatment effect, if the experimental treatment were to have the strongest impact on survival at the middle of the treatment time period $t$ and as the study progresses this effect tapers off and the experimental treatment becomes as effective as the standard of care. This suggests events will occur more often at the start and the end of the treatment period $t$.
+
+<br>
+<br>
+
+```{r, echo=FALSE}
+# FH(0,1) 1-S(t-) against t (late effect)
+plot(x = S$time, y = (1-S$surv),
+     main = "FH(0,1) S(t) vs Time (Late Effect)", 
+     xlab = "Time",
+     ylab = "1-S(t-)",
+     col = "blue")
+```
+
+Conversley Lin et al. explain This weight would correspond to a delayed treatment effect, if the experimental treatment were to have the strongest impact on survival at the end of the treatment time period $t$ and as the study progresses this effect increases. This suggests events will occur less often as later time periods $t$ are reached.

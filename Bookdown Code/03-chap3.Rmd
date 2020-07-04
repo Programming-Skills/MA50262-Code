@@ -76,12 +76,12 @@ flights <- read.csv("data/flights.csv", stringsAsFactors = FALSE)
 <br>
 <br>
 
-## Mok et al. 2009 IPASS Study: Crossing Hazards
+## Mok et al. 2009 IPASS Study: Crossing Hazards {#mok.a}
 
 <br>
 <br>
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.cap="Overall Study Results"}
+```{r,echo=FALSE, warning=FALSE, message=FALSE, fig.cap="Overall Study Results"}
 source("Libraries.R")
 
 IPD.Mok.A <- readRDS("data/IPD.Mok.A.RDS")
@@ -275,6 +275,9 @@ In this study the increase in the censoring weights are small during the first s
 <br>
 
 ```{r, echo=FALSE, fig.cap="Weighted Log Rank Test"}
+
+# Weighted Log Rank Test
+
 source("Libraries.R")
 
 IPD.Mok.A <- readRDS("data/IPD.Mok.A.RDS")
@@ -292,7 +295,15 @@ result %>%
 <br>
 <br>
 
+Table \@ref(tab:wlr) 
+
+<br>
+<br>
+
 ```{r, echo=FALSE, include=FALSE}
+
+# Max Combo Test
+
 source("Libraries.R")
 
 IPD.Mok.A <- readRDS("data/IPD.Mok.A.RDS")
@@ -318,6 +329,9 @@ as.data.frame(result.mc) %>% kableExtra::kable(caption = "Max Combo Test")
 <br>
 
 ```{r, include=FALSE, message=FALSE}
+
+# RMST
+
 source("Libraries.R")
 
 IPD.Mok.A <- readRDS("data/IPD.Mok.A.RDS")
@@ -336,6 +350,9 @@ as.data.frame(result.rmst_) %>% kableExtra::kable(caption = "Restricted Mean Sur
 ```
 
 ```{r, include=FALSE}
+
+# RMST
+
 source("Libraries.R")
 
 IPD.Mok.A <- readRDS("data/IPD.Mok.A.RDS")
