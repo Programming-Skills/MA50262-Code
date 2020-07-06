@@ -1,5 +1,5 @@
 ---
-title: 'Methods to Accommodate NPH in the Analysis of Clinical Trials'
+title: 'Methods to Accommodate Non Proportional Hazards in the Analysis of Clinical Trials'
 author: 'Martin Adrian Hewing'
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 institution: 'University of Bath'
@@ -120,13 +120,13 @@ Alternatively, you can put that content in files like 00--prelim.Rmd and
 
 ## The Cox Proportional Hazards model
 
-This paper will now proceed to give a concise outline of censoring, the hazard function, the Cox model and some of the most important characteristics of this particular approach.
+This paper will now proceed to give a concise outline of censoring, the hazard function, the Cox model and some of the most important characteristics of this approach.
 <br/><br/>
-Censoring happens when some information about the survival times of individuals is available, but it is not known precisely. In general there are three separate answers to why censoring is likely to occur. Firstly, the individual does not get the event before the end of the study. Secondly, in the course of the study period, an individual is lost to follow-up, and thirdly, because an individual withdraws from the study, but for a reason other than due to getting the event of interest.
+Censoring happens when some information about the survival times of individuals is available, but it is not known precisely. In general, there are three separate answers to why censoring is likely to occur. Firstly, the individual does not get the event before the end of the study. Secondly, during the study period, an individual is lost to follow-up, and thirdly, because an individual withdraws from the study, but for a reason other than due to getting the event of interest.
 <br/><br/>
-Additionally, there are three types of censoring that can happen. Firstly, data that is right-censored. In this case the true time survived is the same as or more than the recorded survival time. Secondly, data that is left-censored. In this case the true time survived is the same as or less than the recorded survival time. Thirdly, data that is interval-censored. In this case the true time survived is within a time interval which is known to the researcher. This project will focus on data that is right censored.
+Additionally, there are three types of censoring that can happen. Firstly, data that is right-censored. In this case the true time survived is the same as or more than the recorded survival time. Secondly, data that is left-censored. In this case the true time survived is the same as or less than the recorded survival time. Thirdly, data that is interval censored. In this case the true time survived is within a time interval which is known to the researcher. This project will focus on data that is right censored.
 <br/><br/>
-The hazard function(also known as the conditional failure rate) is given by: 
+The hazard function (also known as the conditional failure rate) is given by: 
 
 <br/><br/>
 
@@ -140,7 +140,7 @@ Formally $\mathit{h(t)}$ can be defined as a function that "gives the instantane
 <br/><br/>
 In a similar fashion the hazard function calculates the potential to get the event being studied at that instant, given survival up to that point in time. Furthermore, it is important to note that for specific $\textit{t}$ time values the hazard function has two properties: firstly, $\mathit{h(t)}$ is not limited to an upper bound value. Secondly, $\mathit{h(t)}$ is never negative, it is more than or equal to zero. 
 <br/><br/>
-The Cox proportional hazards regression model  formula is given by:
+The Cox proportional hazards regression model formula is given by:
 
 <br/><br/>
 
@@ -154,7 +154,7 @@ $$\mathbf{X}=\left(X_{1}, X_{2}, \dots, X_{p}\right)$$
 
 The left hand side of the above expression is the time $\textit{t}$ hazard that an individual faces given a collection of explanatory variables $\mathbf{X}$ whereas, the right hand side of (2) is the product of the baseline hazard function given by $\mathit{{h_{0}(t)}}$ and an exponential expression which is raised to the $\mathit{\beta_{i} X_{i}}$ summed over the $\textit{P}$ predictor $\mathit{X}$ variables. 
 <br/><br/>
-Additionally in regard to the proportional hazards assumption it is important to note that in the formula given in (2) the baseline hazard is a function of $\textit{t}$ but not the $X^{\prime} s$.  Conversely, the exponential expression does not involve the $\textit{t's}$, but does involve the $X^{\prime} s$. Therefore, the $X^{\prime} s$ are "time-independent" and can be defined as "any variable whose value for a given individual does not change over time". Moreover, two important properties of the Cox proportional hazards model regression model formula are that firstly when all the $X^{\prime} s$ are zero then the formula equals the baseline hazard function as an exponential raised to the zero equals one, and the exponential in the Cox formula ensures that the fitted hazard is not negative. 
+Additionally, in regard to the proportional hazards assumption it is important to note that in the formula given in (2) the baseline hazard is a function of $\textit{t}$ but not the $X^{\prime} s$.  Conversely, the exponential expression does not involve the $\textit{t's}$ but does involve the $X^{\prime} s$. Therefore, the $X^{\prime} s$ are "time-independent" and can be defined as "any variable whose value for a given individual does not change over time". Moreover, two important properties of the Cox proportional hazards model regression model formula are that firstly when all the $X^{\prime} s$ are zero then the formula equals the baseline hazard function as an exponential raised to the zero equals one, and the exponential in the Cox formula ensures that the fitted hazard is not negative. 
 <br/><br/>
 Secondly, the Cox model is semi-parametric because $\mathit{{h_{0}(t)}}$ the baseline hazard function is unspecified, whereas , parametric models such as the Weibull or Exponential have a fixed functional form, so the Cox model is appropriate in many data situations where functional form of the baseline hazard is unknown as it can often accurately approximate the correct parametric form. 
 <br/><br/>
@@ -192,10 +192,11 @@ $$\hat{h}\left(t, X^{*}\right)=\hat{\theta} \hat{h}(t, X)$$
 
 <br/><br/>
 
-By letting $\hat{\theta}$ equal to $\exp \left[\sum_{i=1}^{p} \hat{\beta}_{i}\left(X_{i}^{*}-X_{i}\right)\right]$ it follows that $\frac{\hat{h}\left(t, \mathbf{X}^{*}\right)}{\hat{h}(t, \mathbf{X})}=\hat{\theta}$ and so $\hat{h}\left(t, X^{*}\right)=\hat{\theta} \hat{h}(t, X)$ where the constant of proportionality $\hat{\theta}$ is not dependent on $\textit{t}$. Therefore, one subjects hazard function is in proportion to another subjects hazard. 
+By letting $\hat{\theta}$ equal to $\exp \left[\sum_{i=1}^{p} \hat{\beta}_{i}\left(X_{i}^{*}-X_{i}\right)\right]$ it follows that $\frac{\hat{h}\left(t, \mathbf{X}^{*}\right)}{\hat{h}(t, \mathbf{X})}=\hat{\theta}$ and so $\hat{h}\left(t, X^{*}\right)=\hat{\theta} \hat{h}(t, X)$ where the constant of proportionality $\hat{\theta}$ is not dependent on $\textit{t}$. Therefore, one subjects hazard function is in proportion to another subject's hazard. 
+
 Klein05
 
-## Model Diagnostics
+## Model Diagnostics {#diag}
 
 Moore D explains that Schoenfeld residuals can be used to assess the proportional hazards assumption:
 
@@ -221,7 +222,7 @@ The Schoenfeld residuals are the score function's individual terms, and every te
 
 *The expected value is $E\left(Z_{i}\right)=\bar{z}\left(t_{i}\right)$, this is a weighted sum (weight is $p_{k}(\beta)$) of the values of the covariates for at risk patients at that particular time point.
 
-An alternative way to understand the weights is that they are the chance of choosing an indivual from the risk set at time $t$.
+An alternative way to understand the weights is that they are the chance of choosing an individual from the risk set at time $t$.
 
 Therefore, the residual for $\hat{\beta}$ for the $i^{th}$ event time is:
 
@@ -269,7 +270,7 @@ Finally a Schoenfeld plot of $r_{i}^{*}$ versus $t$ or $log(t)$ can be created t
 
 Roychoudhury et al. explain that the most frequently used rank-based test to compare two survival curves is the log-rank test (LRT).
 
-As the LRT is a non-parametric test, it performs well when the non-proportional hazards (NPH) assumption is not violated. However, when this assumption is broken the LRT is not sufficiently powerful. Furthermore, if the proportional hazards assumption is broken, it makes the hazard ratio (can be thought of as an average hazard ratio, which is subject to to the overall follow-up of study participants) difficult to interpret. 
+As the LRT is a non-parametric test, it performs well when the non-proportional hazards (NPH) assumption is not violated. However, when this assumption is broken the LRT is not sufficiently powerful. Furthermore, if the proportional hazards assumption is broken, it makes the hazard ratio (can be thought of as an average hazard ratio, which is subject to the overall follow-up of study participants) difficult to interpret. 
 
 Therefore, when NPH are present it is not apparent which estimand the hazard ratio and LRT are associated with. However, it should be noted that the LRT gives good performance in regard to type I error. This gives the rationale to consider the WLRT when NPH are present.
 
@@ -342,7 +343,7 @@ plot(x = S$time,
      col = "blue")
 ```
 
-If the NPH assumption were not violated this project would expect to see a hazard ratio of one throughout the treatment time period $t$. This suggests events will be evenly spaced accross $t$.
+If the NPH assumption were not violated this project would expect to see a hazard ratio of one throughout the treatment time period $t$. This suggests events will be evenly spaced across $t$.
 
 <br>
 <br>
@@ -359,7 +360,7 @@ plot(x = S$time, y = S$surv,
 <br>
 <br>
 
-Lin et al. explain this weight would correspond to a early positive treatment effect. If the experimental treatment were to have the strongest positive impact on survival at the start of the treatment time period $t$ but this decreases as the treatment period progesses. This would suggest that more events will occur later in the study treatment period $t$.
+Lin et al. explain this weight would correspond to a early positive treatment effect. If the experimental treatment were to have the strongest positive impact on survival at the start of the treatment time period $t$ but this decreases as the treatment period progresses. This would suggest that more events will occur later in the study treatment period $t$.
 
 <br>
 <br>
@@ -391,4 +392,4 @@ plot(x = S$time, y = (1-S$surv),
      col = "blue")
 ```
 
-Conversley Lin et al. explain This weight would correspond to a delayed treatment effect, if the experimental treatment were to have the strongest impact on survival at the end of the treatment time period $t$ and as the study progresses this effect increases. This suggests events will occur less often as later time periods $t$ are reached.
+Conversely Lin et al. explain This weight would correspond to a delayed treatment effect, if the experimental treatment were to have the strongest impact on survival at the end of the treatment time period $t$ and as the study progresses this effect increases. This suggests events will occur less often as later time periods $t$ are reached.
