@@ -1,5 +1,4 @@
-km_trt_fit <- survfit(Surv(IPD.Brahmer.a.time, IPD.Brahmer.a.event) ~ IPD.Brahmer.a.arm)
-
+km_trt_fit <- survfit(Surv(time, event) ~ arm, data = IPD.Brahmer.a)
 
 ggsurv <- ggsurvplot(
   km_trt_fit,                     # survfit object with calculated statistics.
@@ -23,7 +22,7 @@ ggsurv <- ggsurvplot(
   ncensor.plot.height = 0.25,
   conf.int.style = "step",  # customize style of confidence intervals
   surv.median.line = "hv",  # add the median survival pointer.
-  legend.labs = c("Nivolumab", "Docetaxel")    # change legend labels.
+  legend.labs = c("Docetaxel", "Nivolumab")    # change legend labels.
 )
 
 # Labels for Survival Curves (plot)

@@ -23,13 +23,13 @@ ggsurv <- ggsurvplot(
   ncensor.plot.height = 0.25,
   conf.int.style = "step",  # customize style of confidence intervals
   surv.median.line = "hv",  # add the median survival pointer.
-  legend.labs = c("Atezolizumab", "Docetaxel")    # change legend labels.
+  legend.labs = c("Docetaxel", "Atezolizumab")    # change legend labels.
 )
 
 # Labels for Survival Curves (plot)
 ggsurv$plot <- ggsurv$plot + labs(
   title    = "Kaplan Meier Estimates of Progression-free Survival",                  
-  subtitle = "Patients in the IIT population"
+  subtitle = "Patients in the intend to treat population"
 )
 
 # Changing the font size, style and color

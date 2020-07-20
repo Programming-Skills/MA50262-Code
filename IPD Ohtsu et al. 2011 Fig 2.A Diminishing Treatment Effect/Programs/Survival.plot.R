@@ -1,4 +1,4 @@
-km_trt_fit <- survfit(Surv(IPD.Ohtsu.time, IPD.Ohtsu.event) ~ IPD.Ohtsu.arm)
+km_trt_fit <- survfit(Surv(time, event) ~ arm, data = IPD.Ohtsu)
 
 ggsurv <- ggsurvplot(
   km_trt_fit,                     # survfit object with calculated statistics.
@@ -22,7 +22,7 @@ ggsurv <- ggsurvplot(
   ncensor.plot.height = 0.25,
   conf.int.style = "step",  # customize style of confidence intervals
   surv.median.line = "hv",  # add the median survival pointer.
-  legend.labs = c("bevacizumab", "Placebo")    # change legend labels.
+  legend.labs = c("Placebo", "Bevacizumab")    # change legend labels.
 )
 
 # Labels for Survival Curves (plot)

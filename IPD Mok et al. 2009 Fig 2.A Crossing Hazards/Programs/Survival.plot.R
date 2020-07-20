@@ -1,5 +1,6 @@
+source("Libraries.R")
 
-km_trt_fit <- survfit(Surv(IPD.Mok.A.time, IPD.Mok.A.event) ~ IPD.Mok.A.arm)
+km_trt_fit <- survfit(Surv(time, event) ~ arm, data = IPD.Mok.A)
 
 ggsurv <- ggsurvplot(
   km_trt_fit,                     # survfit object with calculated statistics.
@@ -23,13 +24,13 @@ ggsurv <- ggsurvplot(
   ncensor.plot.height = 0.25,
   conf.int.style = "step",  # customize style of confidence intervals
   surv.median.line = "hv",  # add the median survival pointer.
-  legend.labs = c("Gefitinib", "Carboplatin")    # change legend labels.
+  legend.labs = c("Carboplatin", "Gefitinib")    # change legend labels.
 )
 
 # Labels for Survival Curves (plot)
 ggsurv$plot <- ggsurv$plot + labs(
   title    = "Kaplan-Meier Curves for Progression-free Survival",                  
-  subtitle = "patients who were positive for the EGFR mutation"
+  subtitle = "Overall Results"
 )
 
 # Changing the font size, style and color

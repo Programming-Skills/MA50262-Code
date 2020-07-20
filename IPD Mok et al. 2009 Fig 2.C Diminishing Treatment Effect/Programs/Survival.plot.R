@@ -1,4 +1,4 @@
-km_trt_fit <- survfit(Surv(IPD.Mok.C.time, IPD.Mok.C.event) ~ IPD.Mok.C.arm)
+km_trt_fit <- survfit(Surv(time, event) ~ arm, data = IPD.Mok.C)
 
 ggsurv <- ggsurvplot(
   km_trt_fit,                     # survfit object with calculated statistics.
@@ -8,7 +8,7 @@ ggsurv <- ggsurvplot(
   conf.int = FALSE,         # show confidence intervals for 
   # point estimates of survival curves.
   palette = c("#E7B800", "#2E9FDF"),
-  xlim = c(0,16),         # present narrower X axis, but not affect
+  xlim = c(0,14),         # present narrower X axis, but not affect
   # survival estimates.
   xlab = "Months since Randomization",   # customize X axis label.
   ylab = "Probability of Progression-free Survival",   # customize X axis label.
@@ -22,7 +22,7 @@ ggsurv <- ggsurvplot(
   ncensor.plot.height = 0.25,
   conf.int.style = "step",  # customize style of confidence intervals
   surv.median.line = "hv",  # add the median survival pointer.
-  legend.labs = c("Gefitinib", "Carboplatin")    # change legend labels.
+  legend.labs = c("Carboplatin", "Gefitinib")    # change legend labels.
 )
 
 # Labels for Survival Curves (plot)

@@ -1,5 +1,5 @@
 ---
-title: 'Methods to Accommodate Non-Proportional Hazards in the Analysis of Clinical Trials'
+title: 'Methods to Accommodate Non Proportional Hazards in the Analysis of Clinical Trials'
 author: 'Martin Adrian Hewing'
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 institution: 'University of Bath'
@@ -120,13 +120,13 @@ Alternatively, you can put that content in files like 00--prelim.Rmd and
 
 ## The Cox Proportional Hazards model
 
-This paper will now proceed to give a concise outline of censoring, the hazard function, the Cox model and some of the most important characteristics of this particular approach.
+This paper will now proceed to give a concise outline of censoring, the hazard function, the Cox model and some of the most important characteristics of this approach.
 <br/><br/>
-Censoring happens when some information about the survival times of individuals is available, but it is not known precisely. In general there are three separate answers to why censoring is likely to occur. Firstly, the individual does not get the event before the end of the study. Secondly, in the course of the study period, an individual is lost to follow-up, and thirdly, because an individual withdraws from the study, but for a reason other than due to getting the event of interest.
+Censoring happens when some information about the survival times of individuals is available, but it is not known precisely. In general, there are three separate answers to why censoring is likely to occur. Firstly, the individual does not get the event before the end of the study. Secondly, during the study period, an individual is lost to follow-up, and thirdly, because an individual withdraws from the study, but for a reason other than due to getting the event of interest.
 <br/><br/>
-Additionally, there are three types of censoring that can happen. Firstly, data that is right-censored. In this case the true time survived is the same as or more than the recorded survival time. Secondly, data that is left-censored. In this case the true time survived is the same as or less than the recorded survival time. Thirdly, data that is interval-censored. In this case the true time survived is within a time interval which is known to the researcher. This project will focus on data that is right censored.
+Additionally, there are three types of censoring that can happen. Firstly, data that is right-censored. In this case the true time survived is the same as or more than the recorded survival time. Secondly, data that is left-censored. In this case the true time survived is the same as or less than the recorded survival time. Thirdly, data that is interval censored. In this case the true time survived is within a time interval which is known to the researcher. This project will focus on data that is right censored.
 <br/><br/>
-The hazard function(also known as the conditional failure rate) is given by: 
+The hazard function (also known as the conditional failure rate) is given by: 
 
 <br/><br/>
 
@@ -140,7 +140,7 @@ Formally $\mathit{h(t)}$ can be defined as a function that "gives the instantane
 <br/><br/>
 In a similar fashion the hazard function calculates the potential to get the event being studied at that instant, given survival up to that point in time. Furthermore, it is important to note that for specific $\textit{t}$ time values the hazard function has two properties: firstly, $\mathit{h(t)}$ is not limited to an upper bound value. Secondly, $\mathit{h(t)}$ is never negative, it is more than or equal to zero. 
 <br/><br/>
-The Cox proportional hazards regression model  formula is given by:
+The Cox proportional hazards regression model formula is given by:
 
 <br/><br/>
 
@@ -154,7 +154,7 @@ $$\mathbf{X}=\left(X_{1}, X_{2}, \dots, X_{p}\right)$$
 
 The left hand side of the above expression is the time $\textit{t}$ hazard that an individual faces given a collection of explanatory variables $\mathbf{X}$ whereas, the right hand side of (2) is the product of the baseline hazard function given by $\mathit{{h_{0}(t)}}$ and an exponential expression which is raised to the $\mathit{\beta_{i} X_{i}}$ summed over the $\textit{P}$ predictor $\mathit{X}$ variables. 
 <br/><br/>
-Additionally in regard to the proportional hazards assumption it is important to note that in the formula given in (2) the baseline hazard is a function of $\textit{t}$ but not the $X^{\prime} s$.  Conversely, the exponential expression does not involve the $\textit{t's}$, but does involve the $X^{\prime} s$. Therefore, the $X^{\prime} s$ are "time-independent" and can be defined as "any variable whose value for a given individual does not change over time". Moreover, two important properties of the Cox proportional hazards model regression model formula are that firstly when all the $X^{\prime} s$ are zero then the formula equals the baseline hazard function as an exponential raised to the zero equals one, and the exponential in the Cox formula ensures that the fitted hazard is not negative. 
+Additionally, in regard to the proportional hazards assumption it is important to note that in the formula given in (2) the baseline hazard is a function of $\textit{t}$ but not the $X^{\prime} s$.  Conversely, the exponential expression does not involve the $\textit{t's}$ but does involve the $X^{\prime} s$. Therefore, the $X^{\prime} s$ are "time-independent" and can be defined as "any variable whose value for a given individual does not change over time". Moreover, two important properties of the Cox proportional hazards model regression model formula are that firstly when all the $X^{\prime} s$ are zero then the formula equals the baseline hazard function as an exponential raised to the zero equals one, and the exponential in the Cox formula ensures that the fitted hazard is not negative. 
 <br/><br/>
 Secondly, the Cox model is semi-parametric because $\mathit{{h_{0}(t)}}$ the baseline hazard function is unspecified, whereas , parametric models such as the Weibull or Exponential have a fixed functional form, so the Cox model is appropriate in many data situations where functional form of the baseline hazard is unknown as it can often accurately approximate the correct parametric form. 
 <br/><br/>
@@ -192,10 +192,11 @@ $$\hat{h}\left(t, X^{*}\right)=\hat{\theta} \hat{h}(t, X)$$
 
 <br/><br/>
 
-By letting $\hat{\theta}$ equal to $\exp \left[\sum_{i=1}^{p} \hat{\beta}_{i}\left(X_{i}^{*}-X_{i}\right)\right]$ it follows that $\frac{\hat{h}\left(t, \mathbf{X}^{*}\right)}{\hat{h}(t, \mathbf{X})}=\hat{\theta}$ and so $\hat{h}\left(t, X^{*}\right)=\hat{\theta} \hat{h}(t, X)$ where the constant of proportionality $\hat{\theta}$ is not dependent on $\textit{t}$. Therefore, one subjects hazard function is in proportion to another subjects hazard. 
+By letting $\hat{\theta}$ equal to $\exp \left[\sum_{i=1}^{p} \hat{\beta}_{i}\left(X_{i}^{*}-X_{i}\right)\right]$ it follows that $\frac{\hat{h}\left(t, \mathbf{X}^{*}\right)}{\hat{h}(t, \mathbf{X})}=\hat{\theta}$ and so $\hat{h}\left(t, X^{*}\right)=\hat{\theta} \hat{h}(t, X)$ where the constant of proportionality $\hat{\theta}$ is not dependent on $\textit{t}$. Therefore, one subjects hazard function is in proportion to another subject's hazard. 
+
 Klein05
 
-## Cox Proportional Hazards model Diagnostics
+## Model Diagnostics {#diag}
 
 Moore D explains that Schoenfeld residuals can be used to assess the proportional hazards assumption:
 
@@ -221,7 +222,7 @@ The Schoenfeld residuals are the score function's individual terms, and every te
 
 *The expected value is $E\left(Z_{i}\right)=\bar{z}\left(t_{i}\right)$, this is a weighted sum (weight is $p_{k}(\beta)$) of the values of the covariates for at risk patients at that particular time point.
 
-An alternative way to understand the weights is that they are the chance of choosing an indivual from the risk set at time $t$.
+An alternative way to understand the weights is that they are the chance of choosing an individual from the risk set at time $t$.
 
 Therefore, the residual for $\hat{\beta}$ for the $i^{th}$ event time is:
 
@@ -265,9 +266,18 @@ In this way an approximation of $\beta(t)$ can be obtained by adding the Cox Pro
 
 Finally a Schoenfeld plot of $r_{i}^{*}$ versus $t$ or $log(t)$ can be created to examine the residuals.
 
-## The Weighted Log Rank Test
+## The Weighted Log Rank Test (WLRT)
 
-Jimenez et al. gives a definition of the Weighted Log Rank Test (WLRT): 
+Roychoudhury et al. explain that the most frequently used rank-based test to compare two survival curves is the log-rank test (LRT).
+
+As the LRT is a non-parametric test, it performs well when the non-proportional hazards (NPH) assumption is not violated. However, when this assumption is broken the LRT is not sufficiently powerful. Furthermore, if the proportional hazards assumption is broken, it makes the hazard ratio (can be thought of as an average hazard ratio, which is subject to the overall follow-up of study participants) difficult to interpret. 
+
+Therefore, when NPH are present it is not apparent which estimand the hazard ratio and LRT are associated with. However, it should be noted that the LRT gives good performance in regard to type I error. This gives the rationale to consider the WLRT when NPH are present.
+
+<br>
+<br>
+
+Jimenez et al. gives a definition of the WLRT: 
 
 <br>
 <br>
@@ -275,6 +285,7 @@ Jimenez et al. gives a definition of the Weighted Log Rank Test (WLRT):
 $$Z_{r}=\frac{\sum_{i=1}^{D} r_{i}\left(d_{1 i}-\mathrm{E}\left(d_{1 i}\right)\right)}{\sqrt{\sum_{i=1}^{D} r_{i}^{2} \operatorname{Var}\left(d_{1 i}\right)}}$$
 
 $\text { where } \mathrm{E}\left(d_{1 i}\right)=n_{1 i} \times\left(\frac{d_{i}}{n_{i}}\right), \operatorname{Var}\left(d_{1 i}\right)=\frac{n_{1 i} n_{2 i} d_{i}\left(n_{i}-d_{i}\right)}{n_{i}^{2}\left(n_{i}-1\right)}$
+
 $\begin{aligned} &\text { and } Z_{r}^{\text {appr. }} N(0,1) \text { under the null hypothesis }\ H 0: h_{1} / h_{2}=1\end{aligned}$
 
 <br>
@@ -287,12 +298,14 @@ Fleming et al. developed the technique of using $r_{i}$ to weight early, middle 
 
 $$r_{i}=\hat{S}\left(t_{i}\right)^{\rho}\left(1-\hat{S}\left(t_{i}\right)\right)^{\gamma}$$
 
-Where $\hat{S}\left(t_{i}\right)$ is the  Kaplan-Meier estimator.
+Where $\hat{S}\left(t_{i}\right)$ is the Kaplan-Meier estimator.
 
 <br>
 <br>
 
 In the above equation choices of $\rho$ and $\gamma$ values serve to create different weights for the WLRT. 
+
+<br>
 
 ---------------------------------------------------------------------------- -------------------
   Rho $\rho$        Gamma $\gamma$     Difference            Function                Name              
@@ -305,9 +318,11 @@ In the above equation choices of $\rho$ and $\gamma$ values serve to create diff
 
       0                  1               Late                $1-S(t-)$                -
 ------------------------------------------------------------------------------------------------
-Table: (\#tab:inher) Weighted Log Rank Test Weight Functions
+Table: (\#tab:wlr) Weighted Log Rank Test Weight Functions 
 
-## Weights for the WLRT
+<br>
+
+The information in table \@ref(tab:wlr) is used to create four visualisations corresponding to the different $G^{\rho, \gamma}$ functions using the data from the [Mok et al. 2009 IPASS Study](#mok.a). 
 
 ```{r, include=FALSE}
 source("Libraries.R")
@@ -318,52 +333,66 @@ IPD.Mok.A <- readRDS("data/IPD.Mok.A.RDS")
 S <- survfit(Surv(time, event) ~ 1, data = IPD.Mok.A)
 ```
 
-```{r, echo=FALSE}
-# FH(1,0) S(t-) vs t (Prentice-Wilcoxon)
-plot(x = S$time, y = S$surv,
-     main = "FH(1,0)  S(t-) vs Time (Prentice-Wilcoxon)", 
-     xlab = "Time",
-     ylab = "1-S(t-)",
-     col = "blue")
-```
-
-<br>
-<br>
-
-```{r, echo=FALSE}
-# FH(0,1) S(t) against t
-plot(x = S$time, y = (1-S$surv),
-     main = "FH(0,1) S(t) vs Time", 
-     xlab = "Time",
-     ylab = "S(t)",
-     col = "blue")
-```
-
-<br>
-<br>
-
-```{r, echo=FALSE}
+```{r, echo=FALSE, fig.cap="FH(0,0) Log-Rank Test"}
 # Log.Rank 
 plot(x = S$time, 
      y = rep(1, times = length(S$time)),
-     main = "FH(0,0) Constant Function One Vs Time", 
+     main = "Constant Function One Vs Time", 
      xlab = "Time",
      ylab = "Constant Function 1",
      col = "blue")
 ```
 
+If the NPH assumption were not violated this project would expect to see a hazard ratio of one throughout the treatment time period $t$. This suggests events will be evenly spaced across $t$.
+
 <br>
 <br>
 
 ```{r, echo=FALSE}
-# FH(1,1) S(t)*(1-S(t))
+# FH(1,0) S(t-) vs t (Prentice-Wilcoxon) (early effect)
+plot(x = S$time, y = S$surv,
+     main = "FH(1,0) S(t-) vs Time (Prentice-Wilcoxon) (Early effect)", 
+     xlab = "Time",
+     ylab = "S(t-)",
+     col = "blue")
+```
+
+<br>
+<br>
+
+Lin et al. explain this weight would correspond to a early positive treatment effect. If the experimental treatment were to have the strongest positive impact on survival at the start of the treatment time period $t$ but this decreases as the treatment period progresses. This would suggest that more events will occur later in the study treatment period $t$.
+
+<br>
+<br>
+
+```{r, echo=FALSE}
+# FH(1,1) S(t)*(1-S(t)) (middle effect)
 plot(x = S$time, 
      y = (S$surv)*(1-(S$surv)), 
-     main = "FH(1,1) S(t)*(1-S(t))", 
+     main = "FH(1,1) S(t)*(1-S(t)) (Middle effect)", 
      xlab = "Time",
      ylab = "S(t)*(1-S(t)",
      col = "blue")
 ```
+
+<br>
+<br>
+
+Lin et al. explain this weight would correspond to a diminishing treatment effect, if the experimental treatment were to have the strongest impact on survival at the middle of the treatment time period $t$ and as the study progresses this effect tapers off and the experimental treatment becomes as effective as the standard of care. This suggests events will occur more often at the start and the end of the treatment period $t$.
+
+<br>
+<br>
+
+```{r, echo=FALSE}
+# FH(0,1) 1-S(t-) against t (late effect)
+plot(x = S$time, y = (1-S$surv),
+     main = "FH(0,1) S(t) vs Time (Late Effect)", 
+     xlab = "Time",
+     ylab = "1-S(t-)",
+     col = "blue")
+```
+
+Conversely Lin et al. explain This weight would correspond to a delayed treatment effect, if the experimental treatment were to have the strongest impact on survival at the end of the treatment time period $t$ and as the study progresses this effect increases. This suggests events will occur less often as later time periods $t$ are reached.
 
 <!--chapter:end:index.Rmd-->
 
@@ -621,17 +650,17 @@ The researchers compared their approach to the two traditional methods mentioned
 
 ## Precise survival data approach
 
-An approach developed by Guyot et al. 2012 that can be used with data that is left or right censored, makes use of an iterative algorithm. From this recreated IPD the survival curves can be reconstructed. In constrast to the approach put forward by Hoyle et al. the estimated IPD is precise survival data and not interval survival data. However, an assumption of Guyot et al. is that the rate of censoring is constant within a given time interval. 
+An approach developed by Guyot et al. 2012 that can be used with data that is left or right censored, makes use of an iterative algorithm. From this recreated IPD the survival curves can be reconstructed. In contrast to the approach put forward by Hoyle et al. the estimated IPD is precise survival data and not interval survival data. However, an assumption of Guyot et al. is that the rate of censoring is constant within a given time interval. 
 
-A concise explaination of the Guyot et al. algorithm is now given: 
+A concise explanation of the Guyot et al. algorithm is now given: 
 
 ```{r, echo=FALSE, fig.cap="Guyot Algorithm Flowchart"}
 knitr::include_graphics(path = "figure/guyot.flowchart.PNG")
 ```
 
-The intitial estmate of the number of censored subjects is obtained for the $i^{th}$ interval. From this ititial estimate, a calculation of the number of censored subjects that occured between the extracted KM co-ordinate $k$ and $k+1$ is made. Now this calculation is used to estimate the number of events that occur at every extracted KM co-ordinate $k$ and also the numbers of patients at risk at $k+1$. This information is used to compare the estimate of the number of patients at risk at the start of the interval $i$ to the reported number at risk at the beginning of the interval $i$, and if the numbers are not equal the process repeats itself until the two numbers are equal and this matches the previous iteration. Conversely, in the situation where, the total number of the reported events is greater than the estimate of the number of events the process repeats itself until the two numbers equal from the previous iteration.
+The  initial estimate of the number of censored subjects is obtained for the $i^{th}$ interval. From this initial estimate, a calculation of the number of censored subjects that occurred between the extracted KM co-ordinate $k$ and $k+1$ is made. Now this calculation is used to estimate the number of events that occur at every extracted KM co-ordinate $k$ and the numbers of patients at risk at $k+1$. This information is used to compare the estimate of the number of patients at risk at the start of the interval $i$ to the reported number at risk at the beginning of the interval $i$, and if the numbers are not equal the process repeats itself until the two numbers are equal and this matches the previous iteration. Conversely, in the situation where, the total number of the reported events is greater than the estimate of the number of events the process repeats itself until the two numbers equal from the previous iteration.
 
-Guyot et al. evaluated the accuracy of their approach by comparing the findings to the reported statistics in four papers that they selected to recreate, choosing not to carry any simulations. These included 22 probabilites of survival, 7 times of median survival, 6 hazard ratios and 4 log hazard ratio standard errors. The researchers discovered that their approach was highly accurate for both median survival times and survival probabilities and the accuracy was acceptable when the total number of events or the number of patients at risk was given. 
+Guyot et al. evaluated the accuracy of their approach by comparing the findings to the reported statistics in four papers that they selected to recreate, choosing not to carry any simulations. These included 22 probabilities of survival, 7 times of median survival, 6 hazard ratios and 4 log hazard ratio standard errors. The researchers discovered that their approach was highly accurate for both median survival times and survival probabilities and the accuracy was acceptable when the total number of events or the number of patients at risk was given. 
 
 ## Evaluation of the Four Approaches
 
@@ -639,21 +668,21 @@ Wan et al. 2015 compared all four approaches on simulated data and found that th
 
 ## Implementation of the Guyot et al. Approach
 
-To implement the Guyot et al. algorithm and reconstruct the IPD for a published KM curve a number of steps must be undertaken. Noting that it is imperative that the number of patients at risk and/or the total number of events must be known to apply this method.
+To implement the Guyot et al. algorithm and reconstruct the IPD for a published KM curve several steps must be undertaken. Noting that it is imperative that the number of patients at risk and/or the total number of events must be known to apply this method.
 
-Several reseachers have made use of the Guyot et al. algorithm in their work, this project will be using the method used by Satagopan et al. and some adjustments proposed by Magirr D and Biao et al. .
+A number of researchers have made use of the Guyot et al. algorithm in their work, this project will be using the method used by Satagopan et al. and some adjustments proposed by Magirr D and Biao et al.
 
 The first step was to source the studies that exhibit non-proportional hazards. (This project decided to source two studies for each type of non-proportional hazards, including, crossing hazards, a delayed treatment effect or diminishing treatment effect). 
 
-```{r, echo=FALSE, fig.cap="Various Types of Non-Proportional Hazards"}
+```{r, echo=FALSE, fig.cap="Knezevic et al. Various Types of Non-Proportional Hazards"}
 knitr::include_graphics(path = "figure/np.PNG")
 ```
 
-The main source of research papers that feature non-proportional hazards have been via the techniques used in the literature review. This has involved a continued search via the Mathematical Sciences hub on the University of Bath library portal, various databases including "Pubmed" using a modified keyword search to locate studies that exhibit non-proportional hazards for example "Oncology non-proportional hazards" returned 878 results, while "Clinical Trial non-proportional hazards" returned 943 results. Furthermore, as this is a contemporary issue which is having a significant impact on clinical trials, especially those focusing on oncology and immunotherapy many pharmacuetical companies are now working together to discuss these challenges and propose solutions. The information from these working groups are often then freely distributed. An example of one such working group is: The public workshop hosted at the Duke, Robert J. Margolis, MD Center for Health Policy titled "Oncology Clinical Trials in the Presence of Non-Proportional Hazards". This session examined various studies that featured non-proportion hazards and how different approaches might be used to overcome the problem of the violation of non-proportional hazards, and a follow up research paper created by Lin et al. 2020 titled: "Alternative Analysis Methods for Time to Event Endpoints Under Nonproportional Hazards: A Comparative Analysis" (discussed in the literature review). 
+The main source of research papers that feature non-proportional hazards have been via the techniques used in the literature review. This has involved a continued search via the Mathematical Sciences hub on the University of Bath library portal, various databases including "Pubmed" using a modified keyword search to locate studies that exhibit non-proportional hazards for example "Oncology non-proportional hazards" returned 878 results, while "Clinical Trial non-proportional hazards" returned 943 results. Furthermore, as this is a contemporary issue which is having a significant impact on clinical trials, especially those focusing on oncology and immunotherapy many pharmaceutical companies are now working together to discuss these challenges and propose solutions. The information from these working groups are often then freely distributed. An example of one such working group is: The public workshop hosted at the Duke, Robert J. Margolis, MD Center for Health Policy titled "Oncology Clinical Trials in the Presence of Non-Proportional Hazards". This session examined various studies that featured non-proportion hazards and how different approaches might be used to overcome the problem of the violation of non-proportional hazards, and a follow up research paper created by Lin et al. 2020 titled: "Alternative Analysis Methods for Time to Event Endpoints Under Nonproportional Hazards: A Comparative Analysis" (discussed in the literature review). 
 
-Once the relevant studies featuring non-proportional hazards have been sourced, as per the method undertaken by Satagopan et al. the first stage is to load the png image into Adobe Illustrator and to convert the image into a high fidelity photo. This enables the separate KM curves to be isolated from each other and saved to separate jpeg files. Then the separate images can be loaded into a software program such as "DigitalizeIT" that will facilitate the digital extraction of the survival and time probabilities. In this software program the researcher must stipulate the minimum and maximum X and Y values respectively and trace the outline of the KM curve either automatically or via a manual approach which involves tracing the curve with multiple mouse clicks. This data is then introduced to the algorithm after the researcher has stipulated which time ranges to consider. Noting that each treatment arm must be considered separately The output result will be IPD for each treatment arm which the researcher can bind together to create IPD for each study. This was carried out for the six studies that were selected for this project. 
+Once the relevant studies featuring non-proportional hazards have been sourced, as per the method undertaken by Satagopan et al. the first stage is to load the png image into Adobe Illustrator and to convert the image into a high-fidelity photo. This enables the separate KM curves to be isolated from each other and saved to separate jpeg files. Then the separate images can be loaded into a software program such as "DigitizeIT" that will facilitate the digital extraction of the survival and time probabilities. In this software program the researcher must stipulate the minimum and maximum X and Y values respectively and trace the outline of the KM curve either automatically or via a manual approach which involves tracing the curve with multiple mouse clicks. This data is then introduced to the algorithm after the researcher has stipulated which time ranges to consider. Noting that each treatment arm must be considered separately the output result will be IPD for each treatment arm which the researcher can bind together to create IPD for each study. This was carried out for the six studies that were selected for this project. 
 
-It is worth noting that an issue faced in this process was that the researcher must ensure that their data is monotonically decreasing and well defined. Furthermore, Biao et al. explains that if the researcher stipulates the number at risk parameter after the automatic collection of data points (the software can set too many instances of the same survival (y-axis) to different time points (x-axis)) there is the risk of upsetting the delicate balance between the amount of censored that are needed to ensure proportionality and overall numbers (of censored) between time points. If this relationship is broken then the vector of censored will contain negative numbers and break the algorithm. This problem occured during the creating of IPD for this project. However, a solution was to create a custom function that would remove values that where non-monotonically decreasing and to use the manual tracing method for the collection of some data-sets. 
+It is worth noting that an issue faced in this process was that the researcher must ensure that their data is monotonically decreasing and well defined. Furthermore, Biao et al. explains that if the researcher stipulates the number at risk parameter after the automatic collection of data points (the software can set too many instances of the same survival (y-axis) to different time points (x-axis)) there is the risk of upsetting the delicate balance between the amount of censored that are needed to ensure proportionality and overall numbers (of censored) between time points. If this relationship is broken, then the vector of censored will contain negative numbers and break the algorithm. This problem occurred during the creating of IPD for this project. However, a solution was to create a custom function that would remove values that where non-monotonically decreasing and to use the manual tracing method for the collection of some datasets. 
 
 ```{r, echo=FALSE, fig.cap="Red points show Non-Monotonically Decreasing Data"}
 knitr::include_graphics(path = "figure/mono3.PNG")
@@ -860,14 +889,12 @@ flights <- read.csv("data/flights.csv", stringsAsFactors = FALSE)
 # Analysis of Individual patient Data {#ref-labels}
 
 <br>
+
+## Mok et al. 2009 IPASS Study: Crossing Hazards {#mok.a}
+
 <br>
 
-## Mok et al. 2009 IPASS Study: Crossing Hazards
-
-<br>
-<br>
-
-```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.cap="Overall Study Results"}
+```{r,echo=FALSE, warning=FALSE, message=FALSE, fig.cap="Overall Study Results"}
 source("Libraries.R")
 
 IPD.Mok.A <- readRDS("data/IPD.Mok.A.RDS")
@@ -921,19 +948,13 @@ ggsurv <- ggpar(
 ggsurv
 ```
 
-<br>
-<br>
-
 The IPASS study which was titled: "Gefitinib or Carboplatin–Paclitaxel in Pulmonary Adenocarcinoma" was a phase 3 clinical trial (open label).
 
-Previously untreated East Asian patients who were suffering from non–small-cell lung cancer (advanced pulmonary adenocarcinoma) and were either former light smokers or non-smokers were assigned randomly to be treated with either a daily dose of 250mg of gefitinib (609 subjects) or a dose of carboplatin of 5 to 6mg per mililiter per minute and a dose a 200mg per meter squared of body-surface area (608 subjects). 
+Previously untreated East Asian patients who were suffering from non–small-cell lung cancer (advanced pulmonary adenocarcinoma) and were either former light smokers or non-smokers were assigned randomly to be treated with either a daily dose of 250mg of gefitinib (609 subjects) or a dose of carboplatin of 5 to 6mg per milliliter per minute and a dose a 200mg per meter squared of body-surface area (608 subjects). 
 
 The primary endpoint of the trial was the progression free survival of the subject. 
 
 From a visual inspection it is apparent that the experimental treatment begins with a greater hazard but there is a crossing of the treatment arms at around six months after that time the control arm presents the higher hazard, for overall patient outcome.
-
-<br>
-<br>
 
 ```{r, echo=FALSE, fig.cap= "Schoenfeld Plot for Mok et al. 2009 IPASS Study", warning=FALSE, message=FALSE}
 source("Libraries.R")
@@ -953,12 +974,10 @@ abline(h=0, col=2)
 # cox.zph(cox.model)
 ```
 
-<br>
-<br>
-
 The Schoenfeld residual plot is an effective method to assess the proportional hazards assumption when combined with a visual inspection of the Kaplan Meier curves and a global test of non-proportional hazards. 
 
-The Schoenfeld residuals are calculated by subtracting the expected value of the model from the scaled covariate value of the $i^{th}$ observed event. (Please see 0.1 Diagnosics for more information) and Adam O gives an explanation of the the pattern of the Schoenfeld residuals: for this model the dummy covariate "Gefitinib" which takes 1 if the patient is on the gifitinib treatment arm or 0 if the patient is on the carboplatin–paclitaxel treatment arm. If there is zero association and subjects are balanced in the trial (equal numbers in both arms), it would follow that the covariates expection would be 0.5. Alternatively, it could be said that a subject would equally likely to experience the event (death) in either treatment arm at any time point. If this were the case we would see no variability in the Schoenfeld residuals (a definite trend). 
+The Schoenfeld residuals are calculated by subtracting the expected value of the model from the scaled covariate value of the $i^{th}$ observed event. (Please see [0.1 Model Diagnostics](#diag) for more information) and Adam O gives an explanation of the pattern of the Schoenfeld residuals: for this model the dummy covariate "Gefitinib" which takes 1 if the patient is on the gefitinib treatment arm or 0 if the patient is on the carboplatin–paclitaxel treatment arm. If there is zero association and subjects are balanced in the trial (equal numbers in both arms), it would follow that the covariates expectation would be 0.5. Alternatively, it could be said that a subject would equally likely to experience the event (death) in either treatment arm at any time point. If this were the case, no variability in the Schoenfeld residuals (a definite trend) would be witnessed. 
+
 Moore D explains that the smooth (loess) curve's shape gives a visual representation of an estimate of the difference parameter as function of $t$. Additionally, a 95% confidence interval is given by the dashed lines.
 
 This project will now check proportional hazards by using the Schoenfeld test for proportion hazards:
@@ -974,11 +993,10 @@ $$Ha: Hazards\ are\ not\ proportional$$
 
 Due to the very large test statistic (chisq = 113) value and small p value (p = 2e-16), there is significant evidence of non-proportional hazards. 
 
-In Fig 3.1 the estimate shows a steady decline in the hazard until approximately the seven month mark, after that there is a slow constant increase in hazard. This reflects the effect seen in the KM curve, where the gefitinib treatment is at first detrimental to the patient compared to those treated with carboplatin, but at around seven months starts to give benefit when compared to the carboplatin.
+In Fig 3.1 the estimate shows a steady decline in the hazard until approximately the seven-month mark, after that there is a slow constant increase in hazard. This reflects the effect seen in the KM curve, where the gefitinib treatment is at first detrimental to the patient compared to those treated with carboplatin, but at around seven months starts to give benefit when compared to the carboplatin.
 
 From this analysis, there is clear evidence that the proportional hazards assumption has been violated and the results of the Cox proportional hazards model could be biased, giving the rationale to examine alternative methods to the overcome this issue.
 
-<br>
 <br>
 
 ```{r echo=FALSE, fig.cap="Cox Proportional Hazards Model", message=FALSE, warning=FALSE}
@@ -1003,19 +1021,17 @@ cox.model %>%
 ```
 
 <br>
-<br>
 
-The baseline hazard is unspecified in the Cox model. Therefore, the researcher cannot estimate the survival with the Cox Proportional Hazards Model. Furthermore, because the model does not estimate the intercept it is not possible to estimate the hazard, or make an estimation of the survival function.
+The baseline hazard is unspecified in the Cox model. Therefore, the researcher cannot estimate the survival with the Cox Proportional Hazards Model. Furthermore, because the model does not estimate the intercept it is not possible to estimate the hazard or make an estimation of the survival function.
 
-The Cox Proportional Hazards Model can provide an estimation of the hazard ratio (HR) (A measure of how likely a particular event is to occur in one group cpmpared to another group over time). 
+The Cox Proportional Hazards Model can provide an estimation of the hazard ratio (HR) (A measure of how likely an event is to occur in one group compared to another group over time). 
 
 The reported HR for the Cox Model in the gefitinib treatment arm is: 0.76 (carboplatin-paclitaxel is the reference group). An interpretation of the HR is that; at an instant in time a patient receiving the gefitinib is 0.76 times as likely to die as a patient who is on carboplatin treatment. Conversely a patient on the standard of care is 1.2438 times as likely to experience the event as a patient on the experimental treatment.
 
-By subtracting one from the HR, this ratio can be interpreted this as a percentage change. At a given instant a patient on the gefitinib tratment is ((1-0.76)*100) 24% less likely to die than those patients on the carboplatin dose if the assumptions of the model are satified.  
+By subtracting one from the HR, this ratio can be interpreted this as a percentage change. At a given instant a patient on the gefitinib treatment is ((1-0.76)*100) 24% less likely to die than those patients on the carboplatin dose if the assumptions of the model are satisfied.  
 
-Furthermore, the model is 95% confident that the true HR lies between 0.66 and 0.86 and the p-value for the test that the gefitinib coefficient is actually zero is less than 0.001.
+Furthermore, the model is 95% confident that the true HR lies between 0.66 and 0.86 and the p-value for the test that the gefitinib coefficient is zero is less than 0.001.
 
-<br>
 <br>
 
 ----------------------------------------------------------------------------------
@@ -1026,11 +1042,9 @@ Furthermore, the model is 95% confident that the true HR lies between 0.66 and 0
 Table: (\#tab:inher) Weighted Cox Proportional Hazards Model
 
 <br>
-<br>
 
-At a given instant in time a patient recieving the Gefitinib treatment is 0.965 times as likely to die as a patient who is on the Carboplatin-Paclitaxel treatment. The 95% confidence interval was (0.844, 1.104) with p value 0.605.
+At a given instant in time a patient receiving the Gefitinib treatment is 0.965 times as likely to die as a patient who is on the Carboplatin-Paclitaxel treatment. The 95% confidence interval was (0.844, 1.104) with p value 0.605.
 
-<br>
 <br>
 
 ----------------------------------------------------------------------------------
@@ -1041,11 +1055,9 @@ At a given instant in time a patient recieving the Gefitinib treatment is 0.965 
 Table: (\#tab:inher1) Weighted Cox Proportional Hazards Model (Generalized Concordance)
 
 <br>
-<br>
 
 With a probability of 49.12% (95% CI:45.8%, 52.5%), a patient treated with Gefitinib expected (at the baseline value) to die earlier than a patient treated with Carboplatin-Paclitaxel with p value 0.605.
 
-<br>
 <br>
 
 ```{r, echo=FALSE, fig.cap="Weights used by weighted Cox regression are plotted against time"}
@@ -1053,14 +1065,13 @@ knitr::include_graphics(path = "figure/mok.a.coxphw.svg")
 ```
 
 <br>
-<br>
 
 In this study the increase in the censoring weights are small during the first six months of treatment, after this they begin to rise rapidly. However, it should be noted that the normalised total weight range is [0,25, 2]. 
 
-<br>
-<br>
-
 ```{r, echo=FALSE, fig.cap="Weighted Log Rank Test"}
+
+# Weighted Log Rank Test
+
 source("Libraries.R")
 
 IPD.Mok.A <- readRDS("data/IPD.Mok.A.RDS")
@@ -1076,9 +1087,17 @@ result %>%
 ```
 
 <br>
+
+Table \@ref(tab:wlr) gives information on the $G^{\rho, \gamma}$ collection of weights used in the WLRT for this project. Additionally, the study data has been plotted using the weight functions of this test. FH(0,0), FH(1,0), FH(1,1), FH(0,1) to give a visual representation of the various weights used in this research.
+
+The WLRT results shown in table 3.3, reveal that all the p-values aside from FH(1,0) are statistically significant (a weight of FH(1,0) would signify more events occurring in the latter period of the study, and as per the KM curves this is clearly not the case). It would be expected that FH(0,1) would be significant as it is apparent that more events are likely to occur in the early portion of the treatment and potentially FH(1,1) the middle. However, there is little intuitive reason why F(0,0) is significant was there is a clear violation of the PH assumption. 
+
 <br>
 
 ```{r, echo=FALSE, include=FALSE}
+
+# Max Combo Test
+
 source("Libraries.R")
 
 IPD.Mok.A <- readRDS("data/IPD.Mok.A.RDS")
@@ -1101,9 +1120,11 @@ as.data.frame(result.mc) %>% kableExtra::kable(caption = "Max Combo Test")
 ```
 
 <br>
-<br>
 
 ```{r, include=FALSE, message=FALSE}
+
+# RMST
+
 source("Libraries.R")
 
 IPD.Mok.A <- readRDS("data/IPD.Mok.A.RDS")
@@ -1121,7 +1142,12 @@ result.rmst_ <- lapply(result.rmst, function(x) round(x, digits = 5))
 as.data.frame(result.rmst_) %>% kableExtra::kable(caption = "Restricted Mean Survival Time")
 ```
 
+<br>
+
 ```{r, include=FALSE}
+
+# RMST
+
 source("Libraries.R")
 
 IPD.Mok.A <- readRDS("data/IPD.Mok.A.RDS")
@@ -1131,7 +1157,6 @@ result.rmst2 = rmst2(time = IPD.Mok.A$time, status = IPD.Mok.A$event, arm = IPD.
 result.rmst2
 ```
 
-<br>
 <br>
 
 The point estimate indicated that patients on the Gefitinib treatment survive `r round(result.rmst2$unadjusted.result[1,1],1)` months longer than those on Carboplatin-Paclitaxel group on average, when following up the patients `r result.rmst2$tau` months. The 95% confidence interval was (`r round(result.rmst2$unadjusted.result[1,2],1)` to `r round(result.rmst2$unadjusted.result[1,3],1)`) with p value `r round(result.rmst2$unadjusted.result[1,4],2)`.
@@ -1157,13 +1182,11 @@ angle = 85
 ```
 
 <br>
-<br>
 
 \clearpage 
 
 ## Brehmer et al. 2016 Nivolumab versus Docetaxel Study: Crossing Hazards
 
-<br>
 <br>
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.cap="Kaplan–Meier curves for overall survival"}
@@ -1221,7 +1244,6 @@ ggsurv
 ```
 
 <br>
-<br>
 
 The Brehmer et al. 2015 study titled: "Nivolumab versus Docetaxel in Advanced Nonsquamous Non–Small-Cell Lung Cancer" was an open labelled randomised phase 3 trial which was global in scope. Patients who had previously been treated with a dose of 75mg docetaxel per square meter of body-area every each 3 week period or platinum-based doublet chemotherapy before or after progression of nonsquamous non–small-cell lung cancer (NSCLC) were assigned a dose of nivolumab of 3mg per kilogram of body-weight every two  weeks. 
 
@@ -1231,7 +1253,6 @@ The trial's primary end point was overall survival.
 
 From a visual inspection it is apparent that the experimental treatment begins with a greater hazard but there is a crossing of the treatment arms at around seven months after that time the control arm presents the higher hazard, for overall patient survival. survival.
 
-<br>
 <br>
 
 ```{r, echo=FALSE}
@@ -1255,9 +1276,8 @@ abline(h=0, col=2)
 
 Due to the large test statistic (chisq = 9.56) value and small p value (p = 0.002), there is significant evidence of non-proportional hazards. 
 
-In Fig 3.2 the estimate shows a slow steady decline in the hazard until approximately the ten month mark, after that there is a rapid increase in hazard. This reflects the effect seen in the KM curve, where the nivolumab treatment is at first detrimental to the patient compared to those treated with docetaxel, but at around ten months starts to give benefit when compared to the docetaxel arm.
+In Fig 3.2 the estimate shows a slow steady decline in the hazard until approximately the ten- month mark, after that there is a rapid increase in hazard. This reflects the effect seen in the KM curve, where the nivolumab treatment is at first detrimental to the patient compared to those treated with docetaxel, but at around ten months starts to give benefit when compared to the docetaxel arm.
 
-<br>
 <br>
 
 ```{r echo=FALSE, fig.cap="Cox Proportional Hazards Model"}
@@ -1282,15 +1302,12 @@ cox.model %>%
 ```
 
 <br>
-<br>
 
 The reported HR for the Cox Model in the nivolumab treatment arm is: 0.76 (docetaxel is the reference group). An interpretation of the HR is that; at an instant in time a patient receiving the nivolumab is 0.76 times as likely to die as a patient who is on docetaxel treatment. Conversely a patient on the standard of care is 1.2436 times as likely to experience the event as a patient on the experimental treatment.
 
-By subtracting one from the HR, this ratio can be interpreted this as a percentage change. At a given instant a patient on the nivolumab treatment is ((1-0.76)*100) 24% less likely to die than those patients on the docetaxel dose if the assumptions of the model are satified.  
+By subtracting one from the HR, this ratio can be interpreted this as a percentage change. At a given instant a patient on the nivolumab treatment is ((1-0.76)*100) 24% less likely to die than those patients on the docetaxel dose if the assumptions of the model are satisfied.  
+Furthermore, the model is 95% confident that the true HR lies between 0.62, 0.92 and the p-value for the test that the nivolumab coefficient is zero is less than 0.005.
 
-Furthermore, the model is 95% confident that the true HR lies between 0.62, 0.92 and the p-value for the test that the nivolumab coefficient is actually zero is less than 0.005.
-
-<br>
 <br>
 
 ----------------------------------------------------------------------------------
@@ -1301,11 +1318,9 @@ Furthermore, the model is 95% confident that the true HR lies between 0.62, 0.92
 Table: (\#tab:inher) Weighted Cox Proportional Hazards Model
 
 <br>
-<br>
 
-At a given instant in time a patient recieving the Nivolumab treatment is 0.846 times as likely to die as a patient who is on the Docetaxel treatment. The 95% confidence interval was (0.691, 1.0348) with p value 0.104.
+At a given instant in time a patient receiving the Nivolumab treatment is 0.846 times as likely to die as a patient who is on the Docetaxel treatment. The 95% confidence interval was (0.691, 1.0348) with p value 0.104.
 
-<br>
 <br>
 
 ----------------------------------------------------------------------------------
@@ -1316,11 +1331,9 @@ At a given instant in time a patient recieving the Nivolumab treatment is 0.846 
 Table: (\#tab:inher1) Weighted Cox Proportional Hazards Model (Generalized Concordance)
 
 <br>
-<br>
 
 With a probability of 45.82% (95% CI:45.8%, 52.5%), a patient treated with Nivolumab expected (at the baseline value) to die earlier than a patient treated with Docetaxel with p value 0.104.
 
-<br>
 <br>
 
 ```{r, echo=FALSE, fig.cap="Weights used by weighted Cox regression are plotted against time"}
@@ -1328,14 +1341,15 @@ knitr::include_graphics(path = "figure/brehmer.coxphw.svg")
 ```
 
 <br>
-<br>
 
 In this study the increase in the censoring weights are small during the first nine months of treatment, after this they begin to rise rapidly. However, it should be noted that the normalised total weight range is [1, 2]. 
 
 <br>
-<br>
 
 ```{r, echo=FALSE, fig.cap="Weighted Log Rank Test"}
+
+# WRLT
+
 source("Libraries.R")
 
 IPD.Brahmer.a <- readRDS("data/IPD.Brahmer.a.RDS")
@@ -1350,7 +1364,8 @@ result %>%
   kableExtra::kable()
 ```
 
-<br>
+The WLRT results shown in table 3., reveal that all the p-values are statistically significant. It would be expected that FH(0,1) would be significant (this is the most significant p value) as it is apparent that more events are likely to occur in the early portion of the treatment and potentially FH(1,1) the middle. However, there is little intuitive reason why F(0,0) or F(1,0) are significant was there is a clear violation of the PH assumption, so the standard log rank test would not be the most powerful test, and that the majority of events would occur early in the trial.
+
 <br>
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
@@ -1375,7 +1390,6 @@ result.mc <- lapply(result.mc, function(x) round(x, digits = 3))
 as.data.frame(result.mc) %>% kableExtra::kable()
 ```
 
-<br>
 <br>
 
 ```{r, include=FALSE, message=FALSE}
@@ -1405,7 +1419,7 @@ result.rmst2 = rmst2(time = IPD.Brahmer.a$time, status = IPD.Brahmer.a$event, ar
 
 result.rmst2
 ```
-<br>
+
 <br>
 
 The point estimate indicated that patients on the Nivolumab treatment survive `r round(result.rmst2$unadjusted.result[1,1],1)` months longer than those on Docetaxel group on average, when following up the patients `r round(result.rmst2$tau, 0)` months. The 95% confidence interval was (`r round(result.rmst2$unadjusted.result[1,2],1)` to `r round(result.rmst2$unadjusted.result[1,3],1)`) with p value `r round(result.rmst2$unadjusted.result[1,4],2)`.
@@ -1430,13 +1444,11 @@ angle = 85
 ```
 
 <br>
-<br>
 
 \clearpage 
 
-## Mok et al. 2009 IPASS Study: Dimishing Treatment Effect
+## Mok et al. 2009 IPASS Study: Diminishing Treatment Effect
 
-<br>
 <br>
 
 ```{r, echo = FALSE, fig.cap="Patients with unknown EGFR mutation status", warning=FALSE, message=FALSE}
@@ -1494,17 +1506,15 @@ ggsurv
 ```
 
 <br>
-<br>
 
 The IPASS study which was titled: "Gefitinib or Carboplatin–Paclitaxel in Pulmonary Adenocarcinoma" was a phase 3 clinical trial (open label).
 
-Previously untreated East Asian patients who were suffering from non–small-cell lung cancer (advanced pulmonary adenocarcinoma) and were either former light smokers or non-smokers were assigned randomly to be treated with either a daily dose of 250mg of gefitinib (609 subjects) or a dose of carboplatin of 5 to 6mg per mililiter per minute and a dose a 200mg per meter squared of body-surface area (608 subjects). 
+Previously untreated East Asian patients who were suffering from non–small-cell lung cancer (advanced pulmonary adenocarcinoma) and were either former light smokers or non-smokers were assigned randomly to be treated with either a daily dose of 250mg of gefitinib (609 subjects) or a dose of carboplatin of 5 to 6mg per milliliter per minute and a dose a 200mg per meter squared of body-surface area (608 subjects). 
 
 The primary endpoint of the trial was the progression free survival of the subject. 
 
 From a visual inspection it is apparent that the experimental treatment begins with a greater hazard but there is a crossing of the treatment arms at around six months after that time the control arm presents the higher hazard, for EGFR-Mutation–Negative patient group outcome.
 
-<br>
 <br>
 
 ```{r, echo=FALSE}
@@ -1525,13 +1535,11 @@ abline(h=0, col=2)
 ```
 
 <br>
-<br>
 
 Due to the large test statistic (chisq = 17) value and small p value (p = 3.7e-05), there is significant evidence of non-proportional hazards. 
 
-In Fig 3.1 the estimate shows a steady decline in the hazard until approximately the ten month mark. This reflects the effect seen in the KM curve, where the gefitinib treatment is detrimental to the patient compared to those treated with carboplatin, giving no benefit to patients within this group when compared to the standard of care.
+In Fig 3.1 the estimate shows a steady decline in the hazard until approximately the ten-month mark. This reflects the effect seen in the KM curve, where the gefitinib treatment is detrimental to the patient compared to those treated with carboplatin, giving no benefit to patients within this group when compared to the standard of care.
 
-<br>
 <br>
 
 ```{r echo=FALSE, fig.cap="Cox Proportional Hazards Model"}
@@ -1556,15 +1564,13 @@ cox.model %>%
 ```
 
 <br>
-<br>
 
 The reported HR for the Cox Model in the gefitinib treatment arm is: 2.80 (carboplatin-paclitaxel is the reference group). An interpretation of the HR is that; at an instant in time a patient receiving the gefitinib is 2.80 times as likely to die as a patient who is on carboplatin treatment. Conversely a patient on the standard of care is 1.8 times less likely to experience the event as a patient on the experimental treatment.
 
-By subtracting one from the HR, this ratio can be interpreted this as a percentage change. At a given instant a patient on the gefitinib tratment is ((1-2.80)*100) 180% more likely to die than those patients on the carboplatin dose if the assumptions of the model are satified.  
+By subtracting one from the HR, this ratio can be interpreted this as a percentage change. At a given instant a patient on the gefitinib treatment is ((1-2.80)*100) 180% more likely to die than those patients on the carboplatin dose if the assumptions of the model are satisfied.  
 
-Furthermore, the model is 95% confident that the true HR lies between 2.02 and 3.89 and the p-value for the test that the gefitinib coefficient is actually zero is less than 0.001.
+Furthermore, the model is 95% confident that the true HR lies between 2.02 and 3.89 and the p-value for the test that the gefitinib coefficient is zero is less than 0.001.
 
-<br>
 <br>
 
 ----------------------------------------------------------------------------------
@@ -1575,11 +1581,9 @@ Furthermore, the model is 95% confident that the true HR lies between 2.02 and 3
 Table: (\#tab:inher) Weighted Cox Proportional Hazards Model
 
 <br>
-<br>
 
-At a given instant in time a patient recieving the Nivolumab treatment is 3.863 times as likely to die as a patient who is on the Docetaxel treatment. The 95% confidence interval was (2.699, 5.531) with p value 0.00 .
+At a given instant in time a patient recieving the Nivolumab treatment is 3.863 times as likely to die as a patient who is on the Docetaxel treatment. The 95% confidence interval was (2.699, 5.531) with p value 0.00.
 
-<br>
 <br>
 
 ----------------------------------------------------------------------------------
@@ -1590,11 +1594,9 @@ At a given instant in time a patient recieving the Nivolumab treatment is 3.863 
 Table: (\#tab:inher1) Weighted Cox Proportional Hazards Model (Generalized Concordance)
 
 <br>
-<br>
 
 With a probability of 79.44% (95% CI:72.96%, 84.69%), a patient treated with Gefitinib expected (at the baseline value) to die earlier than a patient treated with Carboplatin-Paclitaxel with p value 0.000.
 
-<br>
 <br>
 
 ```{r, echo=FALSE, fig.cap="Weights used by weighted Cox regression are plotted against time"}
@@ -1602,11 +1604,9 @@ knitr::include_graphics(path = "figure/mok.c.coxph.svg")
 ```
 
 <br>
-<br>
 
-In this study the increase in the censoring weights are large during the course of the treatment. However, it should be noted that the normalised total weight range is [0, 2]. 
+In this study the increase in the censoring weights are large during the treatment. However, it should be noted that the normalised total weight range is [0, 2]. 
 
-<br>
 <br>
 
 ```{r, echo=FALSE, fig.cap="Weighted Log Rank Test"}
@@ -1626,10 +1626,12 @@ result %>%
   kableExtra::kable()
 ```
 
-<br>
+The WLRT results shown in table 3.3, reveal that all the p-values are statistically significant. It would be expected that FH(1,1) would be significant (this is one of the most significant  p values) as it is apparent that more events are likely to occur in the early and late portions of the trial. However, there is little intuitive reason why F(0,0) is significant was there is a clear violation of the PH assumption. Furthermore, the significant p values for FH(0,1) and FH(1,0) has little intuitive explanation as this would imply that events were more likely to occur at the beginning and end of the trial, and from the KM curves it can be seen that this is not the case.
+
 <br>
 
 ```{r, echo=FALSE, include=FALSE}
+
 source("Libraries.R")
 
 IPD.Mok.C <- readRDS("data/IPD.Mok.C.RDS")
@@ -1644,16 +1646,17 @@ IPD.Mok.C$arm <- ifelse(IPD.Mok.C$arm == 1, "control", "experimental")
 
 result.mc <- nphsim::combo.wlr(survival = IPD.Mok.C$time, cnsr = IPD.Mok.C$event, trt = IPD.Mok.C$arm, fparam = list(rgs=rgs,draws=draws))
 
-result.mc <- lapply(result.mc, function(x) round(x, digits = 3))
+result.mc <- lapply(result.mc, function(x) round(x, digits = 5))
 ```
 
 ```{r, echo=FALSE}
 as.data.frame(result.mc) %>% kableExtra::kable()
 ```
 
+As the package nphsim uses one sided p values so for this data set, this project will use the p value from the control arm and then take 1/exp(coef) to calculate the HR. The result of 1/0.25136 is 3.978358.
+
 <br>
-<br>
-  
+
 ```{r, include=FALSE, message=FALSE}
 source("Libraries.R")
 
@@ -1683,11 +1686,9 @@ result.rmst2
 ```
 
 <br>
-<br>
 
 The point estimate indicated that patients on the Gefitinib treatment survive `r round(result.rmst2$unadjusted.result[1,1],1)` months longer than those on Carboplatin-Paclitaxel group on average, when following up the patients `r result.rmst2$tau` months. The 95% confidence interval was (`r round(result.rmst2$unadjusted.result[1,2],1)` to `r round(result.rmst2$unadjusted.result[1,3],1)`) with p value `r round(result.rmst2$unadjusted.result[1,4],1)`.
 
-<br>
 <br>
 
 ```{r, echo=FALSE}
@@ -1710,13 +1711,11 @@ angle = 85
 ```
 
 <br>
-<br>
 
 \clearpage 
 
-## Ohtsu et al. 2011 AVAGAST Study: Dimishing Treatment Effect
+## Ohtsu et al. 2011 AVAGAST Study: Diminishing Treatment Effect
 
-<br>
 <br>
 
 ```{r, echo=FALSE, fig.cap="Patients in the intention-to-treat population", warning=FALSE, message=FALSE}
@@ -1772,19 +1771,18 @@ ggsurv <- ggpar(
 
 ggsurv
 ```
-<br>
+
 <br>
 
-The AVAGAST study which was titled "Bevacizumab in Combination With Chemotherapy As
-First-Line Therapy in Advanced Gastric Cancer" was an randomised international study that compared a placebo to a combination of bevacizumab to capecitabine-cisplatin in the treatment of advanced gastric cancer.
+The AVAGAST study was titled "Bevacizumab in Combination with Chemotherapy As
+First-Line Therapy in Advanced Gastric Cancer" was a randomised international study that compared a placebo to a combination of bevacizumab to capecitabine-cisplatin in the treatment of advanced gastric cancer.
 
-The study participants recieved a placebo or bevacizumab 7.5 mg/kg on the first day plus a dose of capecitabine 1,000 mg/m2 twice a day for 14 days every three weeks. For patients not able to take oral medications Fluorouracil was given. Futhermore, six cycles of Cisplatin were administered; bevacizumab and cisplatin were given until the toxity was too high or the patient suffered disease progression.
+The study participants received  a placebo or bevacizumab 7.5 mg/kg on the first day plus a dose of capecitabine 1,000 mg/m2 twice a day for 14 days every three weeks. For patients not able to take oral medications Fluorouracil was given. Futhermore, six cycles of Cisplatin were administered; bevacizumab and cisplatin were given until the toxicity was too high or the patient suffered disease progression.
 
 The primary endpoint of the trial was the progression free survival of the subject. 
 
-From a visual inspection it is seen that the bevacizumab hazard is less that the placebo throughout the course of the trial but the hazard is the same as the control arm by the end of the trial, point to the suposition that the treatment is ineffective.
+From a visual inspection it is seen that the bevacizumab hazard is less that the placebo throughout the course of the trial but the hazard is the same as the control arm by the end of the trial, point to the supposition that the treatment is ineffective.
 
-<br>
 <br>
 
 ```{r, echo=FALSE}
@@ -1805,13 +1803,11 @@ abline(h=0, col=2)
 ```
 
 <br>
-<br>
 
 Due to the large test statistic (chisq = 6.05) value and small p value (p = 0.014), there is significant evidence of non-proportional hazards. 
 
 In Fig 3.1 the estimate shows a steady increase in the hazard until approximately the five month mark, then the hazard is constant until around the ten month time mark, after that it is seen to rise until the end of the treatment period. This reflects the effect seen in the KM curve, where the bevacizumab treatment is benefical to the patient compared to those treated with with a placebo, however, by the end of the treatment period the experimental treatment seems to offer no additional benefit to the patient.
 
-<br>
 <br>
 
 ```{r, echo=FALSE, fig.cap="Cox Proportional Hazards Model"}
@@ -1836,16 +1832,12 @@ cox.model %>%
 ```
 
 <br>
-<br>
 
 The reported HR for the Cox Model in the bevacizumab treatment arm is: 0.87 (placebo is the reference group). An interpretation of the HR is that; at an instant in time a patient receiving the bevacizumab is 0.87 times as likely to die as a patient who is on placebo treatment. Conversely a patient on the standard of care is 1.13 times as likely to experience the event as a patient on the experimental treatment.
 
-By subtracting one from the HR, this ratio can be interpreted this as a percentage change. At a given instant a patient on the bevacizumab tratment is ((1-0.87)*100) 13% less likely to die than those patients on the placebo dose if the assumptions of the model are satified.  
+By subtracting one from the HR, this ratio can be interpreted this as a percentage change. At a given instant a patient on the bevacizumab treatment is ((1-0.87)*100) 13% less likely to die than those patients on the placebo dose if the assumptions of the model are satisfied.  
+Furthermore, the model is 95% confident that the true HR lies between 0.73 and 1.04 and the p-value for the test that the bevacizumab coefficient is zero is less than 0.12.
 
-Furthermore, the model is 95% confident that the true HR lies between 0.73 and 1.04 and the p-value for the test that the bevacizumab coefficient is actually zero is less than 0.12.
-
-
-<br>
 <br>
 
 ----------------------------------------------------------------------------------
@@ -1856,11 +1848,9 @@ Furthermore, the model is 95% confident that the true HR lies between 0.73 and 1
 Table: (\#tab:inher) Weighted Cox Proportional Hazards Model
 
 <br>
-<br>
 
-At a given instant in time a patient recieving the Nivolumab treatment is 0.852 times as likely to die as a patient who is on the Docetaxel treatment. The 95% confidence interval was (0.716, 1.015) with p value 0.073.
+At a given instant in time a patient receiving the Nivolumab treatment is 0.852 times as likely to die as a patient who is on the Docetaxel treatment. The 95% confidence interval was (0.716, 1.015) with p value 0.073.
 
-<br>
 <br>
 
 ----------------------------------------------------------------------------------
@@ -1870,7 +1860,6 @@ At a given instant in time a patient recieving the Nivolumab treatment is 0.852 
 ------------------------- ---------------------------------- ---------------------
 Table: (\#tab:inher1) Weighted Cox Proportional Hazards Model (Generalized Concordance)
 
-<br>
 <br>
 
 With a probability of 46.01% (95% CI:41.71%, 50.37%), a patient treated with Gefitinib expected (at the baseline value) to die earlier than a patient treated with Carboplatin-Paclitaxel with p value 0.073.
@@ -1883,14 +1872,15 @@ knitr::include_graphics(path = "figure/ohtsu.coxphw.svg")
 ```
 
 <br>
-<br>
 
 In this study the increase in the censoring weights are small during the first 12 months of treatment, after this they begin to rise rapidly. However, it should be noted that the normalised total weight range is [1,25, 2]. 
 
 <br>
-<br>
 
 ```{r, echo=FALSE, fig.cap="Weighted Log Rank Test"}
+
+# WLRT
+
 source("Libraries.R")
 
 IPD.Ohtsu <- readRDS("data/IPD.Ohtsu.RDS")
@@ -1905,10 +1895,14 @@ result %>%
   kableExtra::kable()
 ```
 
-<br>
+The WLRT results shown in table 3.3, reveal that only the p-value for FH(1,0) is statistically significant. As per the KM plot, the experimental treatment derives benefit for the patients throughout the course of the treatment period $t$. However, examination of the Schoenfeld plot shows that for most of the early follow up patients are benefiting from a HR < 1 this continues to around the thirteen month mark after which the HR > 1 and patients stop deriving benefit from the experimental treatment when compared to the standard of care. Therefore, it is prudent to weight early, as it is expected that most of the events would occur at the end of the study.
+
 <br>
 
 ```{r, echo=FALSE, include=FALSE}
+
+# Max Combo
+
 source("Libraries.R")
 
 IPD.Ohtsu <- readRDS("data/IPD.Ohtsu.RDS")
@@ -1931,8 +1925,7 @@ as.data.frame(result.mc) %>% kableExtra::kable()
 ```
 
 <br>
-<br>
-  
+
 ```{r, include=FALSE, message=FALSE}
 source("Libraries.R")
 
@@ -1962,11 +1955,9 @@ result.rmst2
 ```
 
 <br>
-<br>
 
 The point estimate indicated that patients on the Gefitinib treatment survive `r round(result.rmst2$unadjusted.result[1,1],1)` months longer than those on Carboplatin-Paclitaxel group on average, when following up the patients `r result.rmst2$tau` months. The 95% confidence interval was (`r round(result.rmst2$unadjusted.result[1,2],1)` to `r round(result.rmst2$unadjusted.result[1,3],1)`) with p value `r round(result.rmst2$unadjusted.result[1,4],1)`.
 
-<br>
 <br>
 
 ```{r, echo=FALSE}
@@ -1989,13 +1980,11 @@ angle = 85
 ```
 
 <br>
-<br>
 
 \clearpage 
 
 ## Ascierto et al. 2017 The Ipilimumab Study: Delayed Treatment Effect
 
-<br>
 <br>
 
 ```{r, echo=FALSE, fig.cap="Patients in the intention-to-treat population", warning=FALSE, message=FALSE}
@@ -2053,16 +2042,14 @@ ggsurv
 ```
 
 <br>
-<br>
 
 The Ipilimumab Study: titled "Ipilimumab 10 mg/kg versus ipilimumab 3 mg/kg in
-patients with unresectable or metastatic melanoma" was a mutlinational double-blind phase 3 trial that recruited patients suffering from previously untreated or treated advanced skin cancer and who had not previously been treated with immune checkpoint or BRAF inhibitors. The subjects were randomly assigned (all participants were masked to which treatment arm they were assigned to) to recieve either ipilimumab 10 mg/kg or 3 mg/kg, which was delivered intravenously every 3 weeks for 90 minutes. Furthermore, patients were stratified by disease progression status.
+patients with unresectable or metastatic melanoma" was a multinational double-blind phase 3 trial that recruited patients suffering from previously untreated or treated advanced skin cancer and who had not previously been treated with immune checkpoint or BRAF inhibitors. The subjects were randomly assigned (all participants were masked to which treatment arm they were assigned to) to receive either ipilimumab 10 mg/kg or 3 mg/kg, which was delivered intravenously every 3 weeks for 90 minutes. Furthermore, patients were stratified by disease progression status.
 
 The primary endpoint of the trial was the progression free survival of the subject in the intend to treat population. 
 
-From a visual inspection it is seen that the ipilimumab 10 mg/kg and the 3 mg/kg hazard are the same for the first seven months of the study. After seven months the treatment arms separate and ipilimumab 10 mg/kg hazard is less than 3 mg/kg hazard for the remainder of the treatment period.
+From a visual inspection it is seen that the ipilimumab 10 mg/kg and the 3 mg/kg hazard are the same for the first seven months of the study. After seven months the treatment arms separate, and ipilimumab 10 mg/kg hazard is less than 3 mg/kg hazard for the remainder of the treatment period.
 
-<br>
 <br>
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
@@ -2083,13 +2070,11 @@ abline(h=0, col=2)
 ```
 
 <br>
-<br>
 
 Due to the test statistic (chisq = 1.79) value and large p value (p = 0.18), there is not significant evidence of non-proportional hazards. However, from the observed KM curves there clearly show non-proportional hazards at the beginning of the time period.
 
-In Fig 3.1 the estimate shows the hazard is constant until approximately the two month mark, then the hazard slowly declines until around the twelve month mark, after that it is seen to rise until the end of the treatment period. This reflects the effect seen in the KM curve, where the 10mg and 3mg treatment seem to offer the same level of benefit to the patient in the first nine months.However, by the end of the treatment period the 10mg seems to offer additional benefit to the patient comared to the 3mg dose.
+In Fig 3.1 the estimate shows the hazard is constant until approximately the two-month mark, then the hazard slowly declines until around the twelve-month mark, after that it is seen to rise until the end of the treatment period. This reflects the effect seen in the KM curve, where the 10mg and 3mg treatment seem to offer the same level of benefit to the patient in the first nine months. However, by the end of the treatment period the 10mg seems to offer additional benefit to the patient compared to the 3mg dose.
 
-<br>
 <br>
 
 ```{r echo=FALSE, fig.cap="Cox Proportional Hazards Model"}
@@ -2114,15 +2099,13 @@ cox.model %>%
 ```
 
 <br>
-<br>
 
 The reported HR for the Cox Model in the ipilimumab 10 mg/kg treatment arm is: 0.85 (ipilimumab 3 mg/kg is the reference group). An interpretation of the HR is that; at an instant in time a patient receiving the ipilimumab 10 mg/kg is 0.85 times as likely to die as a patient who is on ipilimumab 3 mg/kg treatment. Conversely a patient on the standard of care is 1.15 times as likely to experience the event as a patient on the experimental treatment.
 
-By subtracting one from the HR, this ratio can be interpreted this as a percentage change. At a given instant a patient on the ipilimumab 10 mg/kg treatment is ((1-0.85)*100) 15% less likely to die than those patients on the ipilimumab 3 mg/kg dose if the assumptions of the model are satified.  
+By subtracting one from the HR, this ratio can be interpreted this as a percentage change. At a given instant a patient on the ipilimumab 10 mg/kg treatment is ((1-0.85)*100) 15% less likely to die than those patients on the ipilimumab 3 mg/kg dose if the assumptions of the model are satisfied.  
 
-Furthermore, the model is 95% confident that the true HR lies between 0.72 and 1.01 and the p-value for the test that the ipilimumab 10 mg/kg coefficient is actually zero is less than 0.061.
+Furthermore, the model is 95% confident that the true HR lies between 0.72 and 1.01 and the p-value for the test that the ipilimumab 10 mg/kg coefficient is zero is less than 0.061.
 
-<br>
 <br>
 
 ----------------------------------------------------------------------------------
@@ -2133,11 +2116,9 @@ Furthermore, the model is 95% confident that the true HR lies between 0.72 and 1
 Table: (\#tab:inher) Weighted Cox Proportional Hazards Model
 
 <br>
-<br>
 
-At a given instant in time a patient recieving the Nivolumab treatment is 0.846 times as likely to die as a patient who is on the Docetaxel treatment. The 95% confidence interval was (0.691, 1.0348) with p value 0.179.
+At a given instant in time a patient receiving the Nivolumab treatment is 0.846 times as likely to die as a patient who is on the Docetaxel treatment. The 95% confidence interval was (0.691, 1.0348) with p value 0.179.
 
-<br>
 <br>
 
 ----------------------------------------------------------------------------------
@@ -2148,11 +2129,9 @@ At a given instant in time a patient recieving the Nivolumab treatment is 0.846 
 Table: (\#tab:inher1) Weighted Cox Proportional Hazards Model (Generalized Concordance)
 
 <br>
-<br>
 
 With a probability of 46.93% (95% CI:42.5%, 51.41%), a patient treated with Gefitinib expected (at the baseline value) to die earlier than a patient treated with Carboplatin-Paclitaxel with p value 0.179.
 
-<br>
 <br>
 
 ```{r, echo=FALSE, fig.cap="Weights used by weighted Cox regression are plotted against time"}
@@ -2160,11 +2139,9 @@ knitr::include_graphics(path = "figure/asc.coxphw.svg")
 ```
 
 <br>
-<br>
 
 In this study the increase in the censoring weights are large during the first 3 months of treatment, after this they begin to rise slowly until after 40 months and then increase very quickly. However, it should be noted that the normalised total weight range is [0.5, 1.75]. 
 
-<br>
 <br>
 
 ```{r, echo=FALSE, fig.cap="Weighted Log Rank Test"}
@@ -2182,7 +2159,6 @@ result %>%
   kableExtra::kable()
 ```
 
-<br>
 <br>
 
 ```{r, echo=FALSE, include=FALSE}
@@ -2208,8 +2184,7 @@ as.data.frame(result.mc) %>% kableExtra::kable()
 ```
 
 <br>
-<br>
-  
+
 ```{r, include=FALSE, message=FALSE}
 source("Libraries.R")
 
@@ -2239,11 +2214,9 @@ result.rmst2
 ```
 
 <br>
-<br>
 
 The point estimate indicated that patients on the Ipilimumab 10 mg/kg treatment survive `r round(result.rmst2$unadjusted.result[1,1],1)` months longer than those on Ipilimumab 3 mg/kg group on average, when following up the patients `r result.rmst2$tau` months. The 95% confidence interval was (`r round(result.rmst2$unadjusted.result[1,2],1)` to `r round(result.rmst2$unadjusted.result[1,3],1)`) with p value `r round(result.rmst2$unadjusted.result[1,4],1)`.
 
-<br>
 <br>
 
 ```{r, echo=FALSE}
@@ -2266,13 +2239,11 @@ angle = 85
 ```
 
 <br>
-<br>
 
 \clearpage 
 
 ## Rittermeyer et al. 2017 The OAK Study: Delayed Treatment Effect
 
-<br>
 <br>
 
 ```{r, echo = FALSE, fig.cap="Patients in the WT population", warning=FALSE, message=FALSE}
@@ -2330,17 +2301,15 @@ ggsurv
 ```
 
 <br>
-<br>
 
-The OAK study 2017: was titled "Atezolizumab versus docetaxel in patients with previously treated non-small-cell lung cancer" investigated if randomly assigned cancer patients aged 18 and above and had not recieved some forms of prior treatment including docetaxel to recieve either docetaxel 75 mg/m2 every 3 weeks or an intravenous dose of 1200mg of atezolizumab
+The OAK study 2017: was titled "Atezolizumab versus docetaxel in patients with previously treated non-small-cell lung cancer" investigated if randomly assigned cancer patients aged 18 and above and had not received some forms of prior treatment including docetaxel to receive either docetaxel 75 mg/m2 every 3 weeks or an intravenous dose of 1200mg of atezolizumab
 
-The primary endpoint of the trial was the progression free survival of the subject in the intend to treat population and and PD-L1-expression population on their cancers. 
+The primary endpoint of the trial was the progression free survival of the subject in the intend to treat population and PD-L1-expression population on their cancers. 
 
 *Atezolizumab is a "humanised antiprogrammed death-ligand 1 (PD-L1) monoclonal antibody that inhibits PD-L1 and programmed death-1 (PD-1) and PD-L1 and B7–1 interactions, reinvigorating anticancer immunity".
 
-From a visual inspection it can be seen that the atezolizumab and docetaxel hazard are the same for the first three months of the study. After three months the treatment arms separate and atezolizumab is less than and docetaxel hazard for the remainder of the treatment period.
+From a visual inspection the atezolizumab and docetaxel hazard are the same for the first three months of the study. After three months the treatment arms separate and atezolizumab is less than and docetaxel hazard for the remainder of the treatment period.
 
-<br>
 <br>
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
@@ -2361,13 +2330,11 @@ abline(h=0, col=2)
 ```
 
 <br>
-<br>
 
 Due to the test statistic (chisq = 0.717) value and large p value (p = 0.4), there is not significant evidence of non-proportional hazards. However, from the observed KM curves there clearly show non-proportional hazards at the beginning of the time period.
 
-In Fig 3.1 the estimate shows the hazard is declining very slowly until around the nine month mark, then the hazard slowly increases until around the twenty-two month mark. This reflects the effect seen in the KM curve, where the atezolizumab and docetaxel treatment seem to offer the same level of benefit to the patient in the first five months. However, by the end of the treatment period the atezolizumab seems to offer additional benefit to the patient compared to the standard of care.
+In Fig 3.1 the estimate shows the hazard is declining very slowly until around the nine-month mark, then the hazard slowly increases until around the twenty-two-month mark. This reflects the effect seen in the KM curve, where the atezolizumab and docetaxel treatment seem to offer the same level of benefit to the patient in the first five months. However, by the end of the treatment period the atezolizumab seems to offer additional benefit to the patient compared to the standard of care.
 
-<br>
 <br>
 
 ```{r echo=FALSE, fig.cap="Cox Proportional Hazards Model"}
@@ -2392,15 +2359,13 @@ cox.model %>%
 ```
 
 <br>
-<br>
 
 The reported HR for the Cox Model in the atezolizumab treatment arm is: 0.72 (docetaxel is the reference group). An interpretation of the HR is that; at an instant in time a patient receiving the atezolizumab is 0.72 times as likely to die as a patient who is on docetaxel treatment. Conversely a patient on the standard of care is 1.15 times as likely to experience the event as a patient on the experimental treatment.
 
-By subtracting one from the HR, this ratio can be interpreted this as a percentage change. At a given instant a patient on the atezolizumab treatment is ((1-0.72)*100) 28% less likely to die than those patients on the docetaxel dose if the assumptions of the model are satified.  
+By subtracting one from the HR, this ratio can be interpreted this as a percentage change. At a given instant a patient on the atezolizumab treatment is ((1-0.72)*100) 28% less likely to die than those patients on the docetaxel dose if the assumptions of the model are satisfied.  
 
-Furthermore, the model is 95% confident that the true HR lies between 0.61 and 0.85 and the p-value for the test that the atezolizumab coefficient is actually zero is less than 0.001.
+Furthermore, the model is 95% confident that the true HR lies between 0.61 and 0.85 and the p-value for the test that the atezolizumab coefficient is zero is less than 0.001.
 
-<br>
 <br>
 
 ----------------------------------------------------------------------------------
@@ -2411,11 +2376,9 @@ Furthermore, the model is 95% confident that the true HR lies between 0.61 and 0
 Table: (\#tab:inher) Weighted Cox Proportional Hazards Model
 
 <br>
-<br>
 
-At a given instant in time a patient recieving the Atezolizumab treatment is 0.0.728 times as likely to die as a patient who is on the Docetaxel treatment. The 95% confidence interval was (0.614, 0.863) with p value 0.000.
+At a given instant in time a patient receiving the Atezolizumab treatment is 0.0.728 times as likely to die as a patient who is on the Docetaxel treatment. The 95% confidence interval was (0.614, 0.863) with p value 0.000.
 
-<br>
 <br>
 
 ----------------------------------------------------------------------------------
@@ -2426,11 +2389,9 @@ At a given instant in time a patient recieving the Atezolizumab treatment is 0.0
 Table: (\#tab:inher1) Weighted Cox Proportional Hazards Model (Generalized Concordance)
 
 <br>
-<br>
 
 With a probability of 49.12% (95% CI:45.8%, 52.5%), a patient treated with Gefitinib expected (at the baseline value) to die earlier than a patient treated with Carboplatin-Paclitaxel with p value 0.000.
 
-<br>
 <br>
 
 ```{r, echo=FALSE, fig.cap="Weights used by weighted Cox regression are plotted against time"}
@@ -2438,11 +2399,9 @@ knitr::include_graphics(path = "figure/ritt.coxphw.svg")
 ```
 
 <br>
-<br>
 
 In this study the increase in the censoring weights are small during the first 18 months of treatment, after this they begin to rise rapidly. However, it should be noted that the normalised total weight range is [1.5, 2]. 
 
-<br>
 <br>
 
 ```{r, echo=FALSE, fig.cap="Weighted Log Rank Test"}
@@ -2460,7 +2419,6 @@ result %>%
   kableExtra::kable()
 ```
 
-<br>
 <br>
 
 ```{r, echo=FALSE, include=FALSE}
@@ -2485,7 +2443,6 @@ result.mc <- lapply(result.mc, function(x) round(x, digits = 3))
 as.data.frame(result.mc) %>% kableExtra::kable()
 ```
 
-<br>
 <br>
   
 ```{r, include=FALSE, message=FALSE}
@@ -2517,11 +2474,9 @@ result.rmst2
 ```
 
 <br>
-<br>
 
 The point estimate indicated that patients on the Atezolizumab treatment survive `r round(result.rmst2$unadjusted.result[1,1],1)` months longer than those on Docetaxel group on average, when following up the patients `r result.rmst2$tau` months. The 95% confidence interval was (`r round(result.rmst2$unadjusted.result[1,2],1)` to `r round(result.rmst2$unadjusted.result[1,3],1)`) with p value `r round(result.rmst2$unadjusted.result[1,4],1)`.
 
-<br>
 <br>
 
 ```{r, echo=FALSE}
@@ -2543,7 +2498,6 @@ angle = 85
 )
 ```
 
-<br>
 <br>
 
 ## Tables

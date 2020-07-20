@@ -1,4 +1,4 @@
-km_trt_fit <- survfit(Surv(IPD.ascierto.2.a.time, IPD.ascierto.2.a.event) ~ IPD.ascierto.2.a.arm)
+km_trt_fit <- survfit(Surv(time, event) ~ arm, data = IPD.ascierto.2.a)
 
 ggsurv <- ggsurvplot(
   km_trt_fit,               # survfit object with calculated statistics.
