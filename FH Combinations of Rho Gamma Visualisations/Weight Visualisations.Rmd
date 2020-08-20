@@ -1,0 +1,206 @@
+
+```{r, include=FALSE}
+source("Libraries.R")
+
+IPD.Mok.A <- readRDS("data/IPD.Mok.A.RDS")
+
+# Pooled Survival Function S(t-) or 1-S(t-) = S(t)
+S <- survfit(Surv(time, event) ~ 1, data = IPD.Mok.A)
+```
+
+```{r, echo=FALSE, fig.cap="FH(0,0) Log-Rank Test"}
+# Log.Rank 
+plot(x = S$time, 
+     y = rep(1, times = length(S$time)),
+     main = "Constant Function One Vs Time", 
+     xlab = "Time",
+     ylab = "Constant Function 1",
+     col = "blue")
+```
+
+```{r, echo=FALSE}
+# FH(1,0) S(t-) vs t (Prentice-Wilcoxon) (early effect)
+plot(x = S$time, y = S$surv,
+     main = "FH(1,0) S(t-) vs Time (Prentice-Wilcoxon) (Early effect)", 
+     xlab = "Time",
+     ylab = "S(t-)",
+     col = "blue")
+```
+
+```{r, echo=FALSE}
+# FH(1,1) S(t)*(1-S(t)) (middle effect)
+plot(x = S$time, 
+     y = (S$surv)*(1-(S$surv)), 
+     main = "FH(1,1) S(t)*(1-S(t)) (Middle effect)", 
+     xlab = "Time",
+     ylab = "S(t)*(1-S(t)",
+     col = "blue")
+```
+
+```{r, echo=FALSE}
+# FH(0,1) 1-S(t-) against t (late effect)
+plot(x = S$time, y = (1-S$surv),
+     main = "FH(0,1) S(t) vs Time (Late Effect)", 
+     xlab = "Time",
+     ylab = "1-S(t-)",
+     col = "blue")
+```
+
+```{r}
+library(ggplot2)
+library(survival)
+
+IPD.Mok.A <- readRDS("data/IPD.Mok.A.RDS")
+
+# Pooled Survival Function S(t-) or 1-S(t-) = S(t)
+S <- survfit(Surv(time, event) ~ 1, data = IPD.Mok.A)
+
+x <- S$time
+
+# FH(0,0)
+y_1 <- rep(1, times = length(S$time))
+
+# FH(1,0)
+y_2 <- S$surv
+
+# FH(1,1)
+y_3 <- (S$surv)*(1-(S$surv))
+  
+# FH(0,1)
+y_4 <- (1-S$surv) 
+
+# FH(0,0) Blue
+a <- ggplot() + geom_point(aes(x = x, y = y_1, color = 'FH(0,0)')) + 
+  scale_color_manual(values = c("FH(0,0)" = "#bae1ff", "FH(1,0)" = "#baffc9", "FH(1,1)" = "#ffdfba", "FH(0,1)" = "#ffb3ba"), breaks = c("FH(0,0)", "FH(1,0)", "FH(1,1)", "FH(0,1)")) +
+  ylab(label = 'W(t)') +
+  xlab("Time") +
+  ylim(0,1.2) +
+  ggtitle(label = "W(t) vs Time") + 
+  theme_minimal() +
+  geom_segment(aes(x=0, xend=22, y=0, yend=0), 
+                           arrow = arrow(length = unit(0.3, "cm"))) +
+  geom_segment(aes(x=0, xend=0, y=0, yend=1), 
+                           arrow = arrow(length = unit(0.3, "cm"))) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(legend.title=element_blank()) 
+  
+# FH(1,0) Green
+b <- geom_point(aes(x = x, y = y_2, color = 'FH(1,0)'))
+
+# FH(1,1) Orange
+c <- geom_point(aes(x = x, y = y_3, color = 'FH(1,1)'))
+
+# FH(0,1) Yellow
+d <- geom_point(aes(x = x, y = y_4, color = 'FH(0,1)')) 
+
+p <- a +  b + c + d 
+
+p
+```
+
+```{r}
+library(ggplot2)
+library(survival)
+
+IPD.Mok.A <- readRDS("data/IPD.Mok.A.RDS")
+
+# Pooled Survival Function S(t-) or 1-S(t-) = S(t)
+S <- survfit(Surv(time, event) ~ 1, data = IPD.Mok.A)
+
+x <- S$time
+
+# FH(0,0)
+y_1 <- (rep(1, times = length(S$time) / max(rep(1, times = length(S$time)))))
+
+# FH(1,0)
+y_2 <- (S$surv / max(S$surv))
+
+# FH(1,1)
+y_3 <- ((S$surv)*(1-(S$surv)) / max((S$surv)*(1-(S$surv))))
+  
+# FH(0,1)
+y_4 <- ((1-S$surv) / max((1-S$surv)))
+
+# FH(0,0) Blue
+a <- ggplot() + geom_point(aes(x = x, y = y_1, color = 'FH(0,0)')) + 
+  scale_color_manual(values = c("FH(0,0)" = "#bae1ff", "FH(1,0)" = "#baffc9", "FH(1,1)" = "#ffdfba", "FH(0,1)" = "#ffb3ba"),
+                     breaks = c("FH(0,0)", "FH(1,0)", "FH(1,1)", "FH(0,1)")) +
+  ylab(label = 'A(t)') +
+  xlab("Time") +
+  ylim(0,1.25) +
+  ggtitle(label = "A(t) vs Time") + 
+  theme_minimal() +
+  geom_segment(aes(x=0, xend=22, y=0, yend=0), 
+                           arrow = arrow(length = unit(0.3, "cm"))) +
+  geom_segment(aes(x=0, xend=0, y=0, yend=1), 
+                           arrow = arrow(length = unit(0.3, "cm"))) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(legend.title=element_blank())
+  
+# FH(1,0) Green
+b <- geom_point(aes(x = x, y = y_2, color = 'FH(1,0)'))
+
+# FH(1,1) Orange
+c <- geom_point(aes(x = x, y = y_3, color = 'FH(1,1)'))
+
+# FH(0,1) Yellow
+d <- geom_point(aes(x = x, y = y_4, color = 'FH(0,1)')) 
+
+p <- a +  b + c + d 
+
+p
+```
+
+```{r}
+library(ggplot2)
+library(survival)
+
+IPD.Mok.A <- readRDS("data/IPD.Mok.A.RDS")
+
+# Pooled Survival Function S(t-) or 1-S(t-) = S(t)
+S <- survfit(Surv(time, event) ~ 1, data = IPD.Mok.A)
+
+x <- S$time
+
+# FH(0,0)
+y_1 <-log(0.760) * (rep(1, times = length(S$time) / max(rep(1, times = length(S$time)))))
+
+# FH(1,0)
+y_2 <- log(1.016) * (S$surv / max(S$surv))
+
+# FH(1,1)
+y_3 <- log(0.601) * ((S$surv)*(1-(S$surv)) / max((S$surv)*(1-(S$surv))))
+  
+# FH(0,1)
+y_4 <- log(0.495) * ((1-S$surv) / max((1-S$surv)))
+
+# FH(0,0) Blue
+a <- ggplot() + geom_point(aes(x = x, y = y_1, color = 'FH(0,0)')) + 
+  scale_color_manual(values = c("FH(0,0)" = "#bae1ff", "FH(1,0)" = "#baffc9", "FH(1,1)" = "#ffdfba", "FH(0,1)" = "#ffb3ba"),
+                     breaks = c("FH(0,0)", "FH(1,0)", "FH(1,1)", "FH(0,1)")) +
+  ylab(label = 'Log HR(t)') +
+  xlab("Time") +
+  ylim(-1,1) +
+  annotate("text", x = c(22, 6, 11, 22), y = c(log(0.760), log(0.601)-0.1, log(1.016)-0.1, log(0.495)), label = expression(beta)) +
+  ggtitle(label = "Log HR(t) vs Time") + 
+  theme_minimal() +
+  geom_segment(aes(x=0, xend=22, y=0, yend=0), 
+                           arrow = arrow(length = unit(0.3, "cm"))) +
+  geom_segment(aes(x=0, xend=0, y=-10, yend=10), 
+                           arrow = arrow(length = unit(0.3, "cm"))) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(legend.title=element_blank())
+  
+# FH(1,0) Green
+b <- geom_point(aes(x = x, y = y_2, color = 'FH(1,0)'))
+
+# FH(1,1) Orange
+c <- geom_point(aes(x = x, y = y_3, color = 'FH(1,1)'))
+
+# FH(0,1) Yellow
+d <- geom_point(aes(x = x, y = y_4, color = 'FH(0,1)')) 
+
+p <- a +  b + c + d 
+
+p
+```
