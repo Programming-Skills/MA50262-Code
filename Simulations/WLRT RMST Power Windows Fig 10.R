@@ -154,9 +154,9 @@ crossing_hazards_sim = function(n_c = 165, n_e = 165,
 decreasing_hazards_sim = function(n_c = 165, n_e = 165, 
                                   rec_period = 12, 
                                   rec_power = 1, 
-                                  med_e = 9, 
-                                  rate_c_1 = log(2) / 9, 
-                                  rate_c_2 = log(2) / 6, 
+                                  med_c = 6, 
+                                  rate_e_1 = log(2) / 9, 
+                                  rate_e_2 = log(2) / 6, 
                                   threshold = 2, 
                                   max_cal_t  = 36, 
                                   n_events = NULL, 
@@ -172,7 +172,7 @@ decreasing_hazards_sim = function(n_c = 165, n_e = 165,
     n_e <- model$n_e
     rec_period = model$rec_period
     rec_power = model$rec_power
-    med_e = model$med_e
+    med_c = model$med_c
     rate_c_1 = model$rate_c_1
     rate_c_2 = model$rate_c_2 
     threshold = model$threshold 
@@ -187,13 +187,13 @@ decreasing_hazards_sim = function(n_c = 165, n_e = 165,
   
   # control event times are exponentially distributed:
   
-  t_e = rexp(n_e, rate = log(2) / med_e)
+  t_c = rexp(n_c, rate = log(2) / med_c)
   
   # experimental event times come from 2-piece exponential distribution:
   
-  t_1_c = rexp(n_c, rate = rate_c_1)
-  t_2_c = rexp(n_c, rate = rate_c_2)
-  t_c = ifelse(t_1_c < threshold, t_1_c, threshold + t_2_c)
+  t_1_e = rexp(n_e, rate = rate_e_1)
+  t_2_e = rexp(n_e, rate = rate_e_2)
+  t_e = ifelse(t_1_e < threshold, t_1_e, threshold + t_2_e)
   
   # (calendar) event times, relative to start of trial.
   
@@ -371,7 +371,7 @@ get_risk_table <- function(dt){
 alpha <- 0.025
 
 # number of simulations
-M <- 1000
+M <- 100
 
 t_cut = seq(1,by=1,20)
 
@@ -404,7 +404,7 @@ model_DH <- list(n_c = 165,
                  n_e = 165, 
                  rec_period = 12, 
                  rec_power = 1, 
-                 med_e = 9, 
+                 med_e = 6, 
                  rate_c_1 = log(2) / 9, 
                  rate_c_2 = log(2) / 6, 
                  threshold = 9, 
@@ -518,5 +518,5 @@ scenarios = grid.arrange(p1, p2,
                          nrow = 1, ncol = 2)
 class(scenarios) <- c("scenarios", class(scenarios))
 
-ggsave("~/R/Quantifying-treatment-differences-in-confirmatory-trials-under-non-proportional-hazards/Figure_3.3.png",scenarios,
-       width = 10, height = 4, dpi = 300)
+scenarios
+

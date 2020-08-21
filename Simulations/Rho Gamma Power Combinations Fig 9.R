@@ -2,7 +2,7 @@ library(data.table)
 library(dplyr)
 library(ggplot2)
 
-delayed_effect_sim = function(n_c = 165, n_e = 165, rec_period = 12, rec_power = 1, med_c = 6, rate_e_1 = log(2) / 6, rate_e_2 = log(2) / 9, delay = 2, max_cal_t  = 36, n_events = NULL, model = NULL){
+decreasing_hazards_sim = function(n_c = 165, n_e = 165, rec_period = 12, rec_power = 1, med_c = 6, rate_e_1 = log(2) / 9, rate_e_2 = log(2) / 6, delay = 2, max_cal_t  = 36, n_events = NULL, model = NULL){
   
   if (is.null(max_cal_t) && is.null(n_events)) stop("either max_cal_t or n_events must be specified.")
   if ((!is.null(max_cal_t)) && (!is.null(n_events))) stop("one of max_cal_t and n_events must be NULL.")
@@ -223,8 +223,8 @@ n_e = 330/2
 rec_period = 12
 rec_power = 1
 med_c = 6
-rate_e_1 = log(2)/6
-rate_e_2 = log(2)/9
+rate_e_1 = log(2)/9
+rate_e_2 = log(2)/6
 delay = 4
 max_cal_t  = NULL
 end_event = 200
@@ -233,7 +233,7 @@ end_event = 200
 alpha <- 0.025
 
 # number of simulations
-M <- 10000
+M <- 1000
 
 rho_vector = seq(0, by = 0.1, 1)
 gamma_vector = seq(0, by = 0.1, 1)
@@ -246,7 +246,7 @@ for(ii in 1:length(rho_vector)){
     cat("Rho = ", rho_vector[ii], "Gamma = ", gamma_vector[jj], "\n")
   
   # model parameters TS
-  model_DE <- list(n_c = n_c,
+  model_DH <- list(n_c = n_c,
                    n_e = n_e,
                    rec_period = rec_period, 
                    rec_power = rec_power, 
@@ -258,7 +258,7 @@ for(ii in 1:length(rho_vector)){
                    n_events = end_event)
   
   # simulate data
-  sim_data_DE <- replicate(M, delayed_effect_sim(model = model_DE), simplify = FALSE) 
+  sim_data_DE <- replicate(M, decreasing_hazards_sim(model = model_DH), simplify = FALSE) 
   
   # create risk table
   risk_table_DE <- lapply(sim_data_DE, get_risk_table)
@@ -302,6 +302,5 @@ p = ggplot(df, aes(rho, gamma, fill= Power)) +
   theme(text = element_text(size = 12),
         legend.text = element_text(face = "italic"))
 
-ggsave("Figure_2.pdf",p,
-       width = 6, height = 3, dpi = 300)
+p
 
