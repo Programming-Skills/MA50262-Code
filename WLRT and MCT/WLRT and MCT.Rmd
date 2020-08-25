@@ -1,0 +1,382 @@
+---
+title: "WLRT and MCT"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo=FALSE, fig.cap="Weighted Log Rank Test"}
+
+# Weighted Log Rank Test
+
+source("~/R/nphsim/R/wlr.Stat.r")
+source("~/R/nphsim/R/Cox_RhoGamma_functions_v3_5.R")
+library(survMisc)
+library(dplyr)
+library(data.table)
+
+
+IPD.Mok.A <- readRDS("data/IPD.Mok.A.RDS")
+
+colnames(IPD.Mok.A) <- c("time", "event", "arm")
+
+IPD.Mok.A$event <- ifelse(IPD.Mok.A$event == 0, 1, 0)
+
+result <- wlr.Stat(surv=IPD.Mok.A$time, cnsr=IPD.Mok.A$event, trt= IPD.Mok.A$arm, fparam=list(rho=c(0,0,1,1), gamma=c(0,1,1,0), wlr='FH(0,1)', APPLE=NULL))
+
+result %>% 
+  kableExtra::kable(caption = "Weighted Log Rank Test")
+
+result[,lapply(.SD, qnorm)]
+
+# pval
+# <dbl>
+# pval_FH(0,0)
+# <dbl>
+# pval_FH(0,1)
+# <dbl>
+# pval_FH(1,1)
+# <dbl>
+# pval_FH(1,0)
+# <dbl>
+# -9.380475	-4.20885	-9.380475	-7.206256	0.2216557
+```
+
+```{r, echo=FALSE, include=FALSE}
+
+# Max Combo Test
+
+source("Libraries.R")
+
+IPD.Mok.A <- readRDS("data/IPD.Mok.A.RDS")
+
+draws <- 1000
+
+rgs <- list(c(0, 0), c(0, 1), c(1, 1), c(1, 0))
+
+IPD.Mok.A$arm <- ifelse(IPD.Mok.A$arm == 0, "control", "experimental")
+
+IPD.Mok.A$event <- ifelse(IPD.Mok.A$event == 0, 1, 0)
+
+result.mc <- nphsim::combo.wlr(survival = IPD.Mok.A$time, cnsr = IPD.Mok.A$event, trt = IPD.Mok.A$arm, fparam = list(rgs=rgs,draws=draws))
+
+result.mc <- lapply(result.mc, function(x) round(x, digits = 5))
+```
+
+```{r, echo=FALSE}
+as.data.frame(result.mc) %>% kableExtra::kable(caption = "Max Combo Test")
+
+# Max Combo Test
+# rho	gamma	Zmax	pval	hr	hrL	hrU	hrL.bc	hrU.bc
+# 0	1	9.38047	0	0.4952	0.42517	0.57676	0.41244	0.58237
+```
+
+```{r, echo=FALSE, fig.cap="Weighted Log Rank Test"}
+
+# WRLT
+
+source("~/R/nphsim/R/wlr.Stat.r")
+source("~/R/nphsim/R/Cox_RhoGamma_functions_v3_5.R")
+library(survMisc)
+library(dplyr)
+library(data.table)
+# library(nphsim)
+
+IPD.Brahmer.a <- readRDS("data/IPD.Brahmer.a.RDS")
+
+IPD.Brahmer.a$event <- ifelse(IPD.Brahmer.a$event == 0, 1, 0)
+
+colnames(IPD.Brahmer.a) <- c("time", "event", "arm")
+
+result <- wlr.Stat(surv=IPD.Brahmer.a$time, cnsr=IPD.Brahmer.a$event, trt= IPD.Brahmer.a$arm, fparam=list(rho=c(0,0,1,1), gamma=c(0,1,1,0), wlr='FH(0,1)', APPLE=NULL))
+
+result %>% 
+  kableExtra::kable()
+
+result
+
+result[,lapply(.SD, qnorm)]
+
+# pval
+# <dbl>
+# pval_FH(0,0)
+# <dbl>
+# pval_FH(0,1)
+# <dbl>
+# pval_FH(1,1)
+# <dbl>
+# pval_FH(1,0)
+# <dbl>
+# -3.907895	-2.80596	-3.907895	-3.914892	-1.782945
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+source("Libraries.R")
+
+IPD.Brahmer.a <- readRDS("data/IPD.Brahmer.a.RDS")
+
+IPD.Brahmer.a$event <- ifelse(IPD.Brahmer.a$event == 0, 1, 0)
+
+IPD.Brahmer.a$arm <- ifelse(IPD.Brahmer.a$arm == 0, "control", "experimental")
+
+rgs <- list(c(0, 0), c(0, 1), c(1, 1), c(1, 0))
+
+draws <- 1000
+
+result.mc <- nphsim::combo.wlr(survival = IPD.Brahmer.a$time, cnsr = IPD.Brahmer.a$event, trt = IPD.Brahmer.a$arm, fparam = list(rgs=rgs,draws=draws))
+
+result.mc <- lapply(result.mc, function(x) round(x, digits = 3))
+```
+
+```{r, echo=FALSE}
+as.data.frame(result.mc) %>% kableExtra::kable()
+
+# rho	gamma	Zmax	pval	hr	hrL	hrU	hrL.bc	hrU.bc
+# 0	1	4.032	0	0.631	0.502	0.792	0.485	0.801
+```
+
+```{r, echo=FALSE, fig.cap="Weighted Log Rank Test"}
+
+source("~/R/nphsim/R/wlr.Stat.r")
+source("~/R/nphsim/R/Cox_RhoGamma_functions_v3_5.R")
+library(survMisc)
+library(dplyr)
+library(data.table)
+
+IPD.Mok.C <- readRDS("data/IPD.Mok.C.RDS")
+
+IPD.Mok.C$event <- ifelse(IPD.Mok.C$event == 0, 1, 0)
+
+IPD.Mok.C$arm <- ifelse(IPD.Mok.C$arm == 0, "control", "experimental")
+
+colnames(IPD.Mok.C) <- c("time", "event", "arm")
+
+result <- wlr.Stat(surv=IPD.Mok.C$time, cnsr=IPD.Mok.C$event, trt= IPD.Mok.C$arm, fparam=list(rho=c(0,0,1,1), gamma=c(0,1,1,0), wlr='FH(0,1)', APPLE=NULL))
+
+result %>% 
+  kableExtra::kable()
+
+result[,lapply(.SD, qnorm)]
+
+# pval
+# <dbl>
+# pval_FH(0,0)
+# <dbl>
+# pval_FH(0,1)
+# <dbl>
+# pval_FH(1,1)
+# <dbl>
+# pval_FH(1,0)
+# <dbl>
+# 3.164564	6.384135	3.164564	5.708969	7.841812
+```
+
+```{r, echo=FALSE, include=FALSE}
+
+source("Libraries.R")
+
+IPD.Mok.C <- readRDS("data/IPD.Mok.C.RDS")
+
+rgs <- list(c(0, 0), c(0, 1), c(1, 1), c(1, 0))
+
+draws <- 1000
+
+IPD.Mok.C$event <- ifelse(IPD.Mok.C$event == 0, 1, 0)
+
+IPD.Mok.C$arm <- ifelse(IPD.Mok.C$arm == 1, "control", "experimental")
+
+result.mc <- nphsim::combo.wlr(survival = IPD.Mok.C$time, cnsr = IPD.Mok.C$event, trt = IPD.Mok.C$arm, fparam = list(rgs=rgs,draws=draws))
+
+result.mc <- lapply(result.mc, function(x) round(x, digits = 5))
+```
+
+```{r, echo=FALSE}
+as.data.frame(result.mc) %>% kableExtra::kable()
+
+# rho	gamma	Zmax	pval	hr	hrL	hrU	hrL.bc	hrU.bc
+# 1	0	7.31802	0	0.25136	0.17348	0.36419	0.17174	0.37461
+```
+
+```{r, echo=FALSE, fig.cap="Weighted Log Rank Test"}
+
+# WLRT
+
+source("~/R/nphsim/R/wlr.Stat.r")
+source("~/R/nphsim/R/Cox_RhoGamma_functions_v3_5.R")
+library(survMisc)
+library(dplyr)
+library(data.table)
+
+IPD.Ohtsu <- readRDS("data/IPD.Ohtsu.RDS")
+
+IPD.Ohtsu$event <- ifelse(IPD.Ohtsu$event == 0, 1, 0)
+
+colnames(IPD.Ohtsu) <- c("time", "event", "arm")
+
+result <- wlr.Stat(surv=IPD.Ohtsu$time, cnsr=IPD.Ohtsu$event, trt= IPD.Ohtsu$arm, fparam=list(rho=c(0,0,1,1), gamma=c(0,1,1,0), wlr='FH(0,1)', APPLE=NULL))
+
+result %>% 
+  kableExtra::kable()
+
+result[,lapply(.SD, qnorm)]
+
+# pval
+# <dbl>
+# pval_FH(0,0)
+# <dbl>
+# pval_FH(0,1)
+# <dbl>
+# pval_FH(1,1)
+# <dbl>
+# pval_FH(1,0)
+# <dbl>
+# -0.02577482	-1.546926	-0.02577482	-0.7084914	-2.224917
+
+```
+
+```{r, echo=FALSE, include=FALSE}
+
+# Max Combo
+
+source("Libraries.R")
+
+IPD.Ohtsu <- readRDS("data/IPD.Ohtsu.RDS")
+
+IPD.Ohtsu$event <- ifelse(IPD.Ohtsu$event == 0, 1, 0)
+
+IPD.Ohtsu$arm <- ifelse(IPD.Ohtsu$arm == 0, "control", "experimental")
+
+rgs <- list(c(1, 0), c(0, 2))
+
+draws <- 1000
+
+result.mc <- nphsim::combo.wlr(survival = IPD.Ohtsu$time, cnsr = IPD.Ohtsu$event, trt = IPD.Ohtsu$arm, fparam = list(rgs=rgs,draws=draws))
+
+result.mc <- lapply(result.mc, function(x) round(x, digits = 5))
+```
+
+```{r, echo=FALSE}
+as.data.frame(result.mc) %>% kableExtra::kable()
+
+# rho	gamma	Zmax	pval	hr	hrL	hrU	hrL.bc	hrU.bc
+# 1	0	2.22492	0.031	0.81465	0.67999	0.97597	0.66031	0.99847
+```
+
+```{r, echo=FALSE, fig.cap="Weighted Log Rank Test"}
+
+source("~/R/nphsim/R/wlr.Stat.r")
+source("~/R/nphsim/R/Cox_RhoGamma_functions_v3_5.R")
+library(survMisc)
+library(dplyr)
+library(data.table)
+
+IPD.ascierto.2.a <- readRDS("data/IPD.ascierto.2.a.RDS")
+
+IPD.ascierto.2.a$event <- ifelse(IPD.ascierto.2.a$event == 0, 1, 0)
+
+colnames(IPD.ascierto.2.a) <- c("time", "event", "arm")
+
+result <- wlr.Stat(surv=IPD.ascierto.2.a$time, cnsr=IPD.ascierto.2.a$event, trt= IPD.ascierto.2.a$arm, fparam=list(rho=c(0,0,1,1), gamma=c(0,1,1,0), wlr='FH(0,1)', APPLE=NULL))
+
+result %>% 
+  kableExtra::kable()
+
+result[,lapply(.SD, qnorm)]
+
+# pval
+# <dbl>
+# pval_FH(0,0)
+# <dbl>
+# pval_FH(0,1)
+# <dbl>
+# pval_FH(1,1)
+# <dbl>
+# pval_FH(1,0)
+# <dbl>
+# -2.296742	-1.869846	-2.296742	-2.449518	-1.323338
+```
+
+```{r, echo=FALSE, include=FALSE}
+source("Libraries.R")
+
+IPD.ascierto.2.a <- readRDS("data/IPD.ascierto.2.a.RDS")
+
+rgs <- list(c(0, 0), c(0, 1), c(1, 1), c(1, 0))
+
+draws <- 1000
+
+IPD.ascierto.2.a$event <- ifelse(IPD.ascierto.2.a$event == 0, 1, 0)
+
+IPD.ascierto.2.a$arm <- ifelse(IPD.ascierto.2.a$arm == 0, "control", "experimental")
+
+result.mc <- nphsim::combo.wlr(survival = IPD.ascierto.2.a$time, cnsr = IPD.ascierto.2.a$event, trt = IPD.ascierto.2.a$arm, fparam = list(rgs=rgs,draws=draws))
+
+result.mc <- lapply(result.mc, function(x) round(x, digits = 3))
+```
+
+```{r, echo=FALSE}
+as.data.frame(result.mc) %>% kableExtra::kable()
+
+# rho	gamma	Zmax	pval	hr	hrL	hrU	hrL.bc	hrU.bc
+# 1	1	2.45	0.016	0.798	0.666	0.956	0.638	0.98
+```
+
+```{r, echo=FALSE, fig.cap="Weighted Log Rank Test"}
+source("~/R/nphsim/R/wlr.Stat.r")
+source("~/R/nphsim/R/Cox_RhoGamma_functions_v3_5.R")
+library(survMisc)
+library(dplyr)
+library(data.table)
+
+IPD.Rittmeyer <- readRDS("data/IPD.Rittmeyer.RDS")
+
+IPD.Rittmeyer$event <- ifelse(IPD.Rittmeyer$event == 0, 1, 0)
+
+colnames(IPD.Rittmeyer) <- c("time", "event", "arm")
+
+result <- wlr.Stat(surv=IPD.Rittmeyer$time, cnsr=IPD.Rittmeyer$event, trt= IPD.Rittmeyer$arm, fparam=list(rho=c(0,0,1,1), gamma=c(0,1,1,0), wlr='FH(0,1)', APPLE=NULL))
+
+result %>% 
+  kableExtra::kable()
+
+result[,lapply(.SD, qnorm)]
+
+# pval
+# <dbl>
+# pval_FH(0,0)
+# <dbl>
+# pval_FH(0,1)
+# <dbl>
+# pval_FH(1,1)
+# <dbl>
+# pval_FH(1,0)
+# <dbl>
+# -3.690803	-3.890758	-3.690803	-3.987812	-3.554255
+```
+
+```{r, echo=FALSE, include=FALSE}
+source("Libraries.R")
+
+IPD.Rittmeyer <- readRDS("data/IPD.Rittmeyer.RDS")
+
+IPD.Rittmeyer$event <- ifelse(IPD.Rittmeyer$event == 0, 1, 0)
+
+IPD.Rittmeyer$arm <- ifelse(IPD.Rittmeyer$arm == 0, "control", "experimental")
+
+rgs <- list(c(0, 0), c(0, 1), c(1, 1), c(1, 0))
+
+draws <- 1000
+
+result.mc <- nphsim::combo.wlr(survival = IPD.Rittmeyer$time, cnsr = IPD.Rittmeyer$event, trt = IPD.Rittmeyer$arm, fparam = list(rgs=rgs,draws=draws))
+
+result.mc <- lapply(result.mc, function(x) round(x, digits = 3))
+```
+
+```{r, echo=FALSE}
+as.data.frame(result.mc) %>% kableExtra::kable()
+
+# rho	gamma	Zmax	pval	hr	hrL	hrU	hrL.bc	hrU.bc
+# 1	1	4.079	0	0.696	0.584	0.829	0.577	0.848
+```
